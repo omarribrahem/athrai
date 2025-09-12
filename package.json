@@ -1,0 +1,44 @@
+// This is a Node.js serverless function that will act as a proxy.
+// It safely uses the API key from environment variables on the server.
+
+export default async function handler(request, response) {
+  // Only allow POST requests
+  if (request.method !== 'POST') {
+    return response.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  // Get the API key from server-side environment variables
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return response.status(500).json({ error: 'API key is not configured on the server.' });
+  }
+
+  const googleApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+  try {
+    // Forward the request body from the client to the Google API
+    const googleResponse = await fetch(googleApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request.body),
+    });
+
+    const data = await googleResponse.json();
+
+    if (!googleResponse.ok) {
+      console.error('Google API Error:', data);
+      // Forward the error message from Google API to the client
+      return response.status(googleResponse.status).json({ error: data.error?.message || 'An error occurred with the Google API.' });
+    }
+    
+    // Send the successful response from Google back to the client
+    return response.status(200).json(data);
+
+  } catch (error) {
+    console.error('Proxy Error:', error);
+    return response.status(500).json({ error: 'An internal server error occurred.' });
+  }
+}
+
