@@ -95,6 +95,9 @@
         ul,ol { padding-right:clamp(20px,4vw,25px);margin-bottom:20px;}
         body[dir="ltr"] ul,body[dir="ltr"] ol {padding-right:0;padding-left:clamp(20px,4vw,25px);}
         
+        .case-study { border-right:4px solid var(--highlight-color);padding-right:20px;margin:25px 0;}
+        body[dir="ltr"] .case-study {border-right:none;border-left:4px solid var(--highlight-color);padding-right:0;padding-left:20px;}
+        
         .table-container { overflow-x: auto; margin: 20px 0; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         .business-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.2); border-radius: 12px; overflow: hidden; backdrop-filter: blur(15px); }
         .business-table th, .business-table td { padding: clamp(8px, 2vw, 12px); border: 1px solid rgba(255,255,255,0.3); text-align: right; font-size: clamp(0.8rem, 2vw, 1rem); vertical-align: top; }
@@ -618,8 +621,8 @@
             const aiChatTitle = document.getElementById('ai-chat-title');
             const aiChatButtonText = aiChatButton.querySelector('.fab-text');
 
-            // Chat conversation history using the new messages format
-            let conversationMessages = [];
+            // Chat conversation history
+            let conversationHistory = [];
             
             function applyLanguage(arabic) {
                 isArabic = arabic;
@@ -669,7 +672,8 @@
                 const userQuery = aiChatInput.value.trim();
                 if (!userQuery) return;
                 
-                // Add user message to the UI
+                // Add user message to conversation history
+                conversationHistory.push({ role: 'user', content: userQuery });
                 addMessage(userQuery, 'user');
                 aiChatInput.value = '';
                 showLoading(true);
@@ -677,25 +681,23 @@
                 try {
                     // Get content context from the page
                     const contentElement = isArabic ? arabicContent : englishContent;
-                    const pageContext = contentElement.innerText.substring(0, 8000); // Limit context size
+                    const pageContext = contentElement.innerText.substring(0, 10000); // Limit context size
                     
-                    // System prompt for the AI
-                    const systemPrompt = isArabic
-                        ? "أنت 'المعلم الخبير' من منصة 'أثر'، مساعد ذكاء اصطناعي متخصص في أساسيات الأعمال. المستخدم، أحمد، يتعلم من دليل على الصفحة. دورك هو الإجابة على أسئلته حول مفاهيم الأعمال المقدمة في الدليل بطريقة واضحة ومشجعة وبسيطة، كما لو كنت معلمه الشخصي. اجعل إجاباتك موجزة ومرتبطة بالموضوع مباشرةً. استخدم السياق المقدم من الصفحة للإجابة على الأسئلة."
-                        : "You are 'The Expert Teacher' from the 'Athr' platform, an AI assistant specializing in business fundamentals. The user, Ahmed, is learning from a guide on the page. Your role is to answer his questions about the business concepts presented in the guide in a clear, encouraging, and simple manner, as if you are his personal tutor. Keep your answers concise and directly related to the topic. Use the provided context from the page to answer the questions.";
+                    // Create conversation context
+                    const conversationContext = conversationHistory.map(msg => 
+                        `${msg.role === 'user' ? 'Student' : 'Teacher'}: ${msg.content}`
+                    ).join('\n');
                     
-                    // Prepare messages array with system prompt, page context, conversation history, and new question
-                    const messages = [
-                        { role: "system", content: `${systemPrompt}\n\nPage Content:\n${pageContext}` },
-                        ...conversationMessages,
-                        { role: "user", content: userQuery }
-                    ];
+                    const fullContext = `المحتوى التعليمي:\n---\n${pageContext}\n---\n\nسجل المحادثة:\n${conversationContext}`;
                     
-                    // Make request to Netlify function using the new API structure
+                    // Make request to Netlify function
                     const response = await fetch('/.netlify/functions/askAI', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ messages: messages })
+                        body: JSON.stringify({
+                            question: userQuery,
+                            context: fullContext
+                        })
                     });
                     
                     if (!response.ok) {
@@ -705,9 +707,8 @@
                     const result = await response.json();
                     const aiResponse = result.reply || (isArabic ? "عفواً، لم أستطع إيجاد إجابة. حاول مرة أخرى." : "Sorry, I couldn't find an answer. Please try again.");
                     
-                    // Add messages to conversation history
-                    conversationMessages.push({ role: "user", content: userQuery });
-                    conversationMessages.push({ role: "assistant", content: aiResponse });
+                    // Add AI response to conversation history
+                    conversationHistory.push({ role: 'assistant', content: aiResponse });
                     
                     showLoading(false);
                     addMessage(aiResponse, 'ai');
