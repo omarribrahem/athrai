@@ -1,4 +1,4 @@
-// الكود النهائي لـ askAI.js بالطريقة المنظمة
+// الكود النهائي لـ askAI.js بالطريقة المنظمة (النسخة المصححة)
 
 const fetch = require('node-fetch');
 
@@ -34,12 +34,18 @@ exports.handler = async function (event) {
         ],
     });
 
-    const answer = responseData.choices[0].message.content;
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ reply: answer }),
-    };
+    // إضافة تحقق للتأكد من وجود الإجابة قبل محاولة الوصول إليها
+    if (responseData && responseData.choices && responseData.choices[0]) {
+        const answer = responseData.choices[0].message.content;
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ reply: answer }),
+        };
+    } else {
+        // في حالة أن الرد من الـ API لم يكن بالشكل المتوقع
+        console.error("Unexpected API response:", responseData);
+        throw new Error("Invalid response structure from API");
+    }
 
   } catch (error) {
     console.error("Function Error:", error);
