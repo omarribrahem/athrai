@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل شامل: أساسيات الأعمال التجارية - منصة أثر</title>
+    <style>
+        :root {
+            --glass-bg: rgba(255,255,255,0.18);
+            --glass-border: rgba(255,255,255,0.4);
+            --text-color: #1e293b;
+            --highlight-color: #0ea5e9;
+            --practice-color: #16a34a;
+            --translation-color: #8b5cf6;
+            --ai-color: #f59e0b;
+            --border-radius: 24px;
+        }
+        
+        @keyframes gradientAnimation { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        @keyframes floatSphere1 { 0%,100%{transform:translateY(0px) rotate(0deg) scale(1)} 50%{transform:translateY(-30px) rotate(180deg) scale(1.05)} }
+        @keyframes floatSphere2 { 0%,100%{transform:translateX(0px) translateY(0px) rotate(0deg) scale(1)} 50%{transform:translateX(25px) translateY(-25px) rotate(-180deg) scale(0.95)} }
+        @keyframes floatSphere3 { 0%,100%{transform:translateX(0px) translateY(0px) rotate(0deg) scale(1)} 50%{transform:translateX(-20px) translateY(35px) rotate(120deg) scale(1.08)} }
+        @keyframes translate-glow { 0%,100%{box-shadow:0 0 15px -5px rgba(139,92,246,0.4),inset 0 2px 0 rgba(255,255,255,0.4);} 50%{box-shadow:0 0 25px 0px rgba(139,92,246,0.6),inset 0 2px 0 rgba(255,255,255,0.6);} }
+        @keyframes ai-glow { 0%,100%{box-shadow:0 0 15px -5px rgba(245,158,11,0.4),inset 0 2px 0 rgba(255,255,255,0.4);} 50%{box-shadow:0 0 25px 0px rgba(245,158,11,0.6),inset 0 2px 0 rgba(255,255,255,0.6);} }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        html { font-size:16px; scroll-behavior:smooth; }
+        body {
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+            background-color:#e0f2fe; color:var(--text-color); line-height:1.8;
+            overflow-x:hidden; position:relative; direction:rtl;
+            font-size:clamp(0.9rem,2.5vw,1.05rem); padding:20px clamp(10px,3vw,20px);
+        }
+        body[dir="ltr"] { direction:ltr; }
+        
+        .background-gradient, .floating-spheres { position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2; }
+        .background-gradient { background:linear-gradient(135deg,#e0f2fe 0%,#bae6fd 25%,#fce7f3 75%,#fdf2f8 100%);background-size:400% 400%;animation:gradientAnimation 40s ease infinite;}
+        .floating-spheres {z-index:-1;pointer-events:none;}
+        .sphere {position:absolute;border-radius:50%;backdrop-filter:blur(20px);border:2px solid rgba(255,255,255,0.3);box-shadow:0 20px 60px rgba(14,165,233,0.3),inset 0 4px 0 rgba(255,255,255,0.4);}
+        .sphere.large {width:clamp(120px,20vw,220px);height:clamp(120px,20vw,220px);top:8%;right:12%;background:radial-gradient(circle,#3b82f6,#1e3a8a);animation:floatSphere1 12s ease-in-out infinite;}
+        .sphere.medium {width:clamp(80px,15vw,140px);height:clamp(80px,15vw,140px);bottom:20%;left:8%;background:radial-gradient(circle,#0ea5e9,#0369a1);animation:floatSphere2 9s ease-in-out infinite;}
+        .sphere.small-1 {width:clamp(60px,12vw,95px);height:clamp(60px,12vw,95px);top:50%;right:8%;background:radial-gradient(circle,#06b6d4,#0e7490);animation:floatSphere3 6s ease-in-out infinite;}
+        .fab-button {
+            position:fixed;
+            background:rgba(255,255,255,0.1);backdrop-filter:blur(25px);
+            border:2px solid var(--glass-border);border-radius:50px;
+            padding:clamp(8px,2vw,12px);cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;
+            width:clamp(50px,12vw,60px);height:clamp(50px,12vw,60px);
+            transition:all 0.4s cubic-bezier(0.25,0.8,0.25,1);
+            box-shadow:0 8px 25px -10px rgba(0,0,0,0.2),inset 0 2px 0 rgba(255,255,255,0.5);
+        }
+        .fab-button:hover {
+            width:auto;padding:clamp(8px,2vw,12px) clamp(16px,4vw,22px);
+            transform:translateY(-3px);
+        }
+        .fab-button .icon {width:28px;height:28px;flex-shrink:0;transition:transform 0.3s ease;}
+        .fab-button:hover .icon {transform:scale(0.9);}
+        .fab-text {font-size:clamp(0.85rem,2.2vw,1rem);font-weight:600;white-space:nowrap;display:none;margin-left:10px;}
+        body[dir="ltr"] .fab-text {margin-left:0;margin-right:10px;}
+        .fab-button:hover .fab-text {display:block;}
+        .translation-button {
+            top:clamp(20px,5vw,30px);right:clamp(20px,5vw,30px);
+        }
+        body[dir="ltr"] .translation-button {right:auto;left:clamp(20px,5vw,30px);}
+        .translation-button:hover { border-color:var(--translation-color);background:rgba(139,92,246,0.1); animation:translate-glow 2.5s infinite alternate; }
+        .translation-button .fab-text { color:var(--translation-color); }
+        .ai-chat-button {
+            bottom:clamp(20px,5vw,30px); right:clamp(20px,5vw,30px);
+        }
+        body[dir="ltr"] .ai-chat-button { right:auto; left:clamp(20px,5vw,30px); }
+        .ai-chat-button:hover { border-color:var(--ai-color); background:rgba(245,158,11,0.1); animation:ai-glow 2.5s infinite alternate; }
+        .ai-chat-button .fab-text { color:var(--ai-color); }
+        
+        .main-content {max-width:1200px;margin:90px auto 0;padding:clamp(20px,5vw,40px);}
+        .glassy-card {
+            background:var(--glass-bg);border:2px solid var(--glass-border);border-radius:var(--border-radius);
+            padding:clamp(20px,5vw,30px);margin-bottom:clamp(25px,5vw,35px);backdrop-filter:blur(25px);
+            transition:all 0.4s ease;box-shadow:0 20px 50px rgba(0,0,0,0.1),inset 0 2px 0 rgba(255,255,255,0.5);
+        }
+        .glassy-card:hover {transform:translateY(-5px) scale(1.01);border-color:rgba(255,255,255,0.7);}
+        
+        h1,h2,h3,h4,h5 { color:#0f172a;text-shadow:0 2px 8px rgba(255,255,255,0.8);font-weight:700;}
+        h1 { font-size:clamp(2rem,6vw,3.2rem);text-align:center;margin-bottom:clamp(20px,4vw,30px);color:#0c4a6e; }
+        h2 { font-size:clamp(1.5rem,5vw,2.5rem);border-bottom:3px solid rgba(14,165,233,0.3);padding-bottom:clamp(10px,2vw,15px);margin-bottom:clamp(20px,4vw,30px);}
+        h3 { font-size:clamp(1.2rem,4vw,1.8rem);margin-bottom:clamp(15px,3vw,20px);}
+        h4 { font-size:clamp(1.1rem,3.5vw,1.5rem);margin-bottom:clamp(12px,2.5vw,18px);}
+        
+        p,li { color:#475569;margin-bottom:clamp(10px,2vw,12px);}
+        strong {color:#1e3a8a;}
+        
+        ul,ol { padding-right:clamp(20px,4vw,25px);margin-bottom:20px;}
+        body[dir="ltr"] ul,body[dir="ltr"] ol {padding-right:0;padding-left:clamp(20px,4vw,25px);}
+        
+        .case-study { border-right:4px solid var(--highlight-color);padding-right:20px;margin:25px 0;}
+        body[dir="ltr"] .case-study {border-right:none;border-left:4px solid var(--highlight-color);padding-right:0;padding-left:20px;}
+        
+        .table-container { overflow-x: auto; margin: 20px 0; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .business-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.2); border-radius: 12px; overflow: hidden; backdrop-filter: blur(15px); }
+        .business-table th, .business-table td { padding: clamp(8px, 2vw, 12px); border: 1px solid rgba(255,255,255,0.3); text-align: right; font-size: clamp(0.8rem, 2vw, 1rem); vertical-align: top; }
+        body[dir="ltr"] .business-table th, body[dir="ltr"] .business-table td { text-align: left; }
+        .business-table th { background: rgba(14,165,233,0.2); font-weight: 700; color: #0c4a6e; text-align: center; }
+        
+        .concept-card { background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 25px; margin: 20px 0; backdrop-filter: blur(20px); transition: all 0.4s ease; }
+        .concept-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.2); }
+        
+        /* AI Chat Modal Styles */
+        .ai-chat-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .ai-chat-modal.visible { opacity: 1; pointer-events: auto; }
+        .ai-chat-container { background: var(--glass-bg); border: 2px solid var(--glass-border); border-radius: var(--border-radius); width: 90%; max-width: 600px; height: 80%; max-height: 700px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); display: flex; flex-direction: column; transform: scale(0.95); transition: transform 0.3s ease; backdrop-filter: blur(25px); }
+        .ai-chat-modal.visible .ai-chat-container { transform: scale(1); }
+        
+        .ai-chat-header { padding: 15px 20px; border-bottom: 2px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        .ai-chat-header h3 { color: #0f172a; margin: 0; font-size: clamp(1.1rem, 4vw, 1.3rem); }
+        .ai-chat-close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: #334155; transition: color 0.2s; }
+        .ai-chat-close-btn:hover { color: var(--ai-color); }
+        .ai-chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .chat-message { max-width: 85%; padding: 10px 15px; border-radius: 18px; line-height: 1.6; }
+        .user-message { background: rgba(14,165,233,0.2); color: #0c4a6e; border-bottom-right-radius: 4px; align-self: flex-end; }
+        body[dir="ltr"] .user-message { border-bottom-left-radius: 4px; border-bottom-right-radius: 18px; align-self: flex-start; }
+        .ai-message { background: rgba(245,158,11,0.15); color: #78350f; border-bottom-left-radius: 4px; align-self: flex-start; }
+        body[dir="ltr"] .ai-message { border-bottom-right-radius: 4px; border-bottom-left-radius: 18px; align-self: flex-end; }
+        .loading-indicator { align-self: center; width: 24px; height: 24px; border: 3px solid rgba(245,158,11,0.3); border-top-color: var(--ai-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        .ai-chat-input-area { padding: 15px 20px; border-top: 2px solid var(--glass-border); display: flex; gap: 10px; }
+        #ai-chat-input { flex-grow: 1; border: 2px solid var(--glass-border); background: rgba(255,255,255,0.3); border-radius: 50px; padding: 10px 18px; font-size: 1rem; color: #1e293b; outline: none; transition: border-color 0.3s, box-shadow 0.3s; }
+        #ai-chat-input:focus { border-color: var(--ai-color); box-shadow: 0 0 10px rgba(245,158,11,0.3); }
+        #ai-chat-send-btn { background-color: var(--ai-color); border: none; border-radius: 50%; width: 48px; height: 48px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.3s, transform 0.2s; }
+        #ai-chat-send-btn:hover { background-color: #fbbf24; transform: scale(1.05); }
+        #ai-chat-send-btn svg { width: 24px; height: 24px; color: white; }
+        .hidden { display:none !important; }
+    </style>
+</head>
+<body>
+    <div class="background-gradient"></div>
+    <div class="floating-spheres">
+        <div class="sphere large"></div>
+        <div class="sphere medium"></div>
+        <div class="sphere small-1"></div>
+    </div>
+    
+    <!-- Translation Button -->
+    <button class="fab-button translation-button" id="translationButton">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.25 12C2.25 17.3848 6.61522 21.75 12 21.75C17.3848 21.75 21.75 17.3848 21.75 12C21.75 6.61522 17.3848 2.25 12 2.25C9.36657 2.25 6.94277 3.22321 5.16629 4.83371M12.75 2.25V7.5M12.75 7.5H18M12.75 7.5L5.16629 4.83371M11.25 21.75V16.5M11.25 16.5H6M11.25 16.5L18.8337 19.1663M5.16629 4.83371C3.22321 6.94277 2.25 9.36657 2.25 12M2.25 12C2.25 14.6334 3.22321 17.0572 4.83371 18.8337M18.8337 19.1663C20.7768 17.0572 21.75 14.6334 21.75 12M18.8337 4.83371C17.0572 3.22321 14.6334 2.25 12 2.25" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="fab-text">ترجمة</span>
+    </button>
+    
+    <!-- AI Chat Button -->
+    <button class="fab-button ai-chat-button" id="aiChatButton">
+         <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;"><path d="M12 8V4H8"/><rect x="4" y="12" width="16" height="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v-2a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v2"/></svg>
+        <span class="fab-text">المعلم الخبير</span>
+    </button>
+
+    <main class="main-content">
+        <!-- Arabic Content -->
+        <div id="arabicContent">
+            <section class="glassy-card">
+                <h1>دليل شامل: أساسيات الأعمال التجارية</h1>
+                <p style="text-align: center; font-size: 1.1rem; color: #475569;">أهلاً بك يا أحمد، أنا "المعلم الخبير" الخاص بك من منصة "أثر"</p>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: الأعمال التجارية</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>ببساطة، تخيل أي محل أو شركة حولك. الفكرة الأساسية هي أنهم يقدمون لك شيئاً تحتاجه (سلعة أو خدمة) وبالمقابل، هدفهم الأساسي هو كسب المال من وراء هذه العملية، أو ما يسمى "تحقيق الربح".</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: الربح</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>الربح هو المال المتبقي للشركة بعد أن تدفع كل فواتيرها ومصاريفها، من رواتب الموظفين والإيجار إلى تكلفة المواد الخام. إنه صافي المكسب النهائي.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: رائد الأعمال</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>رائد الأعمال هو الشخص المغامر الذي لديه فكرة ويقرر أن يحولها لمشروع حقيقي. هو من يضع وقته وماله في خطر على أمل أن تنجح فكرته، وهو من يتحمل كل المخاطر في البداية.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: الإيرادات</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>الإيرادات هي إجمالي الأموال التي تدخل للشركة من بيع منتجاتها أو خدماتها، وذلك قبل خصم أي مصاريف. إنه الرقم الإجمالي للدخل، وليس صافي الربح.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: الخسارة</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>الخسارة هي عكس الربح تماماً. تحدث عندما تكون مصاريف الشركة أكثر من الأموال التي تدخل لها. هذا يعني أن الشركة دفعت أموالاً أكثر مما كسبت خلال فترة معينة.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: المخاطرة</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>المخاطرة هي احتمالية عدم تحقيق الربح، أو حتى خسارة الوقت والمال. أي رائد أعمال يفتح مشروعاً جديداً، فهو يراهن على نجاحه في مواجهة عدم اليقين. القاعدة العامة تقول: كلما زادت المخاطرة، زاد الربح المحتمل.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: الاستعانة بمصادر خارجية (Outsourcing)</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>يحدث هذا عندما تقرر شركة ما أن تتعاقد مع شركة أخرى متخصصة لتنفيذ بعض مهامها (مثل المحاسبة أو خدمة العملاء) بدلاً من توظيف فريق داخلي للقيام بها. الهدف هو التركيز على العمل الأساسي وتقليل التكاليف.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: مستوى المعيشة</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>مستوى المعيشة هو ببساطة "القدرة الشرائية". إنه مقياس لكمية السلع والخدمات التي يمكن للأشخاص شراؤها بالمال الذي يملكونه. وهو مقياس مادي بحت.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: جودة الحياة</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>جودة الحياة هي مفهوم أعمق وأشمل من مجرد المال. إنها تقيس مدى الرفاهية العامة والسعادة في المجتمع، وتتضمن عوامل مثل نظافة البيئة، والشعور بالأمان، وجودة التعليم والرعاية الصحية، وتوفر وقت الفراغ.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: أصحاب المصلحة (Stakeholders)</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>هم أي شخص أو جهة تتأثر بقرارات وأنشطة الشركة، سواء بالكسب أو الخسارة. يشمل ذلك الموظفين، والعملاء، والموردين، والبنوك، والمجتمع المحيط، والحكومة.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: الدور الإيجابي للشركات في المجتمع</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>الشركات ليست فقط أداة لكسب المال، بل هي محرك أساسي في أي مجتمع. هي توفر المنتجات والخدمات، وتخلق فرص عمل، وتدفع ضرائب تستخدمها الحكومة في الخدمات العامة، وتساهم في النمو الاقتصادي واستقرار الدولة.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: الآثار السلبية للشركات</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>في سعيها لتحقيق الربح، قد تسبب الشركات أحياناً أضراراً للمجتمع والبيئة. هذا يمكن أن يشمل توليد التلوث، أو خلق مخاطر على صحة وسلامة العاملين، أو التسبب في اضطرابات اجتماعية واقتصادية.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: المنظمات غير الربحية (Non-Profit Organizations)</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>هي منظمات هدفها الأساسي خدمة قضية اجتماعية معينة، وليس تحقيق ربح شخصي لأصحابها. أي مكاسب مالية تحققها يتم إعادة استثمارها بالكامل لتحقيق أهداف المنظمة، مثل مساعدة المحتاجين أو حماية البيئة.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>شرح مفهوم: أهداف الأعمال</h4>
+                    <p><strong>أصل الفكرة (كأن صاحبك بيشرحهالك):</strong></p>
+                    <p>أي شركة لديها أربعة أهداف رئيسية يجب أن توازن بينها:</p>
+                    <ol>
+                        <li><strong>البقاء:</strong> الاستمرار في العمل وعدم الإفلاس.</li>
+                        <li><strong>الربح:</strong> تحقيق مكاسب مالية للتشغيل والنمو.</li>
+                        <li><strong>النمو:</strong> التوسع وزيادة حجم الأعمال.</li>
+                        <li><strong>المسؤولية الاجتماعية:</strong> المساهمة بشكل إيجابي في المجتمع.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h3>جدول المفاهيم الأساسية</h3>
+                <div class="table-container">
+                    <table class="business-table">
+                        <thead>
+                            <tr>
+                                <th>المفهوم</th>
+                                <th>التعريف الرسمي</th>
+                                <th>الخلاصة بكلمتين</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>الأعمال التجارية</strong></td>
+                                <td>أي نشاط يسعى لتقديم سلع وخدمات للآخرين، مع العمل على تحقيق الربح.</td>
+                                <td>بيع وشراء للربح</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الربح</strong></td>
+                                <td>مقدار المال الذي تكسبه الشركة بما يتجاوز ما تنفقه على الرواتب والنفقات الأخرى.</td>
+                                <td>المكسب الصافي</td>
+                            </tr>
+                            <tr>
+                                <td><strong>رائد الأعمال</strong></td>
+                                <td>الشخص الذي يخاطر بوقته وماله لبدء وإدارة عمل تجاري.</td>
+                                <td>مغامر صاحب فكرة</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الإيرادات</strong></td>
+                                <td>المبلغ الإجمالي للأموال التي تحصل عليها الشركة خلال فترة معينة عن طريق بيع السلع والخدمات.</td>
+                                <td>إجمالي الدخل</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الخسارة</strong></td>
+                                <td>تحدث عندما تكون نفقات الشركة أكثر من إيراداتها.</td>
+                                <td>المصاريف أعلى</td>
+                            </tr>
+                            <tr>
+                                <td><strong>المخاطرة</strong></td>
+                                <td>فرصة خسارة رائد الأعمال للوقت والمال في عمل قد لا يثبت ربحيته.</td>
+                                <td>احتمالية الفشل</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الاستعانة بمصادر خارجية</strong></td>
+                                <td>التعاقد مع شركات أخرى لإسناد وظائف مختلفة إليها.</td>
+                                <td>شغل من بره</td>
+                            </tr>
+                            <tr>
+                                <td><strong>مستوى المعيشة</strong></td>
+                                <td>كمية السلع والخدمات التي يستطيع الناس شراؤها بالمال الذي لديهم.</td>
+                                <td>القدرة الشرائية</td>
+                            </tr>
+                            <tr>
+                                <td><strong>جودة الحياة</strong></td>
+                                <td>الرفاهية العامة للمجتمع من حيث الحرية والبيئة والتعليم والصحة.</td>
+                                <td>السعادة والرضا</td>
+                            </tr>
+                            <tr>
+                                <td><strong>أصحاب المصلحة</strong></td>
+                                <td>جميع الأشخاص الذين يمكن أن يربحوا أو يخسروا من سياسات وأنشطة الشركة.</td>
+                                <td>كل من يتأثر</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الدور الإيجابي للشركات</strong></td>
+                                <td>المساهمة في المجتمع عبر توفير السلع والوظائف ودفع الضرائب ودعم النمو الوطني.</td>
+                                <td>فوائد للمجتمع</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الآثار السلبية للشركات</strong></td>
+                                <td>توليد التلوث، خلق مخاطر صحية، تعطيل المجتمعات، والتسبب في عدم الاستقرار المالي.</td>
+                                <td>أضرار للمجتمع</td>
+                            </tr>
+                            <tr>
+                                <td><strong>المنظمات غير الربحية</strong></td>
+                                <td>منظمة لا تهدف إلى تحقيق ربح شخصي لمؤسسيها، بل تخدم أهدافاً اجتماعية.</td>
+                                <td>هدفها خدمة المجتمع</td>
+                            </tr>
+                            <tr>
+                                <td><strong>أهداف الأعمال</strong></td>
+                                <td>البقاء، الربح، النمو، والمسؤولية الاجتماعية.</td>
+                                <td>غايات الشركة الأربع</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- English Content -->
+        <div id="englishContent" class="hidden">
+            <section class="glassy-card">
+                <h1>Comprehensive Guide: Business Fundamentals</h1>
+                <p style="text-align: center; font-size: 1.1rem; color: #475569;">Welcome Ahmed, I am your "Expert Teacher" from "Athr" platform</p>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Business</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>Simply put, imagine any shop or company around you. The basic idea is that they provide you with something you need (a good or service) and in return, their main goal is to make money from this process, or what we call "making a profit".</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Profit</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>Profit is the money left over for the company after it pays all its bills and expenses, from employee salaries and rent to the cost of raw materials. It is the final net gain.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Entrepreneur</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>An entrepreneur is the adventurous person who has an idea and decides to turn it into a real project. They are the one who puts their time and money at risk in the hope that their idea will succeed, and they are the one who bears all the risks at the beginning.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Revenue</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>Revenue is the total amount of money that enters the company from selling its products or services, before deducting any expenses. It is the gross income figure, not the net profit.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Loss</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>Loss is the exact opposite of profit. It occurs when a company's expenses are more than the money coming in. This means the company paid out more money than it earned during a certain period.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Risk</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>Risk is the possibility of not making a profit, or even losing time and money. Any entrepreneur who opens a new project is betting on its success in the face of uncertainty. The general rule says: the higher the risk, the higher the potential profit.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Outsourcing</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>This happens when a company decides to contract with another specialized company to perform some of its tasks (such as accounting or customer service) instead of hiring an internal team to do them. The goal is to focus on the core business and reduce costs.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Standard of Living</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>Standard of living is simply "purchasing power". It is a measure of the amount of goods and services that people can buy with the money they have. It is a purely material measure.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Quality of Life</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>Quality of life is a deeper and more comprehensive concept than just money. It measures the extent of general well-being and happiness in society, and includes factors such as environmental cleanliness, feeling safe, quality of education and healthcare, and availability of leisure time.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Stakeholders</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>They are any person or entity affected by the company's decisions and activities, whether by gain or loss. This includes employees, customers, suppliers, banks, the surrounding community, and the government.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Positive Role of Companies in Society</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>Companies are not just a tool for making money, but they are a fundamental driver in any society. They provide products and services, create job opportunities, pay taxes that the government uses for public services, and contribute to economic growth and state stability.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Negative Effects of Companies</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>In their pursuit of profit, companies may sometimes cause harm to society and the environment. This can include generating pollution, creating risks to worker health and safety, or causing social and economic disruptions.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Non-Profit Organizations</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>These are organizations whose main goal is to serve a specific social cause, not to make personal profit for their owners. Any financial gains they achieve are fully reinvested to achieve the organization's goals, such as helping the needy or protecting the environment.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <div class="concept-card">
+                    <h4>Concept Explanation: Business Objectives</h4>
+                    <p><strong>Core Idea (Like Your Friend Explaining):</strong></p>
+                    <p>Any company has four main objectives that it must balance:</p>
+                    <ol>
+                        <li><strong>Survival:</strong> Continuing to operate and not going bankrupt.</li>
+                        <li><strong>Profit:</strong> Achieving financial gains for operation and growth.</li>
+                        <li><strong>Growth:</strong> Expansion and increasing business size.</li>
+                        <li><strong>Social Responsibility:</strong> Contributing positively to society.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h3>Basic Concepts Table</h3>
+                <div class="table-container">
+                    <table class="business-table">
+                        <thead>
+                            <tr>
+                                <th>Concept</th>
+                                <th>Official Definition</th>
+                                <th>Summary in Two Words</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Business</strong></td>
+                                <td>Any activity that seeks to provide goods and services to others while working to make a profit.</td>
+                                <td>Buy and sell for profit</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Profit</strong></td>
+                                <td>The amount of money a company earns beyond what it spends on salaries and other expenses.</td>
+                                <td>Net gain</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Entrepreneur</strong></td>
+                                <td>A person who risks their time and money to start and run a business.</td>
+                                <td>Adventurous idea owner</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Revenue</strong></td>
+                                <td>The total amount of money a company receives during a certain period by selling goods and services.</td>
+                                <td>Total income</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Loss</strong></td>
+                                <td>Occurs when a company's expenses are more than its revenues.</td>
+                                <td>Higher expenses</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Risk</strong></td>
+                                <td>The chance of an entrepreneur losing time and money in a business that may not prove profitable.</td>
+                                <td>Possibility of failure</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Outsourcing</strong></td>
+                                <td>Contracting with other companies to assign various functions to them.</td>
+                                <td>External work</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Standard of Living</strong></td>
+                                <td>The amount of goods and services people can buy with the money they have.</td>
+                                <td>Purchasing power</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Quality of Life</strong></td>
+                                <td>The general welfare of society in terms of freedom, environment, education, and health.</td>
+                                <td>Happiness and satisfaction</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Stakeholders</strong></td>
+                                <td>All people who can win or lose from company policies and activities.</td>
+                                <td>Everyone affected</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Positive Role of Companies</strong></td>
+                                <td>Contributing to society by providing goods, jobs, paying taxes, and supporting national growth.</td>
+                                <td>Benefits to society</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Negative Effects of Companies</strong></td>
+                                <td>Generating pollution, creating health risks, disrupting communities, and causing financial instability.</td>
+                                <td>Harm to society</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Non-Profit Organizations</strong></td>
+                                <td>Organizations that do not aim to make personal profit for their founders, but serve social goals.</td>
+                                <td>Serves community goals</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Business Objectives</strong></td>
+                                <td>Survival, profit, growth, and social responsibility.</td>
+                                <td>Four company goals</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- AI Chat Modal -->
+    <div class="ai-chat-modal" id="aiChatModal">
+        <div class="ai-chat-container">
+            <div class="ai-chat-header">
+                <h3 id="ai-chat-title">اسأل المعلم الخبير</h3>
+                <button class="ai-chat-close-btn" id="aiChatCloseBtn">&times;</button>
+            </div>
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <!-- Messages will be injected here -->
+            </div>
+            <div class="ai-chat-input-area">
+                <input type="text" id="ai-chat-input" placeholder="اكتب سؤالك هنا...">
+                <button id="ai-chat-send-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Translation Logic ---
+            const translationButton = document.getElementById('translationButton');
+            const translationText = translationButton.querySelector('.fab-text');
+            const arabicContent = document.getElementById('arabicContent');
+            const englishContent = document.getElementById('englishContent');
+            const html = document.documentElement;
+            const body = document.body;
+            let isArabic = true;
+            
+            // --- AI Chat Elements ---
+            const aiChatButton = document.getElementById('aiChatButton');
+            const aiChatModal = document.getElementById('aiChatModal');
+            const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
+            const aiChatMessages = document.getElementById('aiChatMessages');
+            const aiChatInput = document.getElementById('ai-chat-input');
+            const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
+            const aiChatTitle = document.getElementById('ai-chat-title');
+            const aiChatButtonText = aiChatButton.querySelector('.fab-text');
+
+            // Chat conversation history
+            let conversationHistory = [];
+            
+            function applyLanguage(arabic) {
+                isArabic = arabic;
+                const lang = isArabic ? 'ar' : 'en';
+                const dir = isArabic ? 'rtl' : 'ltr';
+                html.setAttribute('lang', lang);
+                html.setAttribute('dir', dir);
+                body.setAttribute('dir', dir);
+                arabicContent.classList.toggle('hidden', !isArabic);
+                englishContent.classList.toggle('hidden', isArabic);
+                
+                translationText.textContent = isArabic ? 'ترجمة' : 'Translate';
+                document.title = isArabic ? 'دليل شامل: أساسيات الأعمال التجارية - منصة أثر' : 'Comprehensive Guide: Business Fundamentals - Athr Platform';
+                
+                // Update AI Chat UI text
+                aiChatTitle.textContent = isArabic ? 'اسأل المعلم الخبير' : 'Ask the Expert Teacher';
+                aiChatInput.placeholder = isArabic ? 'اكتب سؤالك هنا...' : 'Type your question here...';
+                aiChatButtonText.textContent = isArabic ? 'المعلم الخبير' : 'Expert Teacher';
+            }
+            
+            translationButton.addEventListener('click', () => applyLanguage(!isArabic));
+            
+            // --- AI Chat Logic ---
+            aiChatButton.addEventListener('click', () => {
+                aiChatModal.classList.add('visible');
+            });
+            
+            aiChatCloseBtn.addEventListener('click', () => {
+                aiChatModal.classList.remove('visible');
+            });
+            
+            // Close modal by clicking on the overlay
+            aiChatModal.addEventListener('click', (e) => {
+                if (e.target === aiChatModal) {
+                    aiChatModal.classList.remove('visible');
+                }
+            });
+            
+            aiChatSendBtn.addEventListener('click', handleSendMessage);
+            aiChatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleSendMessage();
+                }
+            });
+            
+            async function handleSendMessage() {
+                const userQuery = aiChatInput.value.trim();
+                if (!userQuery) return;
+                
+                // Add user message to conversation history
+                conversationHistory.push({ role: 'user', content: userQuery });
+                addMessage(userQuery, 'user');
+                aiChatInput.value = '';
+                showLoading(true);
+                
+                try {
+                    // Get content context from the page
+                    const contentElement = isArabic ? arabicContent : englishContent;
+                    const pageContext = contentElement.innerText.substring(0, 10000); // Limit context size
+                    
+                    // Create conversation context
+                    const conversationContext = conversationHistory.map(msg => 
+                        `${msg.role === 'user' ? 'Student' : 'Teacher'}: ${msg.content}`
+                    ).join('\n');
+                    
+                    const systemPrompt = isArabic
+                        ? "أنت 'المعلم الخبير' من منصة 'أثر'، مساعد ذكاء اصطناعي متخصص في أساسيات الأعمال. المستخدم، أحمد، يتعلم من دليل على الصفحة. دورك هو الإجابة على أسئلته حول مفاهيم الأعمال المقدمة في الدليل بطريقة واضحة ومشجعة وبسيطة، كما لو كنت معلمه الشخصي. اجعل إجاباتك موجزة ومرتبطة بالموضوع مباشرةً. استخدم السياق المقدم من الصفحة للإجابة على الأسئلة."
+                        : "You are 'The Expert Teacher' from the 'Athr' platform, an AI assistant specializing in business fundamentals. The user, Ahmed, is learning from a guide on the page. Your role is to answer his questions about the business concepts presented in the guide in a clear, encouraging, and simple manner, as if you are his personal tutor. Keep your answers concise and directly related to the topic. Use the provided context from the page to answer the questions.";
+                    
+                    const fullPrompt = `Learning Content:\n---\n${pageContext}\n---\n\nConversation History:\n${conversationContext}\n\nNew Question: "${userQuery}"`;
+                    
+                    // Make request to Netlify function
+                    const response = await fetch('/.netlify/functions/askAI', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            prompt: fullPrompt,
+                            systemInstruction: systemPrompt
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    const aiResponse = result.response || (isArabic ? "عفواً، لم أستطع إيجاد إجابة. حاول مرة أخرى." : "Sorry, I couldn't find an answer. Please try again.");
+                    
+                    // Add AI response to conversation history
+                    conversationHistory.push({ role: 'assistant', content: aiResponse });
+                    
+                    showLoading(false);
+                    addMessage(aiResponse, 'ai');
+                    
+                } catch (error) {
+                    console.error("Error fetching AI response:", error);
+                    showLoading(false);
+                    const errorMessage = isArabic ? "حدث خطأ أثناء محاولة الحصول على إجابة. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى." : "An error occurred while getting a response. Please check your connection and try again.";
+                    addMessage(errorMessage, 'ai');
+                }
+            }
+            
+            function addMessage(text, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('chat-message', `${sender}-message`);
+                messageElement.textContent = text;
+                aiChatMessages.appendChild(messageElement);
+                aiChatMessages.scrollTop = aiChatMessages.scrollHeight; // Auto-scroll to bottom
+            }
+            
+            function showLoading(isLoading) {
+                // Remove any existing loader first
+                const existingLoader = aiChatMessages.querySelector('.loading-indicator');
+                if (existingLoader) {
+                    existingLoader.remove();
+                }
+                
+                if (isLoading) {
+                    const loadingElement = document.createElement('div');
+                    loadingElement.classList.add('loading-indicator');
+                    aiChatMessages.appendChild(loadingElement);
+                    aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+                }
+            }
+            
+            // Initialize page language
+            applyLanguage(true);
+        });
+    </script>
+</body>
+</html>
+
