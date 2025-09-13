@@ -597,156 +597,143 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // --- Translation Logic ---
-            const translationButton = document.getElementById('translationButton');
-            const translationText = translationButton.querySelector('.fab-text');
-            const arabicContent = document.getElementById('arabicContent');
-            const englishContent = document.getElementById('englishContent');
-            const html = document.documentElement;
-            const body = document.body;
-            let isArabic = true;
-            
-            // --- AI Chat Elements ---
-            const aiChatButton = document.getElementById('aiChatButton');
-            const aiChatModal = document.getElementById('aiChatModal');
-            const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
-            const aiChatMessages = document.getElementById('aiChatMessages');
-            const aiChatInput = document.getElementById('ai-chat-input');
-            const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
-            const aiChatTitle = document.getElementById('ai-chat-title');
-            const aiChatButtonText = aiChatButton.querySelector('.fab-text');
+       document.addEventListener('DOMContentLoaded', function () {
+    // --- Translation Logic ---
+    const translationButton = document.getElementById('translationButton');
+    const translationText = translationButton.querySelector('.fab-text');
+    const arabicContent = document.getElementById('arabicContent');
+    const englishContent = document.getElementById('englishContent');
+    const html = document.documentElement;
+    const body = document.body;
+    let isArabic = true;
+    
+    // --- AI Chat Elements ---
+    const aiChatButton = document.getElementById('aiChatButton');
+    const aiChatModal = document.getElementById('aiChatModal');
+    const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
+    const aiChatMessages = document.getElementById('aiChatMessages');
+    const aiChatInput = document.getElementById('ai-chat-input');
+    const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
+    const aiChatTitle = document.getElementById('ai-chat-title');
+    const aiChatButtonText = aiChatButton.querySelector('.fab-text');
 
-            // Chat conversation history
-            let conversationHistory = [];
+    // Chat conversation history
+    let conversationHistory = [];
+    
+    function applyLanguage(arabic) {
+        isArabic = arabic;
+        const lang = isArabic ? 'ar' : 'en';
+        const dir = isArabic ? 'rtl' : 'ltr';
+        html.setAttribute('lang', lang);
+        body.setAttribute('dir', dir);
+        arabicContent.classList.toggle('hidden', !isArabic);
+        englishContent.classList.toggle('hidden', isArabic);
+        
+        translationText.textContent = isArabic ? 'ترجمة' : 'Translate';
+        document.title = isArabic ? 'دليل شامل: أساسيات الأعمال التجارية - منصة أثر' : 'Comprehensive Guide: Business Fundamentals - Athr Platform';
+        
+        // Update AI Chat UI text
+        aiChatTitle.textContent = isArabic ? 'اسأل المعلم الخبير' : 'Ask the Expert Teacher';
+        aiChatInput.placeholder = isArabic ? 'اكتب سؤالك هنا...' : 'Type your question here...';
+        aiChatButtonText.textContent = isArabic ? 'المعلم الخبير' : 'Expert Teacher';
+    }
+    
+    translationButton.addEventListener('click', () => applyLanguage(!isArabic));
+    
+    // --- AI Chat Logic ---
+    aiChatButton.addEventListener('click', () => aiChatModal.classList.add('visible'));
+    aiChatCloseBtn.addEventListener('click', () => aiChatModal.classList.remove('visible'));
+    aiChatModal.addEventListener('click', (e) => {
+        if (e.target === aiChatModal) {
+            aiChatModal.classList.remove('visible');
+        }
+    });
+    
+    aiChatSendBtn.addEventListener('click', handleSendMessage);
+    aiChatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleSendMessage();
+        }
+    });
+    
+    async function handleSendMessage() {
+        const userQuery = aiChatInput.value.trim();
+        if (!userQuery) return;
+        
+        addMessage(userQuery, 'user');
+        aiChatInput.value = '';
+        showLoading(true);
+
+        // Add user message to conversation history
+        conversationHistory.push({ role: 'user', content: userQuery });
+        
+        try {
+            const contentElement = isArabic ? arabicContent : englishContent;
+            const pageContext = contentElement.innerText;
             
-            function applyLanguage(arabic) {
-                isArabic = arabic;
-                const lang = isArabic ? 'ar' : 'en';
-                const dir = isArabic ? 'rtl' : 'ltr';
-                html.setAttribute('lang', lang);
-                html.setAttribute('dir', dir);
-                body.setAttribute('dir', dir);
-                arabicContent.classList.toggle('hidden', !isArabic);
-                englishContent.classList.toggle('hidden', isArabic);
-                
-                translationText.textContent = isArabic ? 'ترجمة' : 'Translate';
-                document.title = isArabic ? 'دليل شامل: أساسيات الأعمال التجارية - منصة أثر' : 'Comprehensive Guide: Business Fundamentals - Athr Platform';
-                
-                // Update AI Chat UI text
-                aiChatTitle.textContent = isArabic ? 'اسأل المعلم الخبير' : 'Ask the Expert Teacher';
-                aiChatInput.placeholder = isArabic ? 'اكتب سؤالك هنا...' : 'Type your question here...';
-                aiChatButtonText.textContent = isArabic ? 'المعلم الخبير' : 'Expert Teacher';
-            }
-            
-            translationButton.addEventListener('click', () => applyLanguage(!isArabic));
-            
-            // --- AI Chat Logic ---
-            aiChatButton.addEventListener('click', () => {
-                aiChatModal.classList.add('visible');
+            const systemMessage = {
+                role: 'system',
+                content: `You are 'The Expert Teacher', an AI assistant. The user is learning from a guide about business fundamentals. Your role is to answer questions based on this guide. Keep answers concise and encouraging. The learning content is:\n---\n${pageContext}`
+            };
+
+            // *** الكود المصحح هنا ***
+            // نرسل الطلب بنفس الصيغة التي ينتظرها الباك إند
+            const response = await fetch('/.netlify/functions/askAI', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    // نرسل سجل المحادثة كاملاً مع رسالة النظام
+                    messages: [systemMessage, ...conversationHistory]
+                })
             });
             
-            aiChatCloseBtn.addEventListener('click', () => {
-                aiChatModal.classList.remove('visible');
-            });
-            
-            // Close modal by clicking on the overlay
-            aiChatModal.addEventListener('click', (e) => {
-                if (e.target === aiChatModal) {
-                    aiChatModal.classList.remove('visible');
-                }
-            });
-            
-            aiChatSendBtn.addEventListener('click', handleSendMessage);
-            aiChatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handleSendMessage();
-                }
-            });
-            
-            async function handleSendMessage() {
-                const userQuery = aiChatInput.value.trim();
-                if (!userQuery) return;
-                
-                // Add user message to conversation history
-                conversationHistory.push({ role: 'user', content: userQuery });
-                addMessage(userQuery, 'user');
-                aiChatInput.value = '';
-                showLoading(true);
-                
-                try {
-                    // Get content context from the page
-                    const contentElement = isArabic ? arabicContent : englishContent;
-                    const pageContext = contentElement.innerText.substring(0, 10000); // Limit context size
-                    
-                    // Create conversation context
-                    const conversationContext = conversationHistory.map(msg => 
-                        `${msg.role === 'user' ? 'Student' : 'Teacher'}: ${msg.content}`
-                    ).join('\n');
-                    
-                    const systemPrompt = isArabic
-                        ? "أنت 'المعلم الخبير' من منصة 'أثر'، مساعد ذكاء اصطناعي متخصص في أساسيات الأعمال. المستخدم، أحمد، يتعلم من دليل على الصفحة. دورك هو الإجابة على أسئلته حول مفاهيم الأعمال المقدمة في الدليل بطريقة واضحة ومشجعة وبسيطة، كما لو كنت معلمه الشخصي. اجعل إجاباتك موجزة ومرتبطة بالموضوع مباشرةً. استخدم السياق المقدم من الصفحة للإجابة على الأسئلة."
-                        : "You are 'The Expert Teacher' from the 'Athr' platform, an AI assistant specializing in business fundamentals. The user, Ahmed, is learning from a guide on the page. Your role is to answer his questions about the business concepts presented in the guide in a clear, encouraging, and simple manner, as if you are his personal tutor. Keep your answers concise and directly related to the topic. Use the provided context from the page to answer the questions.";
-                    
-                    const fullPrompt = `Learning Content:\n---\n${pageContext}\n---\n\nConversation History:\n${conversationContext}\n\nNew Question: "${userQuery}"`;
-                    
-                    // Make request to Netlify function
-                    const response = await fetch('/.netlify/functions/askAI', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            prompt: fullPrompt,
-                            systemInstruction: systemPrompt
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`API Error: ${response.statusText}`);
-                    }
-                    
-                    const result = await response.json();
-                    const aiResponse = result.response || (isArabic ? "عفواً، لم أستطع إيجاد إجابة. حاول مرة أخرى." : "Sorry, I couldn't find an answer. Please try again.");
-                    
-                    // Add AI response to conversation history
-                    conversationHistory.push({ role: 'assistant', content: aiResponse });
-                    
-                    showLoading(false);
-                    addMessage(aiResponse, 'ai');
-                    
-                } catch (error) {
-                    console.error("Error fetching AI response:", error);
-                    showLoading(false);
-                    const errorMessage = isArabic ? "حدث خطأ أثناء محاولة الحصول على إجابة. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى." : "An error occurred while getting a response. Please check your connection and try again.";
-                    addMessage(errorMessage, 'ai');
-                }
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status} ${response.statusText}`);
             }
             
-            function addMessage(text, sender) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('chat-message', `${sender}-message`);
-                messageElement.textContent = text;
-                aiChatMessages.appendChild(messageElement);
-                aiChatMessages.scrollTop = aiChatMessages.scrollHeight; // Auto-scroll to bottom
-            }
+            const result = await response.json();
+            // *** التصحيح هنا: الباك إند يرسل الإجابة في متغير اسمه "reply"
+            const aiResponse = result.reply || (isArabic ? "عفواً، حدث خطأ ما." : "Sorry, something went wrong.");
             
-            function showLoading(isLoading) {
-                // Remove any existing loader first
-                const existingLoader = aiChatMessages.querySelector('.loading-indicator');
-                if (existingLoader) {
-                    existingLoader.remove();
-                }
-                
-                if (isLoading) {
-                    const loadingElement = document.createElement('div');
-                    loadingElement.classList.add('loading-indicator');
-                    aiChatMessages.appendChild(loadingElement);
-                    aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-                }
-            }
+            // Add AI response to conversation history
+            conversationHistory.push({ role: 'assistant', content: aiResponse });
             
-            // Initialize page language
-            applyLanguage(true);
-        });
+            showLoading(false);
+            addMessage(aiResponse, 'ai');
+            
+        } catch (error) {
+            console.error("Error fetching AI response:", error);
+            showLoading(false);
+            const errorMessage = isArabic ? "حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى." : "A connection error occurred. Please try again.";
+            addMessage(errorMessage, 'ai');
+        }
+    }
+    
+    function addMessage(text, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', `${sender}-message`);
+        messageElement.textContent = text;
+        aiChatMessages.appendChild(messageElement);
+        aiChatMessages.scrollTop = aiChatMessages.scrollHeight; // Auto-scroll to bottom
+    }
+    
+    function showLoading(isLoading) {
+        const existingLoader = aiChatMessages.querySelector('.loading-indicator');
+        if (existingLoader) {
+            existingLoader.remove();
+        }
+        
+        if (isLoading) {
+            const loadingElement = document.createElement('div');
+            loadingElement.classList.add('loading-indicator');
+            aiChatMessages.appendChild(loadingElement);
+            aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+        }
+    }
+    
+    // Initialize page language
+    applyLanguage(true);
+});
     </script>
 </body>
 </html>
