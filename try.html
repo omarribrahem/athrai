@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>أساسيات المحاسبة - المحاضرة الأولى - منصة أثر</title>
+    <style>
+        :root {
+            --glass-bg: rgba(255,255,255,0.18);
+            --glass-border: rgba(255,255,255,0.4);
+            --text-color: #1e293b;
+            --highlight-color: #0ea5e9;
+            --practice-color: #16a34a;
+            --translation-color: #8b5cf6;
+            --ai-color: #f59e0b;
+            --border-radius: 24px;
+        }
+        @keyframes gradientAnimation {0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%}}
+        @keyframes floatSphere1 {0%,100%{transform:translateY(0px) rotate(0deg) scale(1)} 50%{transform:translateY(-30px) rotate(180deg) scale(1.05)}}
+        @keyframes floatSphere2 {0%,100%{transform:translateX(0px) translateY(0px) rotate(0deg) scale(1)} 50%{transform:translateX(25px) translateY(-25px) rotate(-180deg) scale(0.95)}}
+        @keyframes floatSphere3 {0%,100%{transform:translateX(0px) translateY(0px) rotate(0deg) scale(1)} 50%{transform:translateX(-20px) translateY(35px) rotate(120deg) scale(1.08)}}
+        @keyframes translate-glow {0%,100%{box-shadow:0 0 15px -5px rgba(139,92,246,0.4),inset 0 2px 0 rgba(255,255,255,0.4);} 50%{box-shadow:0 0 25px 0px rgba(139,92,246,0.6),inset 0 2px 0 rgba(255,255,255,0.6);}}
+        @keyframes ai-glow {0%,100%{box-shadow:0 0 15px -5px rgba(245,158,11,0.4),inset 0 2px 0 rgba(255,255,255,0.4);} 50%{box-shadow:0 0 25px 0px rgba(245,158,11,0.6),inset 0 2px 0 rgba(255,255,255,0.6);}}
+        @keyframes spin {from { transform: rotate(0deg);} to { transform: rotate(360deg);}}
+        * {box-sizing:border-box; margin:0; padding:0;}
+        html {font-size:16px; scroll-behavior:smooth;}
+        body {
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+            background-color:#e0f2fe; color:var(--text-color); line-height:1.8;
+            overflow-x:hidden; position:relative; direction:rtl;
+            font-size:clamp(0.9rem,2.5vw,1.05rem); padding:20px clamp(10px,3vw,20px);
+        }
+        body[dir="ltr"] { direction:ltr; }
+        .background-gradient, .floating-spheres { position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2; }
+        .background-gradient {
+            background:linear-gradient(135deg,#e0f2fe 0%,#bae6fd 25%,#fce7f3 75%,#fdf2f8 100%);
+            background-size:400% 400%;
+            animation:gradientAnimation 40s ease infinite;
+        }
+        .floating-spheres {z-index:-1;pointer-events:none;}
+        .sphere {
+            position:absolute;
+            border-radius:50%;
+            backdrop-filter:blur(20px);
+            border:2px solid rgba(255,255,255,0.3);
+            box-shadow:0 20px 60px rgba(14,165,233,0.3),inset 0 4px 0 rgba(255,255,255,0.4);
+        }
+        .sphere.large {
+            width:clamp(120px,20vw,220px);
+            height:clamp(120px,20vw,220px);
+            top:8%;
+            right:12%;
+            background:radial-gradient(circle,#3b82f6,#1e3a8a);
+            animation:floatSphere1 12s ease-in-out infinite;
+        }
+        .sphere.medium {
+            width:clamp(80px,15vw,140px);
+            height:clamp(80px,15vw,140px);
+            bottom:20%;
+            left:8%;
+            background:radial-gradient(circle,#0ea5e9,#0369a1);
+            animation:floatSphere2 9s ease-in-out infinite;
+        }
+        .sphere.small-1 {
+            width:clamp(60px,12vw,95px);
+            height:clamp(60px,12vw,95px);
+            top:50%;
+            right:8%;
+            background:radial-gradient(circle,#06b6d4,#0e7490);
+            animation:floatSphere3 6s ease-in-out infinite;
+        }
+        .fab-button {
+            position:fixed;
+            background:rgba(255,255,255,0.1);
+            backdrop-filter:blur(25px);
+            border:2px solid var(--glass-border);
+            border-radius:50px;
+            padding:clamp(8px,2vw,12px);
+            cursor:pointer;
+            z-index:1000;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            width:clamp(50px,12vw,60px);
+            height:clamp(50px,12vw,60px);
+            transition:all 0.4s cubic-bezier(0.25,0.8,0.25,1);
+            box-shadow:0 8px 25px -10px rgba(0,0,0,0.2),inset 0 2px 0 rgba(255,255,255,0.5);
+        }
+        .fab-button:hover {
+            width:auto;
+            padding:clamp(8px,2vw,12px) clamp(16px,4vw,22px);
+            transform:translateY(-3px);
+        }
+        .fab-button .icon {width:28px;height:28px;flex-shrink:0;transition:transform 0.3s ease;}
+        .fab-button:hover .icon {transform:scale(0.9);}
+        .fab-text {
+            font-size:clamp(0.85rem,2.2vw,1rem);
+            font-weight:600;
+            white-space:nowrap;
+            display:none;
+            margin-left:10px;
+        }
+        body[dir="ltr"] .fab-text {margin-left:0;margin-right:10px;}
+        .fab-button:hover .fab-text {display:block;}
+        .translation-button {
+            top:clamp(20px,5vw,30px);
+            right:clamp(20px,5vw,30px);
+        }
+        body[dir="ltr"] .translation-button {right:auto;left:clamp(20px,5vw,30px);}
+        .translation-button:hover {
+            border-color:var(--translation-color);
+            background:rgba(139,92,246,0.1);
+            animation:translate-glow 2.5s infinite alternate;
+        }
+        .translation-button .fab-text { color:var(--translation-color); }
+        .ai-chat-button {
+            bottom:clamp(20px,5vw,30px);
+            right:clamp(20px,5vw,30px);
+        }
+        body[dir="ltr"] .ai-chat-button { right:auto; left:clamp(20px,5vw,30px); }
+        .ai-chat-button:hover {
+            border-color:var(--ai-color);
+            background:rgba(245,158,11,0.1);
+            animation:ai-glow 2.5s infinite alternate;
+        }
+        .ai-chat-button .fab-text { color:var(--ai-color); }
+        .main-content {
+            max-width:1200px;
+            margin:90px auto 0;
+            padding:clamp(20px,5vw,40px);
+        }
+        .glassy-card {
+            background:var(--glass-bg);
+            border:2px solid var(--glass-border);
+            border-radius:var(--border-radius);
+            padding:clamp(20px,5vw,30px);
+            margin-bottom:clamp(25px,5vw,35px);
+            backdrop-filter:blur(25px);
+            transition:all 0.4s ease;
+            box-shadow:0 20px 50px rgba(0,0,0,0.1),inset 0 2px 0 rgba(255,255,255,0.5);
+        }
+        .glassy-card:hover {
+            transform:translateY(-5px) scale(1.01);
+            border-color:rgba(255,255,255,0.7);
+        }
+        h1,h2,h3,h4,h5 {
+            color:#0f172a;
+            text-shadow:0 2px 8px rgba(255,255,255,0.8);
+            font-weight:700;
+        }
+        h1 {
+            font-size:clamp(2rem,6vw,3.2rem);
+            text-align:center;
+            margin-bottom:clamp(20px,4vw,30px);
+            color:#0c4a6e;
+        }
+        h2 {
+            font-size:clamp(1.5rem,5vw,2.5rem);
+            border-bottom:3px solid rgba(14,165,233,0.3);
+            padding-bottom:clamp(10px,2vw,15px);
+            margin-bottom:clamp(20px,4vw,30px);
+        }
+        h3 {
+            font-size:clamp(1.2rem,4vw,1.8rem);
+            margin-bottom:clamp(15px,3vw,20px);
+        }
+        h4 {
+            font-size:clamp(1.1rem,3.5vw,1.5rem);
+            margin-bottom:clamp(12px,2.5vw,18px);
+        }
+        p,li {
+            color:#475569;
+            margin-bottom:clamp(10px,2vw,12px);
+        }
+        strong {
+            color:#1e3a8a;
+        }
+        ul,ol {
+            padding-right:clamp(20px,4vw,25px);
+            margin-bottom:20px;
+        }
+        body[dir="ltr"] ul,body[dir="ltr"] ol {
+            padding-right:0;
+            padding-left:clamp(20px,4vw,25px);
+        }
+        .case-study {
+            border-right:4px solid var(--highlight-color);
+            padding-right:20px;
+            margin:25px 0;
+        }
+        body[dir="ltr"] .case-study {
+            border-right:none;
+            border-left:4px solid var(--highlight-color);
+            padding-right:0;
+            padding-left:20px;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .business-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+        }
+        .business-table th, .business-table td {
+            padding: clamp(8px, 2vw, 12px);
+            border: 1px solid rgba(255,255,255,0.3);
+            text-align: right;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            vertical-align: top;
+        }
+        body[dir="ltr"] .business-table th, body[dir="ltr"] .business-table td {
+            text-align: left;
+        }
+        .business-table th {
+            background: rgba(14,165,233,0.2);
+            font-weight: 700;
+            color: #0c4a6e;
+            text-align: center;
+        }
+        .concept-card {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+        }
+        .concept-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.2);
+        }
+        .formula-box {
+            background: rgba(14,165,233,0.1);
+            border: 2px solid rgba(14,165,233,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0c4a6e;
+        }
+        .quiz-question {
+            background: rgba(22,163,74,0.1);
+            border: 2px solid rgba(22,163,74,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .quiz-options {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+        .quiz-options li {
+            padding: 8px 15px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .quiz-options li:hover {
+            background: rgba(22,163,74,0.2);
+        }
+        .answer {
+            color: #059669;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        /* AI Chat Modal Styles */
+        .ai-chat-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .ai-chat-modal.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .ai-chat-container {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            width: 90%; max-width: 600px;
+            height: 80%; max-height: 700px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(25px);
+        }
+        .ai-chat-modal.visible .ai-chat-container {
+            transform: scale(1);
+        }
+        .ai-chat-header {
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ai-chat-header h3 {
+            color: #0f172a;
+            margin: 0;
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
+        }
+        .ai-chat-close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #334155;
+            transition: color 0.2s;
+        }
+        .ai-chat-close-btn:hover {
+            color: var(--ai-color);
+        }
+        .ai-chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .chat-message {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.6;
+        }
+        .user-message {
+            background: rgba(14,165,233,0.2);
+            color: #0c4a6e;
+            border-bottom-right-radius: 4px;
+            align-self: flex-end;
+        }
+        body[dir="ltr"] .user-message {
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 18px;
+            align-self: flex-start;
+        }
+        .ai-message {
+            background: rgba(245,158,11,0.15);
+            color: #78350f;
+            border-bottom-left-radius: 4px;
+            align-self: flex-start;
+        }
+        body[dir="ltr"] .ai-message {
+            border-bottom-right-radius: 4px;
+            border-bottom-left-radius: 18px;
+            align-self: flex-end;
+        }
+        .loading-indicator {
+            align-self: center;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(245,158,11,0.3);
+            border-top-color: var(--ai-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .ai-chat-input-area {
+            padding: 15px 20px;
+            border-top: 2px solid var(--glass-border);
+            display: flex;
+            gap: 10px;
+        }
+        #ai-chat-input {
+            flex-grow: 1;
+            border: 2px solid var(--glass-border);
+            background: rgba(255,255,255,0.3);
+            border-radius: 50px;
+            padding: 10px 18px;
+            font-size: 1rem;
+            color: #1e293b;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        #ai-chat-input:focus {
+            border-color: var(--ai-color);
+            box-shadow: 0 0 10px rgba(245,158,11,0.3);
+        }
+        #ai-chat-send-btn {
+            background-color: var(--ai-color);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        #ai-chat-send-btn:hover {
+            background-color: #fbbf24;
+            transform: scale(1.05);
+        }
+        #ai-chat-send-btn svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+        .hidden { display:none !important; }
+    </style>
+</head>
+<body>
+    <div class="background-gradient"></div>
+    <div class="floating-spheres">
+        <div class="sphere large"></div>
+        <div class="sphere medium"></div>
+        <div class="sphere small-1"></div>
+    </div>
+    <!-- Translation Button -->
+    <button class="fab-button translation-button" id="translationButton" aria-label="Toggle Language">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.25 12C2.25 17.3848 6.61522 21.75 12 21.75C17.3848 21.75 21.75 17.3848 21.75 12C21.75 6.61522 17.3848 2.25 12 2.25C9.36657 2.25 6.94277 3.22321 5.16629 4.83371M12.75 2.25V7.5M12.75 7.5H18M12.75 7.5L5.16629 4.83371M11.25 21.75V16.5M11.25 16.5H6M11.25 16.5L18.8337 19.1663M5.16629 4.83371C3.22321 6.94277 2.25 9.36657 2.25 12M2.25 12C2.25 14.6334 3.22321 17.0572 4.83371 18.8337M18.8337 19.1663C20.7768 17.0572 21.75 14.6334 21.75 12M18.8337 4.83371C17.0572 3.22321 14.6334 2.25 12 2.25" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="fab-text">ترجمة</span>
+    </button>
+    <!-- AI Chat Button -->
+    <button class="fab-button ai-chat-button" id="aiChatButton" aria-label="Open AI Chat">
+         <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;"><path d="M12 8V4H8"/><rect x="4" y="12" width="16" height="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v-2a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v2"/></svg>
+        <span class="fab-text">المعلم الخبير</span>
+    </button>
+    <main class="main-content">
+        <!-- Arabic Content -->
+        <div id="arabicContent">
+            <section class="glassy-card">
+                <h1>أساسيات المحاسبة - المحاضرة الأولى</h1>
+                <p style="text-align: center; font-size: 1.1rem; color: #475569;">أهلاً بك يا أحمد، أنا "المعلم الخبير" الخاص بك من منصة "أثر"</p>
+            </section>
+
+            <section class="glassy-card">
+                <h2>🎯 زبدة المحاضرة</h2>
+                <div class="concept-card">
+                    <p><strong>الهدف الأساسي للمحاسبة:</strong> توفير معلومات مالية مفيدة عن منظمة معينة للمستخدمين المهتمين لاتخاذ قرارات مدروسة، وذلك عبر نظام معلومات يحدد ويسجل ويُوصّل الأحداث الاقتصادية الخاصة بالمنشأة.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>📚 المفاهيم الأساسية (80% تركيز)</h2>
+                
+                <h3>1) أنشطة المحاسبة الثلاثة</h3>
+                <div class="concept-card">
+                    <ul>
+                        <li><strong>التحديد:</strong> تمييز الأحداث الاقتصادية الهامة</li>
+                        <li><strong>التسجيل:</strong> تسجيل وتصنيف وتلخيص الأحداث بصورة منهجية</li>
+                        <li><strong>التوصيل:</strong> إيصال المعلومات عبر تقارير مالية للمستخدمين</li>
+                    </ul>
+                    
+                    <div class="case-study">
+                        <h4>مثال تطبيقي:</h4>
+                        <p>في متجر قهوة، شراء مخزون بقيمة 500 يعتبر حدثاً اقتصادياً يُسجل كمخزون مقابل نقد، بينما محادثة غير مالية لا تُسجل.</p>
+                    </div>
+                </div>
+
+                <h3>2) المعادلة المحاسبية الأساسية</h3>
+                <div class="formula-box">
+                    \[ \text{الأصول} = \text{الالتزامات} + \text{حقوق الملكية} \]
+                </div>
+                <div class="concept-card">
+                    <p>تموَّل الأصول إما بالديون (التزامات) أو باستثمارات الملاك (حقوق ملكية)، ويجب أن تبقى المعادلة متوازنة بعد كل عملية.</p>
+                    
+                    <div class="case-study">
+                        <h4>مثال تطبيقي:</h4>
+                        <p>إيداع 50,000 كرأس مال يزيد الأصول وحقوق الملكية بالقيمة نفسها، وشراء أجهزة بـ10,000 نقداً يغيّر تكوين الأصول دون كسر التوازن.</p>
+                    </div>
+                </div>
+
+                <h3>3) مكونات تعريف المحاسبة الخمسة</h3>
+                <div class="concept-card">
+                    <ol>
+                        <li><strong>الوحدة الاقتصادية:</strong> فصل معاملات المنشأة عن الملاك</li>
+                        <li><strong>المعاملات التجارية:</strong> أحداث اقتصادية قابلة للقياس النقدي</li>
+                        <li><strong>الأنشطة المحاسبية:</strong> التحديد والتسجيل والتوصيل</li>
+                        <li><strong>نظام المعلومات:</strong> مدخلات ومعالجة ومخرجات</li>
+                        <li><strong>المستخدمون المهتمون:</strong> داخليون وخارجيون</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>🔍 التفاصيل الداعمة (20% تركيز)</h2>
+                
+                <h3>شروط تسجيل المعاملات</h3>
+                <div class="concept-card">
+                    <ul>
+                        <li>أن تؤثر على الوحدة الاقتصادية</li>
+                        <li>أن يكون أثرها قابلاً للقياس بالنقود</li>
+                    </ul>
+                </div>
+
+                <h3>المحاسبة كنظام معلومات</h3>
+                <div class="concept-card">
+                    <ul>
+                        <li><strong>مدخلات:</strong> أحداث اقتصادية</li>
+                        <li><strong>معالجة:</strong> تسجيل وتلخيص</li>
+                        <li><strong>مخرجات:</strong> قوائم مالية</li>
+                    </ul>
+                </div>
+
+                <h3>المستخدمون</h3>
+                <div class="table-container">
+                    <table class="business-table">
+                        <thead>
+                            <tr>
+                                <th>المستخدمون الداخليون</th>
+                                <th>المستخدمون الخارجيون</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>الإدارة</td>
+                                <td>المستثمرون</td>
+                            </tr>
+                            <tr>
+                                <td>الإنتاج</td>
+                                <td>الدائنون</td>
+                            </tr>
+                            <tr>
+                                <td>التسويق</td>
+                                <td>مصلحة الضرائب</td>
+                            </tr>
+                            <tr>
+                                <td>المالية</td>
+                                <td>العملاء</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>جهات السوق</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>📖 جدول المصطلحات</h2>
+                <div class="table-container">
+                    <table class="business-table">
+                        <thead>
+                            <tr>
+                                <th>المصطلح العربي</th>
+                                <th>التعريف / المقابل الإنجليزي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>المحاسبة (Accounting)</td>
+                                <td>نظام معلومات لتحديد وتسجيل وتوصيل الأحداث الاقتصادية</td>
+                            </tr>
+                            <tr>
+                                <td>الأصول (Assets)</td>
+                                <td>الموارد الاقتصادية التي تمتلكها الشركة ويتوقع أن تفيدها مستقبلاً</td>
+                            </tr>
+                            <tr>
+                                <td>الالتزامات (Liabilities)</td>
+                                <td>الديون أو الالتزامات تجاه الأطراف الأخرى (الدائنون)</td>
+                            </tr>
+                            <tr>
+                                <td>حقوق الملكية (Owner's Equity)</td>
+                                <td>حق المالكين في الأصول بعد سداد الالتزامات</td>
+                            </tr>
+                            <tr>
+                                <td>الوحدة الاقتصادية (Economic Entity)</td>
+                                <td>وحدة عمل تُفصل معاملاتها عن المالكين</td>
+                            </tr>
+                            <tr>
+                                <td>المعاملات التجارية (Business Transactions)</td>
+                                <td>أحداث اقتصادية قابلة للقياس النقدي تؤثر على المركز المالي</td>
+                            </tr>
+                            <tr>
+                                <td>القوائم المالية (Financial Statements)</td>
+                                <td>تقارير تُلخّص الأداء والوضع المالي</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>🧠 أسئلة اختيار من متعدد</h2>
+                
+                <div class="quiz-question">
+                    <h4>1. أي مما يلي يُعد مستخدماً خارجياً للمعلومات المحاسبية؟</h4>
+                    <ul class="quiz-options">
+                        <li>أ) مدير التسويق</li>
+                        <li>ب) قسم الإنتاج</li>
+                        <li>ج) مصلحة الضرائب</li>
+                        <li>د) مدير الموارد البشرية</li>
+                    </ul>
+                    <div class="answer">الإجابة: ج) مصلحة الضرائب</div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>2. المعادلة المحاسبية الأساسية هي:</h4>
+                    <ul class="quiz-options">
+                        <li>أ) الأصول = الالتزامات − حقوق الملكية</li>
+                        <li>ب) الأصول = الالتزامات + حقوق الملكية</li>
+                        <li>ج) الأصول + الالتزامات = حقوق الملكية</li>
+                        <li>د) الأصول + حقوق الملكية = الالتزامات</li>
+                    </ul>
+                    <div class="answer">الإجابة: ب) الأصول = الالتزامات + حقوق الملكية</div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>3. عملية تسجيل وتصنيف وتلخيص الأحداث الاقتصادية تسمى:</h4>
+                    <ul class="quiz-options">
+                        <li>أ) التحديد</li>
+                        <li>ب) التسجيل</li>
+                        <li>ج) التوصيل</li>
+                        <li>د) التحليل</li>
+                    </ul>
+                    <div class="answer">الإجابة: ب) التسجيل</div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>4. شراء أثاث مكتبي على الحساب يؤدي إلى:</h4>
+                    <ul class="quiz-options">
+                        <li>أ) زيادة في الأصول ونقص في الأصول</li>
+                        <li>ب) زيادة في الأصول وزيادة في حقوق الملكية</li>
+                        <li>ج) زيادة في الأصول وزيادة في الالتزامات</li>
+                        <li>د) نقص في الأصول ونقص في الالتزامات</li>
+                    </ul>
+                    <div class="answer">الإجابة: ج) زيادة في الأصول وزيادة في الالتزامات</div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>5. الموارد التي تمتلكها الشركة وتوفر منافع اقتصادية مستقبلية هي:</h4>
+                    <ul class="quiz-options">
+                        <li>أ) الالتزامات</li>
+                        <li>ب) حقوق الملكية</li>
+                        <li>ج) الإيرادات</li>
+                        <li>د) الأصول</li>
+                    </ul>
+                    <div class="answer">الإجابة: د) الأصول</div>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>🌉 جسور معرفية</h2>
+                <div class="concept-card">
+                    <h4>المحاسبة لغة الأعمال</h4>
+                    <p>قواعدها ومفاهيمها تُمكّن من تواصل مالي واضح لاتخاذ القرار.</p>
+                </div>
+                
+                <div class="concept-card">
+                    <h4>الغاية هي اتخاذ القرار</h4>
+                    <p>التقارير ليست غاية بحد ذاتها بل وسيلة لقرارات أفضل للمستثمرين والإدارة.</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>الكيان الاقتصادي المستقل</h4>
+                    <p>فصل معاملات المنشأة عن الملاك لضمان موثوقية التقارير.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>🏃‍♂️ تمارين تطبيقية</h2>
+                
+                <div class="concept-card">
+                    <h4>تمرين 1:</h4>
+                    <p>دفعت منشأة فاتورة كهرباء بقيمة 1,000؛ صف كيف تُطبّق عليها خطوات التحديد والتسجيل والتوصيل.</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>تمرين 2:</h4>
+                    <p>إذا كانت الأصول 100,000 وحقوق الملكية 70,000، احسب الالتزامات.</p>
+                    <div class="answer">الحل: الالتزامات = 100,000 - 70,000 = 30,000</div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- English Content -->
+        <div id="englishContent" class="hidden">
+            <section class="glassy-card">
+                <h1>Accounting Fundamentals - Lecture One</h1>
+                <p style="text-align: center; font-size: 1.1rem; color: #475569;">Welcome Ahmed, I am your "Expert Teacher" from "Athr" platform</p>
+            </section>
+
+            <section class="glassy-card">
+                <h2>🎯 Lecture Summary</h2>
+                <div class="concept-card">
+                    <p><strong>The primary objective of accounting:</strong> To provide useful financial information about a specific organization to interested users for making informed decisions, through an information system that identifies, records, and communicates economic events related to the entity.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>📚 Core Concepts (80% Focus)</h2>
+                
+                <h3>1) Three Accounting Activities</h3>
+                <div class="concept-card">
+                    <ul>
+                        <li><strong>Identification:</strong> Distinguishing important economic events</li>
+                        <li><strong>Recording:</strong> Systematically recording, classifying, and summarizing events</li>
+                        <li><strong>Communication:</strong> Communicating information through financial reports to users</li>
+                    </ul>
+                    
+                    <div class="case-study">
+                        <h4>Practical Example:</h4>
+                        <p>In a coffee shop, purchasing inventory worth 500 is considered an economic event recorded as inventory against cash, while a non-financial conversation is not recorded.</p>
+                    </div>
+                </div>
+
+                <h3>2) Basic Accounting Equation</h3>
+                <div class="formula-box">
+                    \[ \text{Assets} = \text{Liabilities} + \text{Owner's Equity} \]
+                </div>
+                <div class="concept-card">
+                    <p>Assets are financed either by debts (liabilities) or owners' investments (equity), and the equation must remain balanced after every transaction.</p>
+                    
+                    <div class="case-study">
+                        <h4>Practical Example:</h4>
+                        <p>Depositing 50,000 as capital increases both assets and equity by the same amount, and purchasing equipment for 10,000 cash changes asset composition without breaking the balance.</p>
+                    </div>
+                </div>
+
+                <h3>3) Five Components of Accounting Definition</h3>
+                <div class="concept-card">
+                    <ol>
+                        <li><strong>Economic Entity:</strong> Separating business transactions from owners</li>
+                        <li><strong>Business Transactions:</strong> Economic events measurable in monetary terms</li>
+                        <li><strong>Accounting Activities:</strong> Identification, recording, and communication</li>
+                        <li><strong>Information System:</strong> Inputs, processing, and outputs</li>
+                        <li><strong>Interested Users:</strong> Internal and external</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>🔍 Supporting Details (20% Focus)</h2>
+                
+                <h3>Transaction Recording Conditions</h3>
+                <div class="concept-card">
+                    <ul>
+                        <li>Must affect the economic entity</li>
+                        <li>Impact must be measurable in monetary terms</li>
+                    </ul>
+                </div>
+
+                <h3>Accounting as Information System</h3>
+                <div class="concept-card">
+                    <ul>
+                        <li><strong>Inputs:</strong> Economic events</li>
+                        <li><strong>Processing:</strong> Recording and summarizing</li>
+                        <li><strong>Outputs:</strong> Financial statements</li>
+                    </ul>
+                </div>
+
+                <h3>Users</h3>
+                <div class="table-container">
+                    <table class="business-table">
+                        <thead>
+                            <tr>
+                                <th>Internal Users</th>
+                                <th>External Users</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Management</td>
+                                <td>Investors</td>
+                            </tr>
+                            <tr>
+                                <td>Production</td>
+                                <td>Creditors</td>
+                            </tr>
+                            <tr>
+                                <td>Marketing</td>
+                                <td>Tax Authorities</td>
+                            </tr>
+                            <tr>
+                                <td>Finance</td>
+                                <td>Customers</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Market Entities</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>📖 Terminology Table</h2>
+                <div class="table-container">
+                    <table class="business-table">
+                        <thead>
+                            <tr>
+                                <th>Arabic Term</th>
+                                <th>Definition / English Equivalent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>المحاسبة (Accounting)</td>
+                                <td>Information system for identifying, recording, and communicating economic events</td>
+                            </tr>
+                            <tr>
+                                <td>الأصول (Assets)</td>
+                                <td>Economic resources owned by the company expected to benefit it in the future</td>
+                            </tr>
+                            <tr>
+                                <td>الالتزامات (Liabilities)</td>
+                                <td>Debts or obligations to other parties (creditors)</td>
+                            </tr>
+                            <tr>
+                                <td>حقوق الملكية (Owner's Equity)</td>
+                                <td>Owners' claim on assets after paying liabilities</td>
+                            </tr>
+                            <tr>
+                                <td>الوحدة الاقتصادية (Economic Entity)</td>
+                                <td>Business unit whose transactions are separate from owners</td>
+                            </tr>
+                            <tr>
+                                <td>المعاملات التجارية (Business Transactions)</td>
+                                <td>Economic events measurable in monetary terms affecting financial position</td>
+                            </tr>
+                            <tr>
+                                <td>القوائم المالية (Financial Statements)</td>
+                                <td>Reports summarizing performance and financial position</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>🧠 Multiple Choice Questions</h2>
+                
+                <div class="quiz-question">
+                    <h4>1. Which of the following is considered an external user of accounting information?</h4>
+                    <ul class="quiz-options">
+                        <li>a) Marketing Manager</li>
+                        <li>b) Production Department</li>
+                        <li>c) Tax Authority</li>
+                        <li>d) Human Resources Manager</li>
+                    </ul>
+                    <div class="answer">Answer: c) Tax Authority</div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>2. The basic accounting equation is:</h4>
+                    <ul class="quiz-options">
+                        <li>a) Assets = Liabilities − Owner's Equity</li>
+                        <li>b) Assets = Liabilities + Owner's Equity</li>
+                        <li>c) Assets + Liabilities = Owner's Equity</li>
+                        <li>d) Assets + Owner's Equity = Liabilities</li>
+                    </ul>
+                    <div class="answer">Answer: b) Assets = Liabilities + Owner's Equity</div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>3. The process of recording, classifying, and summarizing economic events is called:</h4>
+                    <ul class="quiz-options">
+                        <li>a) Identification</li>
+                        <li>b) Recording</li>
+                        <li>c) Communication</li>
+                        <li>d) Analysis</li>
+                    </ul>
+                    <div class="answer">Answer: b) Recording</div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>4. Purchasing office furniture on account results in:</h4>
+                    <ul class="quiz-options">
+                        <li>a) Increase in assets and decrease in assets</li>
+                        <li>b) Increase in assets and increase in owner's equity</li>
+                        <li>c) Increase in assets and increase in liabilities</li>
+                        <li>d) Decrease in assets and decrease in liabilities</li>
+                    </ul>
+                    <div class="answer">Answer: c) Increase in assets and increase in liabilities</div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>5. Resources owned by the company that provide future economic benefits are:</h4>
+                    <ul class="quiz-options">
+                        <li>a) Liabilities</li>
+                        <li>b) Owner's Equity</li>
+                        <li>c) Revenues</li>
+                        <li>d) Assets</li>
+                    </ul>
+                    <div class="answer">Answer: d) Assets</div>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>🌉 Knowledge Bridges</h2>
+                <div class="concept-card">
+                    <h4>Accounting as Business Language</h4>
+                    <p>Its rules and concepts enable clear financial communication for decision-making.</p>
+                </div>
+                
+                <div class="concept-card">
+                    <h4>The Goal is Decision Making</h4>
+                    <p>Reports are not an end in themselves but a means for better decisions by investors and management.</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>Independent Economic Entity</h4>
+                    <p>Separating business transactions from owners to ensure report reliability.</p>
+                </div>
+            </section>
+
+            <section class="glassy-card">
+                <h2>🏃‍♂️ Practice Exercises</h2>
+                
+                <div class="concept-card">
+                    <h4>Exercise 1:</h4>
+                    <p>A business paid an electricity bill worth 1,000; describe how the identification, recording, and communication steps apply to it.</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>Exercise 2:</h4>
+                    <p>If assets are 100,000 and owner's equity is 70,000, calculate liabilities.</p>
+                    <div class="answer">Solution: Liabilities = 100,000 - 70,000 = 30,000</div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- AI Chat Modal -->
+    <div class="ai-chat-modal" id="aiChatModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="ai-chat-title">
+        <div class="ai-chat-container">
+            <div class="ai-chat-header">
+                <h3 id="ai-chat-title">اسأل المعلم الخبير</h3>
+                <button class="ai-chat-close-btn" id="aiChatCloseBtn" aria-label="Close Chat">&times;</button>
+            </div>
+            <div class="ai-chat-messages" id="aiChatMessages" aria-live="polite" aria-relevant="additions">
+                <!-- الرسائل ستُضاف هنا -->
+            </div>
+            <div class="ai-chat-input-area">
+                <input type="text" id="ai-chat-input" placeholder="اكتب سؤالك هنا..." aria-label="Input your question here" />
+                <button id="ai-chat-send-btn" aria-label="Send Question">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Load MathJax for LaTeX rendering
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']]
+            }
+        };
+        
+        // Load MathJax script
+        const script = document.createElement('script');
+        script.src = 'https://polyfill.io/v3/polyfill.min.js?features=es6';
+        document.head.appendChild(script);
+        
+        script.onload = function() {
+            const mathJaxScript = document.createElement('script');
+            mathJaxScript.id = 'MathJax-script';
+            mathJaxScript.async = true;
+            mathJaxScript.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+            document.head.appendChild(mathJaxScript);
+        };
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- العناصر ---
+            const translationButton = document.getElementById('translationButton');
+            const translationText = translationButton.querySelector('.fab-text');
+            const arabicContent = document.getElementById('arabicContent');
+            const englishContent = document.getElementById('englishContent');
+            const html = document.documentElement;
+            const body = document.body;
+            let isArabic = true;
+            const aiChatButton = document.getElementById('aiChatButton');
+            const aiChatModal = document.getElementById('aiChatModal');
+            const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
+            const aiChatMessages = document.getElementById('aiChatMessages');
+            const aiChatInput = document.getElementById('ai-chat-input');
+            const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
+            const aiChatTitle = document.getElementById('ai-chat-title');
+            const aiChatButtonText = aiChatButton.querySelector('.fab-text');
+            let conversationHistory = [];
+            
+            // --- تبديل اللغة ---
+            function applyLanguage(arabic) {
+                isArabic = arabic;
+                const lang = isArabic ? 'ar' : 'en';
+                const dir = isArabic ? 'rtl' : 'ltr';
+                html.setAttribute('lang', lang);
+                html.setAttribute('dir', dir);
+                body.setAttribute('dir', dir);
+                arabicContent.classList.toggle('hidden', !isArabic);
+                englishContent.classList.toggle('hidden', isArabic);
+                translationText.textContent = isArabic ? 'ترجمة' : 'Translate';
+                document.title = isArabic ? 'أساسيات المحاسبة - المحاضرة الأولى - منصة أثر' : 'Accounting Fundamentals - Lecture One - Athr Platform';
+                aiChatTitle.textContent = isArabic ? 'اسأل المعلم الخبير' : 'Ask the Expert Teacher';
+                aiChatInput.placeholder = isArabic ? 'اكتب سؤالك هنا...' : 'Type your question here...';
+                aiChatButtonText.textContent = isArabic ? 'المعلم الخبير' : 'Expert Teacher';
+            }
+            translationButton.addEventListener('click', () => applyLanguage(!isArabic));
+            
+            // --- فتح/إغلاق الشات ---
+            aiChatButton.addEventListener('click', () => {
+                aiChatModal.classList.add('visible');
+                aiChatModal.setAttribute('aria-hidden', 'false');
+                aiChatInput.focus();
+            });
+            aiChatCloseBtn.addEventListener('click', () => {
+                aiChatModal.classList.remove('visible');
+                aiChatModal.setAttribute('aria-hidden', 'true');
+            });
+            aiChatModal.addEventListener('click', (e) => {
+                if (e.target === aiChatModal) {
+                    aiChatModal.classList.remove('visible');
+                    aiChatModal.setAttribute('aria-hidden', 'true');
+                }
+            });
+            
+            // --- إرسال السؤال ومعالجة الرد ---
+            aiChatSendBtn.addEventListener('click', handleSendMessage);
+            aiChatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleSendMessage();
+                }
+            });
+            
+            async function handleSendMessage() {
+                const userQuery = aiChatInput.value.trim();
+                if (!userQuery) return;
+                
+                conversationHistory.push({ role: 'user', content: userQuery });
+                addMessage(userQuery, 'user');
+                aiChatInput.value = '';
+                showLoading(true);
+                
+                try {
+                    // محاكاة رد ذكي بناءً على المحتوى
+                    const aiResponse = generateContextualResponse(userQuery);
+                    conversationHistory.push({ role: 'assistant', content: aiResponse });
+                    showLoading(false);
+                    addMessage(aiResponse, 'ai');
+                } catch (error) {
+                    console.error("Error generating AI response:", error);
+                    showLoading(false);
+                    const errorMessage = isArabic ? 
+                        "حدث خطأ أثناء محاولة الحصول على إجابة. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى." : 
+                        "An error occurred while getting a response. Please check your connection and try again.";
+                    addMessage(errorMessage, 'ai');
+                }
+            }
+            
+            function generateContextualResponse(query) {
+                const queryLower = query.toLowerCase();
+                
+                // Arabic responses
+                if (isArabic) {
+                    if (queryLower.includes('معادلة') || queryLower.includes('أصول') || queryLower.includes('التزامات')) {
+                        return "المعادلة المحاسبية الأساسية هي: الأصول = الالتزامات + حقوق الملكية. هذه المعادلة يجب أن تبقى متوازنة بعد كل معاملة مالية.";
+                    }
+                    if (queryLower.includes('أنشطة') || queryLower.includes('تحديد') || queryLower.includes('تسجيل') || queryLower.includes('توصيل')) {
+                        return "الأنشطة الثلاثة للمحاسبة هي: 1) التحديد: تمييز الأحداث الاقتصادية الهامة، 2) التسجيل: تسجيل وتصنيف هذه الأحداث، 3) التوصيل: إيصال المعلومات للمستخدمين عبر التقارير المالية.";
+                    }
+                    if (queryLower.includes('مستخدم') || queryLower.includes('داخلي') || queryLower.includes('خارجي')) {
+                        return "المستخدمون الداخليون يشملون: الإدارة، الإنتاج، التسويق، المالية. أما المستخدمون الخارجيون فيشملون: المستثمرين، الدائنين، مصلحة الضرائب، العملاء، وجهات السوق.";
+                    }
+                    if (queryLower.includes('شروط') || queryLower.includes('تسجيل معاملة')) {
+                        return "شروط تسجيل المعاملة في الدفاتر المحاسبية هي: 1) أن تؤثر على الوحدة الاقتصادية، 2) أن يكون أثرها قابلاً للقياس بالنقود.";
+                    }
+                    return "أهلاً بك أحمد! أنا المعلم الخبير هنا لمساعدتك في فهم أساسيات المحاسبة. يمكنك سؤالي عن أي مفهوم من المحاضرة وسأقوم بتوضيحه لك بشكل مفصل.";
+                }
+                
+                // English responses
+                else {
+                    if (queryLower.includes('equation') || queryLower.includes('assets') || queryLower.includes('liabilities')) {
+                        return "The basic accounting equation is: Assets = Liabilities + Owner's Equity. This equation must remain balanced after every financial transaction.";
+                    }
+                    if (queryLower.includes('activities') || queryLower.includes('identification') || queryLower.includes('recording') || queryLower.includes('communication')) {
+                        return "The three accounting activities are: 1) Identification: distinguishing important economic events, 2) Recording: recording and classifying these events, 3) Communication: communicating information to users through financial reports.";
+                    }
+                    if (queryLower.includes('user') || queryLower.includes('internal') || queryLower.includes('external')) {
+                        return "Internal users include: management, production, marketing, finance. External users include: investors, creditors, tax authorities, customers, and market entities.";
+                    }
+                    if (queryLower.includes('conditions') || queryLower.includes('transaction recording')) {
+                        return "The conditions for recording a transaction in accounting books are: 1) It must affect the economic entity, 2) Its impact must be measurable in monetary terms.";
+                    }
+                    return "Hello Ahmed! I'm the Expert Teacher here to help you understand accounting fundamentals. You can ask me about any concept from the lecture and I'll explain it in detail.";
+                }
+            }
+            
+            function addMessage(text, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('chat-message', `${sender}-message`);
+                messageElement.textContent = text;
+                aiChatMessages.appendChild(messageElement);
+                aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+            }
+            
+            function showLoading(isLoading) {
+                const existingLoader = aiChatMessages.querySelector('.loading-indicator');
+                if (existingLoader) existingLoader.remove();
+                
+                if (isLoading) {
+                    const loadingElement = document.createElement('div');
+                    loadingElement.classList.add('loading-indicator');
+                    aiChatMessages.appendChild(loadingElement);
+                    aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+                }
+            }
+            
+            applyLanguage(true);
+        });
+    </script>
+</body>
+</html>
