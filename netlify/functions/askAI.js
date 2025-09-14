@@ -4,8 +4,8 @@ const fetch = require('node-fetch');
 
 // 1️⃣ دالة الاتصال بواجهة برمجة تطبيقات Google AI
 async function queryGoogleAI(data) {
-  // اسم النموذج الذي سنستخدمه
-  const model = 'gemini-pro';
+  // اسم النموذج الذي سنستخدمه (تم التحديث هنا)
+  const model = 'gemini-1.5-flash-latest'; 
   
   // رابط API الخاص بـ Gemini
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GOOGLE_API_KEY}`;
