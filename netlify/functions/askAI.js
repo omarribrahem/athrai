@@ -6,7 +6,7 @@ async function queryChatModel({ model, systemPrompt, userPrompt }) {
     "https://api-inference.huggingface.co/v1/chat/completions",
     {
       headers: {
-        "Authorization": `Bearer ${process.env.HUGGINGFACE_API_TOKEN}`, // ضع توكن Hugging Face هنا
+        "Authorization": `Bearer ${process.env.HF_TOKEN}`, // ضع توكن Hugging Face هنا
         "Content-Type": "application/json",
       },
       method: "POST",
