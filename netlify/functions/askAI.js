@@ -2,14 +2,14 @@
 
 const fetch = require('node-fetch');
 
-// 1️⃣ دالة الاتصال بالـ API (موظف التوصيل)
+// 1️⃣ دالة الاتصال بالـ API (Featherless AI)
 async function queryAPI(data) {
   const response = await fetch(
-    "https://api-inference.huggingface.co/v1/chat/completions", // endpoint الصحيح
+    "https://router.huggingface.co/featherless-ai/v1/completions",
     {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.HUGGINGFACE_API_TOKEN}`, // حط التوكن هنا في بيئة السيرفر
+        "Authorization": `Bearer ${process.env.HF_TOKEN}`,
       },
       method: "POST",
       body: JSON.stringify(data),
@@ -27,18 +27,17 @@ exports.handler = async function (event) {
   const prompt = `Based on the following lecture content: "${context}". Please answer this question concisely: "${question}"`;
 
   try {
-    // 3️⃣ تجهيز الطلب وإرساله
+    // 3️⃣ تجهيز الطلب وإرساله (مطابق للـ API الجديد)
     const responseData = await queryAPI({
-      model: "meta-llama/Meta-Llama-3-8B-Instruct", // اسم الموديل
-      messages: [
-        { role: "system", content: "You are a helpful teacher who explains step by step." },
-        { role: "user", content: prompt },
-      ],
+      model: "meta-llama/Meta-Llama-3-8B-Instruct",
+      prompt: prompt,
+      max_tokens: 512,
+      temperature: 0.7
     });
 
     // 4️⃣ معالجة الرد
-    if (responseData && responseData.choices && responseData.choices[0]) {
-      const answer = responseData.choices[0].message.content;
+    if (responseData && responseData.choices && responseData.choices[0] && responseData.choices[0].text) {
+      const answer = responseData.choices[0].text;
       return {
         statusCode: 200,
         body: JSON.stringify({ reply: answer }),
