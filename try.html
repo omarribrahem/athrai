@@ -433,16 +433,27 @@
         <div class="sphere medium"></div>
         <div class="sphere small-1"></div>
     </div>
+    
     <!-- Translation Button -->
     <button class="fab-button translation-button" id="translationButton" aria-label="Toggle Language">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.25 12C2.25 17.3848 6.61522 21.75 12 21.75C17.3848 21.75 21.75 17.3848 21.75 12C21.75 6.61522 17.3848 2.25 12 2.25C9.36657 2.25 6.94277 3.22321 5.16629 4.83371M12.75 2.25V7.5M12.75 7.5H18M12.75 7.5L5.16629 4.83371M11.25 21.75V16.5M11.25 16.5H6M11.25 16.5L18.8337 19.1663M5.16629 4.83371C3.22321 6.94277 2.25 9.36657 2.25 12M2.25 12C2.25 14.6334 3.22321 17.0572 4.83371 18.8337M18.8337 19.1663C20.7768 17.0572 21.75 14.6334 21.75 12M18.8337 4.83371C17.0572 3.22321 14.6334 2.25 12 2.25" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.25 12C2.25 17.3848 6.61522 21.75 12 21.75C17.3848 21.75 21.75 17.3848 21.75 12C21.75 6.61522 17.3848 2.25 12 2.25C9.36657 2.25 6.94277 3.22321 5.16629 4.83371M12.75 2.25V7.5M12.75 7.5H18M12.75 7.5L5.16629 4.83371M11.25 21.75V16.5M11.25 16.5H6M11.25 16.5L18.8337 19.1663M5.16629 4.83371C3.22321 6.94277 2.25 9.36657 2.25 12M2.25 12C2.25 14.6334 3.22321 17.0572 4.83371 18.8337M18.8337 19.1663C20.7768 17.0572 21.75 14.6334 21.75 12M18.8337 4.83371C17.0572 3.22321 14.6334 2.25 12 2.25" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         <span class="fab-text">ترجمة</span>
     </button>
+    
     <!-- AI Chat Button -->
     <button class="fab-button ai-chat-button" id="aiChatButton" aria-label="Open AI Chat">
-         <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;"><path d="M12 8V4H8"/><rect x="4" y="12" width="16" height="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v-2a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v2"/></svg>
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+            <path d="M12 8V4H8"/>
+            <rect x="4" y="12" width="16" height="8" rx="2"/>
+            <path d="M2 14h2"/>
+            <path d="M20 14h2"/>
+            <path d="M15 13v-2a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v2"/>
+        </svg>
         <span class="fab-text">المعلم الخبير</span>
     </button>
+    
     <main class="main-content">
         <!-- Arabic Content -->
         <div id="arabicContent">
@@ -477,7 +488,7 @@
 
                 <h3>2) المعادلة المحاسبية الأساسية</h3>
                 <div class="formula-box">
-                    \[ \text{الأصول} = \text{الالتزامات} + \text{حقوق الملكية} \]
+                    الأصول = الالتزامات + حقوق الملكية
                 </div>
                 <div class="concept-card">
                     <p>تموَّل الأصول إما بالديون (التزامات) أو باستثمارات الملاك (حقوق ملكية)، ويجب أن تبقى المعادلة متوازنة بعد كل عملية.</p>
@@ -725,7 +736,7 @@
 
                 <h3>2) Basic Accounting Equation</h3>
                 <div class="formula-box">
-                    \[ \text{Assets} = \text{Liabilities} + \text{Owner's Equity} \]
+                    Assets = Liabilities + Owner's Equity
                 </div>
                 <div class="concept-card">
                     <p>Assets are financed either by debts (liabilities) or owners' investments (equity), and the equation must remain balanced after every transaction.</p>
@@ -954,35 +965,18 @@
             <div class="ai-chat-input-area">
                 <input type="text" id="ai-chat-input" placeholder="اكتب سؤالك هنا..." aria-label="Input your question here" />
                 <button id="ai-chat-send-btn" aria-label="Send Question">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
                 </button>
             </div>
         </div>
     </div>
+
     <script>
-        // Load MathJax for LaTeX rendering
-        window.MathJax = {
-            tex: {
-                inlineMath: [['\\(', '\\)']],
-                displayMath: [['\\[', '\\]']]
-            }
-        };
-        
-        // Load MathJax script
-        const script = document.createElement('script');
-        script.src = 'https://polyfill.io/v3/polyfill.min.js?features=es6';
-        document.head.appendChild(script);
-        
-        script.onload = function() {
-            const mathJaxScript = document.createElement('script');
-            mathJaxScript.id = 'MathJax-script';
-            mathJaxScript.async = true;
-            mathJaxScript.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-            document.head.appendChild(mathJaxScript);
-        };
-        
         document.addEventListener('DOMContentLoaded', function () {
-            // --- العناصر ---
+            // --- العناصر الأساسية ---
             const translationButton = document.getElementById('translationButton');
             const translationText = translationButton.querySelector('.fab-text');
             const arabicContent = document.getElementById('arabicContent');
@@ -990,6 +984,7 @@
             const html = document.documentElement;
             const body = document.body;
             let isArabic = true;
+            
             const aiChatButton = document.getElementById('aiChatButton');
             const aiChatModal = document.getElementById('aiChatModal');
             const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
@@ -998,114 +993,130 @@
             const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
             const aiChatTitle = document.getElementById('ai-chat-title');
             const aiChatButtonText = aiChatButton.querySelector('.fab-text');
-            let conversationHistory = [];
             
-            // --- تبديل اللغة ---
+            let conversationHistory = [];
+
+            // --- دالة تبديل اللغة ---
             function applyLanguage(arabic) {
                 isArabic = arabic;
                 const lang = isArabic ? 'ar' : 'en';
                 const dir = isArabic ? 'rtl' : 'ltr';
+                
                 html.setAttribute('lang', lang);
                 html.setAttribute('dir', dir);
                 body.setAttribute('dir', dir);
+                
                 arabicContent.classList.toggle('hidden', !isArabic);
                 englishContent.classList.toggle('hidden', isArabic);
+                
                 translationText.textContent = isArabic ? 'ترجمة' : 'Translate';
-                document.title = isArabic ? 'أساسيات المحاسبة - المحاضرة الأولى - منصة أثر' : 'Accounting Fundamentals - Lecture One - Athr Platform';
+                document.title = isArabic ? 
+                    'أساسيات المحاسبة - المحاضرة الأولى - منصة أثر' : 
+                    'Accounting Fundamentals - Lecture One - Athr Platform';
+                
                 aiChatTitle.textContent = isArabic ? 'اسأل المعلم الخبير' : 'Ask the Expert Teacher';
                 aiChatInput.placeholder = isArabic ? 'اكتب سؤالك هنا...' : 'Type your question here...';
                 aiChatButtonText.textContent = isArabic ? 'المعلم الخبير' : 'Expert Teacher';
             }
+
+            // --- ربط حدث تبديل اللغة ---
             translationButton.addEventListener('click', () => applyLanguage(!isArabic));
-            
-            // --- فتح/إغلاق الشات ---
+
+            // --- فتح وإغلاق نافذة الشات ---
             aiChatButton.addEventListener('click', () => {
                 aiChatModal.classList.add('visible');
                 aiChatModal.setAttribute('aria-hidden', 'false');
                 aiChatInput.focus();
             });
+
             aiChatCloseBtn.addEventListener('click', () => {
                 aiChatModal.classList.remove('visible');
                 aiChatModal.setAttribute('aria-hidden', 'true');
             });
+
             aiChatModal.addEventListener('click', (e) => {
                 if (e.target === aiChatModal) {
                     aiChatModal.classList.remove('visible');
                     aiChatModal.setAttribute('aria-hidden', 'true');
                 }
             });
-            
-            // --- إرسال السؤال ومعالجة الرد ---
+
+            // --- إرسال الرسائل ---
             aiChatSendBtn.addEventListener('click', handleSendMessage);
             aiChatInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     handleSendMessage();
                 }
             });
-            
+
+            // --- دالة معالجة إرسال الرسائل ---
             async function handleSendMessage() {
                 const userQuery = aiChatInput.value.trim();
                 if (!userQuery) return;
-                
+
+                // إضافة رسالة المستخدم
                 conversationHistory.push({ role: 'user', content: userQuery });
                 addMessage(userQuery, 'user');
                 aiChatInput.value = '';
                 showLoading(true);
-                
+
                 try {
-                    // محاكاة رد ذكي بناءً على المحتوى
-                    const aiResponse = generateContextualResponse(userQuery);
+                    // استخلاص المحتوى من الصفحة الحالية
+                    const contentElement = isArabic ? arabicContent : englishContent;
+                    const pageContext = contentElement.innerText.substring(0, 8000); // تقليل الحد لتجنب تجاوز الحدود
+                    
+                    // تجهيز سياق المحادثة
+                    const conversationContext = conversationHistory
+                        .slice(-4) // آخر 4 رسائل لتجنب تجاوز الحدود
+                        .map(msg => `${msg.role === 'user' ? 'Student' : 'Teacher'}: ${msg.content}`)
+                        .join('\n');
+
+                    // تجهيز السياق الكامل
+                    const fullContext = `${isArabic ? 'المحتوى التعليمي:' : 'Learning Content:'}\n---\n${pageContext}\n---\n\n${isArabic ? 'سجل المحادثة:' : 'Conversation History:'}\n${conversationContext}`;
+
+                    // إرسال الطلب إلى دالة askAI
+                    const response = await fetch('/.netlify/functions/askAI', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            question: userQuery, 
+                            context: fullContext 
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    // معالجة الرد من الخادم
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+
+                    const aiResponse = result.reply || (isArabic ? 
+                        "عفواً، لم أستطع إيجاد إجابة مناسبة. حاول إعادة صياغة سؤالك." : 
+                        "Sorry, I couldn't find an appropriate answer. Try rephrasing your question."
+                    );
+
                     conversationHistory.push({ role: 'assistant', content: aiResponse });
                     showLoading(false);
                     addMessage(aiResponse, 'ai');
+
                 } catch (error) {
-                    console.error("Error generating AI response:", error);
+                    console.error("Error fetching AI response:", error);
                     showLoading(false);
+                    
                     const errorMessage = isArabic ? 
-                        "حدث خطأ أثناء محاولة الحصول على إجابة. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى." : 
-                        "An error occurred while getting a response. Please check your connection and try again.";
+                        "عذراً، حدث خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى." : 
+                        "Sorry, there was a connection error. Please try again.";
+                    
                     addMessage(errorMessage, 'ai');
                 }
             }
-            
-            function generateContextualResponse(query) {
-                const queryLower = query.toLowerCase();
-                
-                // Arabic responses
-                if (isArabic) {
-                    if (queryLower.includes('معادلة') || queryLower.includes('أصول') || queryLower.includes('التزامات')) {
-                        return "المعادلة المحاسبية الأساسية هي: الأصول = الالتزامات + حقوق الملكية. هذه المعادلة يجب أن تبقى متوازنة بعد كل معاملة مالية.";
-                    }
-                    if (queryLower.includes('أنشطة') || queryLower.includes('تحديد') || queryLower.includes('تسجيل') || queryLower.includes('توصيل')) {
-                        return "الأنشطة الثلاثة للمحاسبة هي: 1) التحديد: تمييز الأحداث الاقتصادية الهامة، 2) التسجيل: تسجيل وتصنيف هذه الأحداث، 3) التوصيل: إيصال المعلومات للمستخدمين عبر التقارير المالية.";
-                    }
-                    if (queryLower.includes('مستخدم') || queryLower.includes('داخلي') || queryLower.includes('خارجي')) {
-                        return "المستخدمون الداخليون يشملون: الإدارة، الإنتاج، التسويق، المالية. أما المستخدمون الخارجيون فيشملون: المستثمرين، الدائنين، مصلحة الضرائب، العملاء، وجهات السوق.";
-                    }
-                    if (queryLower.includes('شروط') || queryLower.includes('تسجيل معاملة')) {
-                        return "شروط تسجيل المعاملة في الدفاتر المحاسبية هي: 1) أن تؤثر على الوحدة الاقتصادية، 2) أن يكون أثرها قابلاً للقياس بالنقود.";
-                    }
-                    return "أهلاً بك أحمد! أنا المعلم الخبير هنا لمساعدتك في فهم أساسيات المحاسبة. يمكنك سؤالي عن أي مفهوم من المحاضرة وسأقوم بتوضيحه لك بشكل مفصل.";
-                }
-                
-                // English responses
-                else {
-                    if (queryLower.includes('equation') || queryLower.includes('assets') || queryLower.includes('liabilities')) {
-                        return "The basic accounting equation is: Assets = Liabilities + Owner's Equity. This equation must remain balanced after every financial transaction.";
-                    }
-                    if (queryLower.includes('activities') || queryLower.includes('identification') || queryLower.includes('recording') || queryLower.includes('communication')) {
-                        return "The three accounting activities are: 1) Identification: distinguishing important economic events, 2) Recording: recording and classifying these events, 3) Communication: communicating information to users through financial reports.";
-                    }
-                    if (queryLower.includes('user') || queryLower.includes('internal') || queryLower.includes('external')) {
-                        return "Internal users include: management, production, marketing, finance. External users include: investors, creditors, tax authorities, customers, and market entities.";
-                    }
-                    if (queryLower.includes('conditions') || queryLower.includes('transaction recording')) {
-                        return "The conditions for recording a transaction in accounting books are: 1) It must affect the economic entity, 2) Its impact must be measurable in monetary terms.";
-                    }
-                    return "Hello Ahmed! I'm the Expert Teacher here to help you understand accounting fundamentals. You can ask me about any concept from the lecture and I'll explain it in detail.";
-                }
-            }
-            
+
+            // --- دالة إضافة الرسائل ---
             function addMessage(text, sender) {
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('chat-message', `${sender}-message`);
@@ -1113,11 +1124,12 @@
                 aiChatMessages.appendChild(messageElement);
                 aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
             }
-            
+
+            // --- دالة عرض مؤشر التحميل ---
             function showLoading(isLoading) {
                 const existingLoader = aiChatMessages.querySelector('.loading-indicator');
                 if (existingLoader) existingLoader.remove();
-                
+
                 if (isLoading) {
                     const loadingElement = document.createElement('div');
                     loadingElement.classList.add('loading-indicator');
@@ -1125,7 +1137,8 @@
                     aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
                 }
             }
-            
+
+            // --- تهيئة اللغة العربية كإعداد افتراضي ---
             applyLanguage(true);
         });
     </script>
