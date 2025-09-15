@@ -668,51 +668,44 @@
                 }
             });
             
-            async function handleSendMessage() {
-                const userQuery = aiChatInput.value.trim();
-                if (!userQuery) return;
-                
-                // Add user message to conversation history
-                conversationHistory.push({ role: 'user', content: userQuery });
-                addMessage(userQuery, 'user');
-                aiChatInput.value = '';
-                showLoading(true);
-                
-                try {
-                    // Get content context from the page
-                    const contentElement = isArabic ? arabicContent : englishContent;
-                    const pageContext = contentElement.innerText.substring(0, 10000); // Limit context size
-                    
-                    // Create conversation context
-                    const conversationContext = conversationHistory.map(msg => 
-                        `${msg.role === 'user' ? 'Student' : 'Teacher'}: ${msg.content}`
-                    ).join('\n');
-                    
-                    const fullContext = `المحتوى التعليمي:\n---\n${pageContext}\n---\n\nسجل المحادثة:\n${conversationContext}`;
-                    
-                    // Make request to Netlify function
-                    const response = await fetch('/.netlify/functions/askAI', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            question: userQuery,
-                            context: fullContext
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`API Error: ${response.statusText}`);
-                    }
-                    
-                    const result = await response.json();
-                    const aiResponse = result.reply || (isArabic ? "عفواً، لم أستطع إيجاد إجابة. حاول مرة أخرى." : "Sorry, I couldn't find an answer. Please try again.");
-                    
-                    // Add AI response to conversation history
-                    conversationHistory.push({ role: 'assistant', content: aiResponse });
-                    
-                    showLoading(false);
-                    addMessage(aiResponse, 'ai');
-                    
+           async function handleSendMessage() {
+    const userQuery = aiChatInput.value.trim();
+    if (!userQuery) return;
+
+    // 1. أضف رسالة المستخدم للسجل وللشاشة
+    conversationHistory.push({ role: 'user', content: userQuery });
+    addMessage(userQuery, 'user');
+    aiChatInput.value = '';
+    showLoading(true);
+try {
+    // احصل على سياق الصفحة كالمعتاد
+    const contentElement = isArabic ? arabicContent : englishContent;
+    const pageContext = contentElement.innerText.substring(0, 8000); // قللنا الحجم قليلاً
+
+    // -- التغيير الرئيسي هنا --
+    // أرسل سجل المحادثة كاملاً مع سياق المحاضرة
+    const response = await fetch('/.netlify/functions/askAI', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            conversationHistory: conversationHistory, // أرسلنا السجل كاملاً
+            context: pageContext
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    const aiResponse = result.reply || (isArabic ? "عفواً، لم أستطع إيجاد إجابة." : "Sorry, I couldn't find an answer.");
+
+    // أضف رد المساعد إلى السجل لكي يتذكره في المرة القادمة
+    conversationHistory.push({ role: 'assistant', content: aiResponse });
+
+    showLoading(false);
+    addMessage(aiResponse, 'ai');
+
                 } catch (error) {
                     console.error("Error fetching AI response:", error);
                     showLoading(false);
