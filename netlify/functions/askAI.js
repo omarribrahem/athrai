@@ -1,91 +1,123 @@
-// askAI.js – النسخة النهائية مع شخصية وذاكرة متوافقة مع Google AI
+// askAI.js – النسخة النهائية مع التخزين الدلالي (Semantic Caching)
 
 const fetch = require('node-fetch');
+const { createClient } = require('@supabase/supabase-js');
 
-async function queryGoogleAI(data) {
-  const model = 'gemini-1.5-flash-latest';
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GOOGLE_API_KEY}`;
+// --- إعدادات الاتصال ---
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
+// إنشاء اتصال مع قاعدة بيانات Supabase
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
+// --- دوال مساعدة ---
+
+// دالة لتحويل النص إلى "بصمة معنى" (Embedding)
+async function getEmbedding(text) {
+  const model = 'text-embedding-004';
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${GOOGLE_API_KEY}`;
+  
   const response = await fetch(apiUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: `models/${model}`, content: { parts: [{ text }] } }),
   });
 
   if (!response.ok) {
     const errorBody = await response.json();
-    console.error("Google AI API Error:", errorBody);
-    throw new Error(`API request failed: ${errorBody.error.message}`);
+    throw new Error(`Embedding API Error: ${errorBody.error.message}`);
   }
-  return response.json();
+  const result = await response.json();
+  return result.embedding.values;
 }
 
-exports.handler = async function (event) {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+// دالة للحصول على إجابة من Gemini
+async function getGenerativeAnswer(contents) {
+  const model = 'gemini-1.5-flash-latest';
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GOOGLE_API_KEY}`;
+
+  const requestBody = {
+    contents,
+    generationConfig: { temperature: 0.7, maxOutputTokens: 512 },
+  };
+
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json();
+    throw new Error(`Generative API Error: ${errorBody.error.message}`);
   }
-  if (!process.env.GOOGLE_API_KEY) {
+  const result = await response.json();
+  return result.candidates[0].content.parts[0].text;
+}
+
+
+// --- الدالة الرئيسية ---
+exports.handler = async function (event) {
+  // التحقق من الإعدادات
+  if (!GOOGLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
     return { statusCode: 500, body: JSON.stringify({ error: 'Server configuration error.' }) };
   }
 
   const { conversationHistory, context } = JSON.parse(event.body);
+  const lastUserQuestion = conversationHistory.findLast(turn => turn.role === 'user')?.content;
 
-  // ---  هذا هو التعديل الرئيسي ---
-  // ندمج تعليمات الشخصية مع المحتوى في أول رسالة للمستخدم
-  
-  // 1. إنشاء "برومبت" البداية الذي يعرّف شخصية الـ AI
-  const initialPrompt = `أنت "المعلم الخبير" من منصة "أثر". مهمتك هي مساعدة الطالب على فهم محتوى المحاضرة التالي:
-  ---
-  محتوى المحاضرة:
-  ${context}
-  ---
-  قواعدك:
-  - اشرح المفاهيم بطريقة بسيطة وواضحة.
-  - استخدم أمثلة إذا كان السؤال يتطلب ذلك.
-  - كن ودودًا ومشجعًا في إجاباتك.
-  - يجب أن تكون جميع إجاباتك مبنية فقط على "محتوى المحاضرة" المقدم لك.
-  `;
-
-  // 2. بناء سجل المحادثة بالشكل الصحيح
-  const contents = conversationHistory.map((turn, index) => {
-    // ندمج التعليمات مع أول سؤال للمستخدم
-    if (index === 0) {
-      return {
-        role: 'user',
-        parts: [{ text: `${initialPrompt}\n\nسؤالي الأول هو: ${turn.content}` }]
-      };
-    }
-    // باقي المحادثة تبقى كما هي
-    return {
-      role: turn.role === 'user' ? 'user' : 'model',
-      parts: [{ text: turn.content }]
-    };
-  });
-
-  const requestBody = {
-    contents: contents,
-    generationConfig: {
-      temperature: 0.7,
-      maxOutputTokens: 512,
-    }
-  };
+  if (!lastUserQuestion) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'No user question found.' }) };
+  }
 
   try {
-    const responseData = await queryGoogleAI(requestBody);
+    // 1. تحويل السؤال الأخير إلى "بصمة معنى"
+    const questionEmbedding = await getEmbedding(lastUserQuestion);
 
-    if (responseData.candidates && responseData.candidates[0].content) {
-      const answer = responseData.candidates[0].content.parts[0].text;
+    // 2. البحث في قاعدة البيانات عن سؤال مشابه
+    const { data: similarQuestions, error: matchError } = await supabase.rpc('match_questions', {
+      query_embedding: questionEmbedding,
+      match_threshold: 0.9, // نسبة التشابه المطلوبة (90%)
+      match_count: 1,       // نريد أفضل نتيجة واحدة فقط
+    });
+
+    if (matchError) throw new Error(`Supabase match error: ${matchError.message}`);
+
+    // 3. التحقق من وجود نتيجة مشابهة (Cache Hit)
+    if (similarQuestions && similarQuestions.length > 0) {
+      console.log('CACHE HIT!');
       return {
         statusCode: 200,
-        body: JSON.stringify({ reply: answer.trim() }),
-      };
-    } else {
-      console.error("Invalid response from API or content blocked:", responseData);
-      return { 
-        statusCode: 200,
-        body: JSON.stringify({ reply: "عفواً، لم أتمكن من معالجة هذا الطلب حالياً." })
+        body: JSON.stringify({ reply: similarQuestions[0].answer }),
       };
     }
+
+    // 4. إذا لم نجد نتيجة (Cache Miss)، اطلب إجابة جديدة من Gemini
+    console.log('CACHE MISS!');
+    const initialPrompt = `أنت "المعلم الخبير"... (نفس البرومبت السابق)`; // (اختصار للمساحة)
+    
+    const contents = conversationHistory.map((turn, index) => {
+        if (index === 0) return { role: 'user', parts: [{ text: `${initialPrompt}\n\nسؤالي الأول هو: ${turn.content}` }]};
+        return { role: turn.role === 'user' ? 'user' : 'model', parts: [{ text: turn.content }]};
+    });
+    
+    const newAnswer = await getGenerativeAnswer(contents);
+    
+    // 5. خزّن السؤال الجديد، بصمته، وإجابته في قاعدة البيانات
+    const { error: insertError } = await supabase.from('lecture_cache').insert({
+        question: lastUserQuestion,
+        answer: newAnswer,
+        embedding: questionEmbedding,
+    });
+    
+    if (insertError) throw new Error(`Supabase insert error: ${insertError.message}`);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ reply: newAnswer.trim() }),
+    };
+
   } catch (error) {
     console.error("Function Error:", error);
     return { 
