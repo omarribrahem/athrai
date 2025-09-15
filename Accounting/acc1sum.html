@@ -12,72 +12,284 @@
             --highlight-color: #0ea5e9;
             --practice-color: #16a34a;
             --translation-color: #8b5cf6;
+            --video-color: #e11d48;
             --border-radius: 24px;
         }
-        @keyframes gradientAnimation { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-        @keyframes floatSphere1 { 0%,100%{transform:translateY(0px) rotate(0deg) scale(1)} 50%{transform:translateY(-30px) rotate(180deg) scale(1.05)} }
-        @keyframes floatSphere2 { 0%,100%{transform:translateX(0px) translateY(0px) rotate(0deg) scale(1)} 50%{transform:translateX(25px) translateY(-25px) rotate(-180deg) scale(0.95)} }
-        @keyframes floatSphere3 { 0%,100%{transform:translateX(0px) translateY(0px) rotate(0deg) scale(1)} 50%{transform:translateX(-20px) translateY(35px) rotate(120deg) scale(1.08)} }
-        @keyframes translate-glow {0%,100%{box-shadow:0 0 15px -5px rgba(139,92,246,0.4),inset 0 2px 0 rgba(255,255,255,0.4);}50%{box-shadow:0 0 25px 0px rgba(139,92,246,0.6),inset 0 2px 0 rgba(255,255,255,0.6);}}
 
-        * { box-sizing:border-box; margin:0; padding:0; }
-        html { font-size:16px; scroll-behavior:smooth; }
+        /* Animations */
+        @keyframes gradientAnimation { 
+            0%{background-position:0% 50%} 
+            50%{background-position:100% 50%} 
+            100%{background-position:0% 50%} 
+        }
+        @keyframes floatSphere1 { 
+            0%,100%{transform:translateY(0px) rotate(0deg) scale(1)} 
+            50%{transform:translateY(-30px) rotate(180deg) scale(1.05)} 
+        }
+        @keyframes floatSphere2 { 
+            0%,100%{transform:translateX(0px) translateY(0px) rotate(0deg) scale(1)} 
+            50%{transform:translateX(25px) translateY(-25px) rotate(-180deg) scale(0.95)} 
+        }
+        @keyframes floatSphere3 { 
+            0%,100%{transform:translateX(0px) translateY(0px) rotate(0deg) scale(1)} 
+            50%{transform:translateX(-20px) translateY(35px) rotate(120deg) scale(1.08)} 
+        }
+        @keyframes translate-glow {
+            0%,100%{box-shadow:0 0 15px -5px rgba(139,92,246,0.4),inset 0 2px 0 rgba(255,255,255,0.4);}
+            50%{box-shadow:0 0 25px 0px rgba(139,92,246,0.6),inset 0 2px 0 rgba(255,255,255,0.6);}
+        }
+
+        /* Reset & Base Styles */
+        * { 
+            box-sizing:border-box; 
+            margin:0; 
+            padding:0; 
+        }
+        html { 
+            font-size:16px; 
+            scroll-behavior:smooth; 
+        }
         body {
             font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-            background-color:#e0f2fe; color:var(--text-color); line-height:1.8;
-            overflow-x:hidden; position:relative; direction:rtl;
-            font-size:clamp(0.9rem,2.5vw,1.05rem); padding:20px clamp(10px,3vw,20px);
+            background-color:#e0f2fe; 
+            color:var(--text-color); 
+            line-height:1.8;
+            overflow-x:hidden; 
+            position:relative; 
+            direction:rtl;
+            font-size:clamp(0.9rem,2.5vw,1.05rem); 
+            padding:20px clamp(10px,3vw,20px);
         }
-        body[dir="ltr"] { direction:ltr; }
-        .background-gradient, .floating-spheres { position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2; }
-        .background-gradient { background:linear-gradient(135deg,#e0f2fe 0%,#bae6fd 25%,#fce7f3 75%,#fdf2f8 100%);background-size:400% 400%;animation:gradientAnimation 40s ease infinite;}
-        .floating-spheres {z-index:-1;pointer-events:none;}
-        .sphere {position:absolute;border-radius:50%;backdrop-filter:blur(20px);border:2px solid rgba(255,255,255,0.3);box-shadow:0 20px 60px rgba(14,165,233,0.3),inset 0 4px 0 rgba(255,255,255,0.4);}
-        .sphere.large {width:clamp(120px,20vw,220px);height:clamp(120px,20vw,220px);top:8%;right:12%;background:radial-gradient(circle,#3b82f6,#1e3a8a);animation:floatSphere1 12s ease-in-out infinite;}
-        .sphere.medium {width:clamp(80px,15vw,140px);height:clamp(80px,15vw,140px);bottom:20%;left:8%;background:radial-gradient(circle,#0ea5e9,#0369a1);animation:floatSphere2 9s ease-in-out infinite;}
-        .sphere.small-1 {width:clamp(60px,12vw,95px);height:clamp(60px,12vw,95px);top:50%;right:8%;background:radial-gradient(circle,#06b6d4,#0e7490);animation:floatSphere3 6s ease-in-out infinite;}
+        body[dir="ltr"] { 
+            direction:ltr; 
+        }
 
+        /* Background Elements */
+        .background-gradient, .floating-spheres { 
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            z-index:-2; 
+        }
+        .background-gradient { 
+            background:linear-gradient(135deg,#e0f2fe 0%,#bae6fd 25%,#fce7f3 75%,#fdf2f8 100%);
+            background-size:400% 400%;
+            animation:gradientAnimation 40s ease infinite;
+        }
+        .floating-spheres {
+            z-index:-1;
+            pointer-events:none;
+        }
+        .sphere {
+            position:absolute;
+            border-radius:50%;
+            backdrop-filter:blur(20px);
+            border:2px solid rgba(255,255,255,0.3);
+            box-shadow:0 20px 60px rgba(14,165,233,0.3),inset 0 4px 0 rgba(255,255,255,0.4);
+        }
+        .sphere.large {
+            width:clamp(120px,20vw,220px);
+            height:clamp(120px,20vw,220px);
+            top:8%;
+            right:12%;
+            background:radial-gradient(circle,#3b82f6,#1e3a8a);
+            animation:floatSphere1 12s ease-in-out infinite;
+        }
+        .sphere.medium {
+            width:clamp(80px,15vw,140px);
+            height:clamp(80px,15vw,140px);
+            bottom:20%;
+            left:8%;
+            background:radial-gradient(circle,#0ea5e9,#0369a1);
+            animation:floatSphere2 9s ease-in-out infinite;
+        }
+        .sphere.small-1 {
+            width:clamp(60px,12vw,95px);
+            height:clamp(60px,12vw,95px);
+            top:50%;
+            right:8%;
+            background:radial-gradient(circle,#06b6d4,#0e7490);
+            animation:floatSphere3 6s ease-in-out infinite;
+        }
+
+        /* Translation Button */
         .translation-button {
-            position:fixed;top:clamp(20px,5vw,30px);right:clamp(20px,5vw,30px);
-            background:rgba(255,255,255,0.1);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);
-            border:2px solid var(--glass-border);border-radius:50px;
-            padding:clamp(8px,2vw,12px);cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;
-            width:clamp(50px,12vw,60px);height:clamp(50px,12vw,60px);
+            position:fixed;
+            top:clamp(20px,5vw,30px);
+            right:clamp(20px,5vw,30px);
+            background:rgba(255,255,255,0.1);
+            backdrop-filter:blur(25px);
+            -webkit-backdrop-filter:blur(25px);
+            border:2px solid var(--glass-border);
+            border-radius:50px;
+            padding:clamp(8px,2vw,12px);
+            cursor:pointer;
+            z-index:1000;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            width:clamp(50px,12vw,60px);
+            height:clamp(50px,12vw,60px);
             transition:all 0.4s cubic-bezier(0.25,0.8,0.25,1);
             box-shadow:0 8px 25px -10px rgba(0,0,0,0.2),inset 0 2px 0 rgba(255,255,255,0.5);
         }
-        body[dir="ltr"] .translation-button {right:auto;left:clamp(20px,5vw,30px);}
+        body[dir="ltr"] .translation-button {
+            right:auto;
+            left:clamp(20px,5vw,30px);
+        }
         .translation-button:hover {
-            width:auto;padding:clamp(8px,2vw,12px) clamp(16px,4vw,22px);
-            border-color:var(--translation-color);background:rgba(139,92,246,0.1);transform:translateY(-3px);
+            width:auto;
+            padding:clamp(8px,2vw,12px) clamp(16px,4vw,22px);
+            border-color:var(--translation-color);
+            background:rgba(139,92,246,0.1);
+            transform:translateY(-3px);
             animation:translate-glow 2.5s infinite alternate;
         }
-        .translation-button .icon-translate {width:28px;height:28px;flex-shrink:0;transition:transform 0.3s ease;}
-        .translation-button:hover .icon-translate {transform:scale(0.9);}
-        .translation-text {font-size:clamp(0.85rem,2.2vw,1rem);font-weight:600;color:var(--translation-color);white-space:nowrap;display:none;margin-left:10px;}
-        body[dir="ltr"] .translation-text {margin-left:0;margin-right:10px;}
-        .translation-button:hover .translation-text {display:block;}
+        .translation-button .icon-translate {
+            width:28px;
+            height:28px;
+            flex-shrink:0;
+            transition:transform 0.3s ease;
+        }
+        .translation-button:hover .icon-translate {
+            transform:scale(0.9);
+        }
+        .translation-text {
+            font-size:clamp(0.85rem,2.2vw,1rem);
+            font-weight:600;
+            color:var(--translation-color);
+            white-space:nowrap;
+            display:none;
+            margin-left:10px;
+        }
+        body[dir="ltr"] .translation-text {
+            margin-left:0;
+            margin-right:10px;
+        }
+        .translation-button:hover .translation-text {
+            display:block;
+        }
 
-        .main-content {max-width:1200px;margin:90px auto 0;padding:clamp(20px,5vw,40px) clamp(15px,4vw,20px);}
-        .glassy-card {background:var(--glass-bg);border:2px solid var(--glass-border);border-radius:var(--border-radius);padding:clamp(20px,5vw,30px);margin-bottom:clamp(25px,5vw,35px);backdrop-filter:blur(25px);transition:all 0.4s ease;box-shadow:0 20px 50px rgba(0,0,0,0.1),inset 0 2px 0 rgba(255,255,255,0.5);}
-        .glassy-card:hover {transform:translateY(-5px) scale(1.01);border-color:rgba(255,255,255,0.7);box-shadow:0 30px 70px rgba(0,0,0,0.15),inset 0 2px 0 rgba(255,255,255,0.6);}
-        h1,h2,h3,h4 { color:#0f172a;text-shadow:0 2px 8px rgba(255,255,255,0.8);font-weight:700;}
-        h1 { font-size:clamp(2rem,6vw,3.2rem);text-align:center;margin-bottom:clamp(20px,4vw,30px);color:#0c4a6e; }
-        h2 { font-size:clamp(1.5rem,5vw,2.5rem);border-bottom:3px solid rgba(14,165,233,0.3);padding-bottom:clamp(10px,2vw,15px);margin-bottom:clamp(20px,4vw,30px);}
-        h3 { font-size:clamp(1.2rem,4vw,1.8rem);color:#334155;margin-bottom:clamp(15px,3vw,20px);}
-        h4 { font-size:clamp(1.1rem,3.5vw,1.4rem);color:var(--highlight-color);margin-bottom:clamp(12px,2vw,15px);}
-        p,li { color:#475569;margin-bottom:clamp(10px,2vw,12px);}
-        strong {color:#1e3a8a;}
-        .formula { background:rgba(255,255,255,0.4); padding:clamp(15px,3vw,20px);border-radius:14px;font-family:monospace;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(10px);margin:20px 0;text-align:center;font-size:clamp(1rem,3vw,1.3rem);}
-        ul,ol { padding-right:clamp(20px,4vw,25px);margin-bottom:20px;}
-        body[dir="ltr"] ul,body[dir="ltr"] ol {padding-right:0;padding-left:clamp(20px,4vw,25px);}
-        
-        .case-study { border-right:4px solid var(--highlight-color);padding-right:20px;margin:25px 0;}
-        body[dir="ltr"] .case-study {border-right:none;border-left:4px solid var(--highlight-color);padding-right:0;padding-left:20px;}
+        /* Main Content Layout */
+        .main-content {
+            max-width:1200px;
+            margin:90px auto 0;
+            padding:clamp(20px,5vw,40px) clamp(15px,4vw,20px);
+        }
+
+        /* Glass Cards */
+        .glassy-card {
+            background:var(--glass-bg);
+            border:2px solid var(--glass-border);
+            border-radius:var(--border-radius);
+            padding:clamp(20px,5vw,30px);
+            margin-bottom:clamp(25px,5vw,35px);
+            backdrop-filter:blur(25px);
+            transition:all 0.4s ease;
+            box-shadow:0 20px 50px rgba(0,0,0,0.1),inset 0 2px 0 rgba(255,255,255,0.5);
+        }
+        .glassy-card:hover {
+            transform:translateY(-5px) scale(1.01);
+            border-color:rgba(255,255,255,0.7);
+            box-shadow:0 30px 70px rgba(0,0,0,0.15),inset 0 2px 0 rgba(255,255,255,0.6);
+        }
+
+        /* Video Wrapper Specific Styles */
+        .video-wrapper {
+            border-color:rgba(225,29,72,0.3);
+        }
+        .video-wrapper:hover {
+            border-color:rgba(225,29,72,0.6);
+        }
+        .video-wrapper video {
+            display:block;
+            width:100%;
+            height:auto;
+            border-radius:inherit;
+            background:rgba(0,0,0,0.2);
+            backdrop-filter:blur(6px);
+            margin-top:15px;
+        }
+
+        /* Typography */
+        h1,h2,h3,h4 { 
+            color:#0f172a;
+            text-shadow:0 2px 8px rgba(255,255,255,0.8);
+            font-weight:700;
+        }
+        h1 { 
+            font-size:clamp(2rem,6vw,3.2rem);
+            text-align:center;
+            margin-bottom:clamp(20px,4vw,30px);
+            color:#0c4a6e; 
+        }
+        h2 { 
+            font-size:clamp(1.5rem,5vw,2.5rem);
+            border-bottom:3px solid rgba(14,165,233,0.3);
+            padding-bottom:clamp(10px,2vw,15px);
+            margin-bottom:clamp(20px,4vw,30px);
+        }
+        h3 { 
+            font-size:clamp(1.2rem,4vw,1.8rem);
+            color:#334155;
+            margin-bottom:clamp(15px,3vw,20px);
+        }
+        h4 { 
+            font-size:clamp(1.1rem,3.5vw,1.4rem);
+            color:var(--highlight-color);
+            margin-bottom:clamp(12px,2vw,15px);
+        }
+        p,li { 
+            color:#475569;
+            margin-bottom:clamp(10px,2vw,12px);
+        }
+        strong {
+            color:#1e3a8a;
+        }
+
+        /* Special Elements */
+        .formula { 
+            background:rgba(255,255,255,0.4); 
+            padding:clamp(15px,3vw,20px);
+            border-radius:14px;
+            font-family:monospace;
+            border:1px solid rgba(255,255,255,0.3);
+            backdrop-filter:blur(10px);
+            margin:20px 0;
+            text-align:center;
+            font-size:clamp(1rem,3vw,1.3rem);
+        }
+        ul,ol { 
+            padding-right:clamp(20px,4vw,25px);
+            margin-bottom:20px;
+        }
+        body[dir="ltr"] ul,body[dir="ltr"] ol {
+            padding-right:0;
+            padding-left:clamp(20px,4vw,25px);
+        }
+        .case-study { 
+            border-right:4px solid var(--highlight-color);
+            padding-right:20px;
+            margin:25px 0;
+        }
+        body[dir="ltr"] .case-study {
+            border-right:none;
+            border-left:4px solid var(--highlight-color);
+            padding-right:0;
+            padding-left:20px;
+        }
+
+        /* Practice Questions */
         .practice-question {
-            background:rgba(22,163,74,0.08); border:2px solid rgba(22,163,74,0.2);
-            border-radius:18px; padding:25px; margin-top:20px;
-            cursor: pointer; position: relative;
+            background:rgba(22,163,74,0.08); 
+            border:2px solid rgba(22,163,74,0.2);
+            border-radius:18px; 
+            padding:25px; 
+            margin-top:20px;
+            cursor: pointer; 
+            position: relative;
             transition: all 0.4s ease;
         }
         .practice-question:hover {
@@ -105,31 +317,62 @@
             transform: rotate(180deg);
         }
 
-        .solution-card { max-height:0; overflow:hidden; transition:max-height 0.7s ease-in-out,margin-top 0.5s ease;}
-        .solution-card.show { max-height:500px;margin-top:20px;}
-        .solution-content { background:rgba(255,255,255,0.3); border:1px solid rgba(255,255,255,0.4); padding:20px; border-radius:14px; }
-        .solution-content strong { color:#15803d;}
-        .hidden { display:none; }
+        /* Solution Cards */
+        .solution-card { 
+            max-height:0; 
+            overflow:hidden; 
+            transition:max-height 0.7s ease-in-out,margin-top 0.5s ease;
+        }
+        .solution-card.show { 
+            max-height:500px;
+            margin-top:20px;
+        }
+        .solution-content { 
+            background:rgba(255,255,255,0.3); 
+            border:1px solid rgba(255,255,255,0.4); 
+            padding:20px; 
+            border-radius:14px; 
+        }
+        .solution-content strong { 
+            color:#15803d;
+        }
+
+        /* Utility Classes */
+        .hidden { 
+            display:none; 
+        }
     </style>
 </head>
 <body>
+    <!-- Background Elements -->
     <div class="background-gradient"></div>
     <div class="floating-spheres">
         <div class="sphere large"></div>
         <div class="sphere medium"></div>
         <div class="sphere small-1"></div>
     </div>
+
+    <!-- Translation Button -->
     <button class="translation-button" id="translationButton">
-        <svg class="icon-translate" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.25 12C2.25 17.3848 6.61522 21.75 12 21.75C17.3848 21.75 21.75 17.3848 21.75 12C21.75 6.61522 17.3848 2.25 12 2.25C9.36657 2.25 6.94277 3.22321 5.16629 4.83371M12.75 2.25V7.5M12.75 7.5H18M12.75 7.5L5.16629 4.83371M11.25 21.75V16.5M11.25 16.5H6M11.25 16.5L18.8337 19.1663M5.16629 4.83371C3.22321 6.94277 2.25 9.36657 2.25 12M2.25 12C2.25 14.6334 3.22321 17.0572 4.83371 18.8337M18.8337 19.1663C20.7768 17.0572 21.75 14.6334 21.75 12M18.8337 4.83371C17.0572 3.22321 14.6334 2.25 12 2.25" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg class="icon-translate" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.25 12C2.25 17.3848 6.61522 21.75 12 21.75C17.3848 21.75 21.75 17.3848 21.75 12C21.75 6.61522 17.3848 2.25 12 2.25C9.36657 2.25 6.94277 3.22321 5.16629 4.83371M12.75 2.25V7.5M12.75 7.5H18M12.75 7.5L5.16629 4.83371M11.25 21.75V16.5M11.25 16.5H6M11.25 16.5L18.8337 19.1663M5.16629 4.83371C3.22321 6.94277 2.25 9.36657 2.25 12M2.25 12C2.25 14.6334 3.22321 17.0572 4.83371 18.8337M18.8337 19.1663C20.7768 17.0572 21.75 14.6334 21.75 12M18.8337 4.83371C17.0572 3.22321 14.6334 2.25 12 2.25" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         <span class="translation-text">ترجمة</span>
     </button>
+
+    <!-- Main Content -->
     <main class="main-content">
+        <!-- Arabic Content -->
         <div id="arabicContent">
-            <section class="glassy-card"><h1>مبادئ المحاسبة - المحاضرة الأولى</h1></section>
+            <section class="glassy-card">
+                <h1>مبادئ المحاسبة - المحاضرة الأولى</h1>
+            </section>
+
             <section class="glassy-card">
                 <h2>الخلاصة التنفيذية</h2>
                 <p>المحاضرة الأولى في مبادئ المحاسبة تركز على تعريف المحاسبة كعلم وظيفي يعتمد على تحديد وتسجيل وتبليغ الأحداث المالية الخاصة بالمنشآت بهدف اتخاذ القرار السليم. يشرح محتواها مفهوم الكيان الاقتصادي، وكيفية تسجيل العمليات المالية، ثم توضيح معادلة المحاسبة الأساسية التي تربط بين الأصول والخصوم وحقوق المُلاك. كذلك توضح عددًا من المجموعات التي تعتمد على التقارير المالية داخل وخارج المؤسسة، مع شرح لأدوار كل طرف في النظام المحاسبي.</p>
             </section>
+
             <section class="glassy-card">
                 <h2>أهم القواعد والمفاهيم</h2>
                 <ul>
@@ -144,9 +387,18 @@
                     <li>المستخدمون الداخليون: الإدارة، الإنتاج، التسويق، المالية. المستخدمون الخارجيون: المستثمرون والدائنون والهيئات الضريبية والعملاء والنقابات وسوق الأوراق المالية.</li>
                 </ul>
             </section>
+
+            <section class="glassy-card video-wrapper">
+                <h2>الفيديو التعليمي</h2>
+                <p>شاهد شرح المحاضرة بالتفصيل:</p>
+                <video controls>
+                    <source src="https://raw.githubusercontent.com/YOUR-USERNAME/YOUR-REPO/main/lecture01.mp4" type="video/mp4">
+                    متصفحك لا يدعم تشغيل الفيديو. يرجى تحديث المتصفح أو استخدام متصفح آخر.
+                </video>
+            </section>
+
             <section class="glassy-card">
                 <h2>مكتبة الحالات العملية وساحة التدريب</h2>
-
                 <div class="case-study">
                     <h3>الحالة العملية (1): تعريف الحدث المالي</h3>
                     <div class="practice-question">
@@ -180,15 +432,20 @@
                         </div>
                     </div>
                 </div>
-               
             </section>
         </div>
+
+        <!-- English Content -->
         <div id="englishContent" class="hidden">
-            <section class="glassy-card"><h1>Accounting Principles - First Lecture</h1></section>
+            <section class="glassy-card">
+                <h1>Accounting Principles - First Lecture</h1>
+            </section>
+
             <section class="glassy-card">
                 <h2>Executive Summary</h2>
                 <p>The first lecture in accounting principles focuses on defining accounting as a functional science that relies on identifying, recording, and reporting financial events of organizations for the purpose of making sound decisions. Its content explains the concept of economic entity, how to record financial transactions, then clarifies the fundamental accounting equation that links assets, liabilities, and owners' equity. It also illustrates several groups that rely on financial reports inside and outside the organization, with an explanation of each party's roles in the accounting system.</p>
             </section>
+
             <section class="glassy-card">
                 <h2>Key Rules and Concepts</h2>
                 <ul>
@@ -203,9 +460,18 @@
                     <li>Internal users: Management, Production, Marketing, Finance. External users: Investors, creditors, tax authorities, customers, unions, and stock markets.</li>
                 </ul>
             </section>
+
+            <section class="glassy-card video-wrapper">
+                <h2>Educational Video</h2>
+                <p>Watch the detailed lecture explanation:</p>
+                <video controls>
+                    <source src="https://raw.githubusercontent.com/omarribrahem/athrai/refs/heads/main/Accounting/acc1vid.mp4" type="video/mp4">
+                    Your browser does not support the video tag. Please update your browser or use another one.
+                </video>
+            </section>
+
             <section class="glassy-card">
                 <h2>Case Library and Practice Arena</h2>
-
                 <div class="case-study">
                     <h3>Practical Case (1): Defining Financial Events</h3>
                     <div class="practice-question">
@@ -239,43 +505,47 @@
                         </div>
                     </div>
                 </div>
-                
             </section>
         </div>
     </main>
+
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const translationButton = document.getElementById('translationButton');
-        const translationText = translationButton.querySelector('.translation-text');
-        const arabicContent = document.getElementById('arabicContent');
-        const englishContent = document.getElementById('englishContent');
-        const html = document.documentElement;
-        const body = document.body;
-        let isArabic = true;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Translation functionality
+            const translationButton = document.getElementById('translationButton');
+            const translationText = translationButton.querySelector('.translation-text');
+            const arabicContent = document.getElementById('arabicContent');
+            const englishContent = document.getElementById('englishContent');
+            const html = document.documentElement;
+            const body = document.body;
+            let isArabic = true;
 
-        translationButton.addEventListener('click', () => {
-            isArabic = !isArabic;
-            if (isArabic) {
-                html.lang = 'ar'; body.dir = 'rtl';
-                arabicContent.classList.remove('hidden');
-                englishContent.classList.add('hidden');
-                translationText.textContent = 'ترجمة';
-            } else {
-                html.lang = 'en'; body.dir = 'ltr';
-                arabicContent.classList.add('hidden');
-                englishContent.classList.remove('hidden');
-                translationText.textContent = 'Translate';
-            }
-        });
+            translationButton.addEventListener('click', () => {
+                isArabic = !isArabic;
+                if (isArabic) {
+                    html.lang = 'ar'; 
+                    body.dir = 'rtl';
+                    arabicContent.classList.remove('hidden');
+                    englishContent.classList.add('hidden');
+                    translationText.textContent = 'ترجمة';
+                } else {
+                    html.lang = 'en'; 
+                    body.dir = 'ltr';
+                    arabicContent.classList.add('hidden');
+                    englishContent.classList.remove('hidden');
+                    translationText.textContent = 'Translate';
+                }
+            });
 
-        document.querySelectorAll('.practice-question').forEach(question => {
-            question.addEventListener('click', () => {
-                const solutionCard = question.nextElementSibling;
-                question.classList.toggle('open');
-                solutionCard.classList.toggle('show');
+            // Practice questions functionality
+            document.querySelectorAll('.practice-question').forEach(question => {
+                question.addEventListener('click', () => {
+                    const solutionCard = question.nextElementSibling;
+                    question.classList.toggle('open');
+                    solutionCard.classList.toggle('show');
+                });
             });
         });
-    });
     </script>
 </body>
 </html>
