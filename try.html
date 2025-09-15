@@ -151,55 +151,17 @@
         
         /* Typing Indicator */
         .typing-indicator { 
-            display: flex; 
-            align-items: center; 
-            padding: 10px 15px; 
-            background: rgba(245,158,11,0.15); 
-            color: #78350f; 
-            border-radius: 18px; 
-            border-bottom-left-radius: 4px; 
-            align-self: flex-start; 
-            max-width: 85%;
+            background: rgba(245,158,11,0.15) !important;
+            color: #9ca3af !important;
+            font-style: italic;
         }
-        body[dir="ltr"] .typing-indicator { 
-            border-bottom-right-radius: 4px; 
-            border-bottom-left-radius: 18px; 
-            align-self: flex-end; 
-        }
-        .typing-text { margin-left: 8px; }
-        body[dir="ltr"] .typing-text { margin-left: 0; margin-right: 8px; }
-        .typing-dots span { 
+        .dot { 
             animation: typingDots 1.5s infinite; 
             font-size: 1.2em; 
-            color: var(--ai-color);
+            color: var(--ai-color) !important;
         }
-        .typing-dots span:nth-child(2) { animation-delay: 0.3s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.6s; }
-        
-        /* Suggested Actions */
-        .suggested-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-            padding: 0 15px;
-        }
-        .suggestion-btn {
-            background: rgba(14,165,233,0.1);
-            border: 1px solid rgba(14,165,233,0.3);
-            border-radius: 20px;
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            color: #0c4a6e;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        .suggestion-btn:hover {
-            background: rgba(14,165,233,0.2);
-            border-color: rgba(14,165,233,0.5);
-            transform: translateY(-1px);
-        }
+        .dot:nth-child(2) { animation-delay: 0.3s; }
+        .dot:nth-child(3) { animation-delay: 0.6s; }
         
         .ai-chat-input-area { padding: 15px 20px; border-top: 2px solid var(--glass-border); display: flex; gap: 10px; }
         #ai-chat-input { flex-grow: 1; border: 2px solid var(--glass-border); background: rgba(255,255,255,0.3); border-radius: 50px; padding: 10px 18px; font-size: 1rem; color: #1e293b; outline: none; transition: border-color 0.3s, box-shadow 0.3s; }
@@ -644,7 +606,7 @@
             const body = document.body;
             let isArabic = true;
             
-            // --- AI Chat Elements ---
+            // --- AI Chat Elements (المحدث وفقاً للمواصفات الجديدة) ---
             const aiChatButton = document.getElementById('aiChatButton');
             const aiChatModal = document.getElementById('aiChatModal');
             const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
@@ -654,8 +616,30 @@
             const aiChatTitle = document.getElementById('ai-chat-title');
             const aiChatButtonText = aiChatButton.querySelector('.fab-text');
 
-            // Chat conversation history
             let conversationHistory = [];
+            let isFirstMessage = true;
+
+            function showTypingIndicator(show) {
+                const existingIndicator = aiChatMessages.querySelector('.typing-indicator');
+                if (existingIndicator) {
+                    existingIndicator.remove();
+                }
+                if (show) {
+                    const indicatorElement = document.createElement('div');
+                    indicatorElement.classList.add('chat-message', 'ai-message', 'typing-indicator');
+                    indicatorElement.innerHTML = '<span>أثر AI يكتب الآن</span><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>';
+                    aiChatMessages.appendChild(indicatorElement);
+                    aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+                }
+            }
+
+            function addMessage(text, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('chat-message', `${sender}-message`);
+                messageElement.innerHTML = marked.parse(text);
+                aiChatMessages.appendChild(messageElement);
+                aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+            }
             
             function applyLanguage(arabic) {
                 isArabic = arabic;
@@ -677,66 +661,48 @@
             }
             
             translationButton.addEventListener('click', () => applyLanguage(!isArabic));
-            
-            // --- AI Chat Logic ---
+
             aiChatButton.addEventListener('click', () => {
                 aiChatModal.classList.add('visible');
-                
-                // Show welcome message if no conversation history
-                if (conversationHistory.length === 0) {
-                    showWelcomeMessage();
+                if (isFirstMessage) {
+                    addMessage("أهلاً بك! أنا **أثر AI**، مساعدك الدراسي. اسألني أي شيء عن محتوى هذه المحاضرة.", 'ai');
+                    isFirstMessage = false;
                 }
+                aiChatInput.focus();
             });
-            
+
             aiChatCloseBtn.addEventListener('click', () => {
                 aiChatModal.classList.remove('visible');
             });
-            
+
             // Close modal by clicking on the overlay
             aiChatModal.addEventListener('click', (e) => {
                 if (e.target === aiChatModal) {
                     aiChatModal.classList.remove('visible');
                 }
             });
-            
+
             aiChatSendBtn.addEventListener('click', handleSendMessage);
             aiChatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !aiChatInput.disabled) {
-                    handleSendMessage();
-                }
+                if (e.key === 'Enter') handleSendMessage();
             });
-            
-            function showWelcomeMessage() {
-                const welcomeText = isArabic 
-                    ? "أهلاً بك! أنا أثر AI، مساعدك الدراسي الودود. 😊\n\nلا تقلق، سنفهم محتوى المحاسبة معًا خطوة بخطوة! اسألني عن أي مفهوم تريد توضيحه وسأجعله بسيطًا ومفهومًا."
-                    : "Hello! I'm Athr AI, your friendly study assistant. 😊\n\nDon't worry, we'll understand accounting content together step by step! Ask me about any concept you want clarified and I'll make it simple and understandable.";
-                
-                addMessage(welcomeText, 'ai');
-                addSuggestedActions([
-                    isArabic ? "اشرح المعادلة المحاسبية بطريقة بسيطة" : "Explain the accounting equation simply",
-                    isArabic ? "ما الفرق بين الأصول والالتزامات؟" : "What's the difference between assets and liabilities?",
-                    isArabic ? "أعطني مثالاً عملياً على المحاسبة" : "Give me a practical accounting example"
-                ]);
-            }
-            
+
             async function handleSendMessage() {
                 const userQuery = aiChatInput.value.trim();
                 if (!userQuery) return;
 
-                // تعطيل زر الإرسال ومربع الكتابة فورًا
                 aiChatSendBtn.disabled = true;
                 aiChatInput.disabled = true;
 
                 conversationHistory.push({ role: 'user', content: userQuery });
                 addMessage(userQuery, 'user');
                 aiChatInput.value = '';
-                showTypingIndicator();
+                showTypingIndicator(true);
 
                 try {
-                    const contentElement = isArabic ? arabicContent : englishContent;
-                    const pageContext = contentElement.innerText.substring(0, 8000); 
+                    const pageContext = arabicContent.innerText.substring(0, 8000);
 
-                    const response = await fetch('/askAI', { ... }), {
+                    const response = await fetch('/askAI', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -745,94 +711,26 @@
                         })
                     });
 
-                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                    if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
                     const result = await response.json();
-                    const aiResponse = result.reply || (isArabic ? "عفواً، لم أستطع إيجاد إجابة." : "Sorry, I couldn't find an answer.");
+                    const aiResponse = result.reply || "عفواً، لم أستطع إيجاد إجابة.";
 
                     conversationHistory.push({ role: 'assistant', content: aiResponse });
-                    hideTypingIndicator();
+                    showTypingIndicator(false);
                     addMessage(aiResponse, 'ai');
-                    
-                    // Add suggested actions after AI response
-                    addSuggestedActions([
-                        isArabic ? "بسّط هذا المفهوم أكثر" : "Simplify this concept more",
-                        isArabic ? "أعطني مثالاً واقعياً" : "Give me a real example",
-                        isArabic ? "اختبرني في هذه النقطة" : "Test me on this point"
-                    ]);
-                    
+
                 } catch (error) {
                     console.error("Error fetching AI response:", error);
-                    hideTypingIndicator();
-                    const errorMessage = isArabic ? "حدث خطأ أثناء محاولة الحصول على إجابة. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى." : "An error occurred while getting a response. Please check your connection and try again.";
-                    addMessage(errorMessage, 'ai');
+                    showTypingIndicator(false);
+                    addMessage("حدث خطأ ما، يرجى المحاولة مرة أخرى.", 'ai');
                 } finally {
-                    // المؤقت: 5 ثوانٍ (محدث وفقاً للمواصفات الجديدة)
                     setTimeout(() => {
                         aiChatInput.disabled = false;
                         aiChatSendBtn.disabled = false;
                         aiChatInput.focus();
-                    }, 5000); // 5000 ميلي ثانية = 5 ثوانٍ
+                    }, 5000); // 5 ثوانٍ
                 }
-            }
-            
-            function addMessage(text, sender) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('chat-message', `${sender}-message`);
-                
-                // استخدام marked.parse() لعرض Markdown بشكل كامل
-                if (typeof marked !== 'undefined' && marked.parse) {
-                    messageElement.innerHTML = marked.parse(text);
-                } else {
-                    // Fallback إذا لم تكن المكتبة متاحة
-                    messageElement.textContent = text;
-                }
-                
-                aiChatMessages.appendChild(messageElement);
-                aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-            }
-            
-            function showTypingIndicator() {
-                const typingElement = document.createElement('div');
-                typingElement.classList.add('typing-indicator');
-                typingElement.innerHTML = `
-                    <span class="typing-text">${isArabic ? 'أثر AI يكتب الآن' : 'Athr AI is typing'}</span>
-                    <span class="typing-dots">
-                        <span>.</span>
-                        <span>.</span>
-                        <span>.</span>
-                    </span>
-                `;
-                aiChatMessages.appendChild(typingElement);
-                aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-            }
-            
-            function hideTypingIndicator() {
-                const typingElement = aiChatMessages.querySelector('.typing-indicator');
-                if (typingElement) {
-                    typingElement.remove();
-                }
-            }
-            
-            function addSuggestedActions(suggestions) {
-                const actionsContainer = document.createElement('div');
-                actionsContainer.classList.add('suggested-actions');
-                
-                suggestions.forEach(suggestion => {
-                    const btn = document.createElement('button');
-                    btn.classList.add('suggestion-btn');
-                    btn.textContent = suggestion;
-                    btn.addEventListener('click', () => {
-                        if (!aiChatInput.disabled) {
-                            aiChatInput.value = suggestion;
-                            handleSendMessage();
-                        }
-                    });
-                    actionsContainer.appendChild(btn);
-                });
-                
-                aiChatMessages.appendChild(actionsContainer);
-                aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
             }
             
             // Initialize page language
