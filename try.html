@@ -736,7 +736,7 @@
                     const contentElement = isArabic ? arabicContent : englishContent;
                     const pageContext = contentElement.innerText.substring(0, 8000); 
 
-                    const response = await fetch('/.netlify/functions/askAI', {
+                    const response = await fetch('/askAI', { ... }), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
