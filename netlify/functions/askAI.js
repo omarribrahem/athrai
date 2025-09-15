@@ -1,4 +1,4 @@
-// askAI.js – نسخة مطورة بشخصية وذاكرة أفضل
+// askAI.js – النسخة النهائية مع شخصية وذاكرة متوافقة مع Google AI
 
 const fetch = require('node-fetch');
 
@@ -28,30 +28,39 @@ exports.handler = async function (event) {
     return { statusCode: 500, body: JSON.stringify({ error: 'Server configuration error.' }) };
   }
 
-  // الآن نستقبل سجل المحادثة بالكامل بدلاً من سؤال واحد
   const { conversationHistory, context } = JSON.parse(event.body);
 
-  // 1. إعطاء الذكاء الاصطناعي شخصية (System Instruction)
-  const systemInstruction = {
-    role: "system",
-    parts: [{
-      text: `أنت "المعلم الخبير" من منصة "أثر". مهمتك هي مساعدة الطالب على فهم محتوى المحاضرة.
-      - اشرح المفاهيم بطريقة بسيطة وواضحة.
-      - استخدم أمثلة إذا كان السؤال يتطلب ذلك.
-      - كن ودودًا ومشجعًا في إجاباتك.
-      - يجب أن تكون جميع إجاباتك مبنية **فقط** على "محتوى المحاضرة" المقدم لك.
-      - هذا هو محتوى المحاضرة: """${context}"""`
-    }]
-  };
+  // ---  هذا هو التعديل الرئيسي ---
+  // ندمج تعليمات الشخصية مع المحتوى في أول رسالة للمستخدم
   
-  // 2. بناء سجل المحادثة لإعطاء الـ AI ذاكرة
-  const contents = [
-    systemInstruction, // نبدأ دائمًا بالشخصية
-    ...conversationHistory.map(turn => ({ // ثم نضيف المحادثة السابقة
+  // 1. إنشاء "برومبت" البداية الذي يعرّف شخصية الـ AI
+  const initialPrompt = `أنت "المعلم الخبير" من منصة "أثر". مهمتك هي مساعدة الطالب على فهم محتوى المحاضرة التالي:
+  ---
+  محتوى المحاضرة:
+  ${context}
+  ---
+  قواعدك:
+  - اشرح المفاهيم بطريقة بسيطة وواضحة.
+  - استخدم أمثلة إذا كان السؤال يتطلب ذلك.
+  - كن ودودًا ومشجعًا في إجاباتك.
+  - يجب أن تكون جميع إجاباتك مبنية فقط على "محتوى المحاضرة" المقدم لك.
+  `;
+
+  // 2. بناء سجل المحادثة بالشكل الصحيح
+  const contents = conversationHistory.map((turn, index) => {
+    // ندمج التعليمات مع أول سؤال للمستخدم
+    if (index === 0) {
+      return {
+        role: 'user',
+        parts: [{ text: `${initialPrompt}\n\nسؤالي الأول هو: ${turn.content}` }]
+      };
+    }
+    // باقي المحادثة تبقى كما هي
+    return {
       role: turn.role === 'user' ? 'user' : 'model',
       parts: [{ text: turn.content }]
-    }))
-  ];
+    };
+  });
 
   const requestBody = {
     contents: contents,
@@ -71,7 +80,7 @@ exports.handler = async function (event) {
         body: JSON.stringify({ reply: answer.trim() }),
       };
     } else {
-      console.error("Invalid response from API:", responseData);
+      console.error("Invalid response from API or content blocked:", responseData);
       return { 
         statusCode: 200,
         body: JSON.stringify({ reply: "عفواً، لم أتمكن من معالجة هذا الطلب حالياً." })
