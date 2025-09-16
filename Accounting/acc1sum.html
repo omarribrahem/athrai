@@ -197,20 +197,28 @@
         }
 
         /* Video Wrapper Specific Styles */
-        .video-wrapper {
+        .video-card {
             border-color:rgba(225,29,72,0.3);
         }
-        .video-wrapper:hover {
+        .video-card:hover {
             border-color:rgba(225,29,72,0.6);
         }
-        .video-wrapper video {
-            display:block;
-            width:100%;
-            height:auto;
-            border-radius:inherit;
-            background:rgba(0,0,0,0.2);
-            backdrop-filter:blur(6px);
-            margin-top:15px;
+        .responsive-video-wrapper {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 18px;
+            margin-top: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .responsive-video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
 
         /* Typography */
@@ -388,13 +396,18 @@
                 </ul>
             </section>
 
-            <section class="glassy-card video-wrapper">
-                <h2>الفيديو التعليمي</h2>
-                <p>شاهد شرح المحاضرة بالتفصيل:</p>
-                <video controls>
-                    <source src="https://raw.githubusercontent.com/YOUR-USERNAME/YOUR-REPO/main/lecture01.mp4" type="video/mp4">
-                    متصفحك لا يدعم تشغيل الفيديو. يرجى تحديث المتصفح أو استخدام متصفح آخر.
-                </video>
+            <!-- Video Section -->
+            <section class="glassy-card video-card">
+                <h2>📹 الفيديو التعليمي</h2>
+                <p>شاهد شرح المحاضرة بالتفصيل مع أمثلة تطبيقية:</p>
+                <div class="responsive-video-wrapper">
+                    <iframe 
+                        src="https://player.vimeo.com/video/YOUR_VIDEO_ID" 
+                        frameborder="0" 
+                        allow="autoplay; fullscreen; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
             </section>
 
             <section class="glassy-card">
@@ -461,13 +474,18 @@
                 </ul>
             </section>
 
-            <section class="glassy-card video-wrapper">
-                <h2>Educational Video</h2>
-                <p>Watch the detailed lecture explanation:</p>
-                <video controls>
-                    <source src="https://raw.githubusercontent.com/omarribrahem/athrai/refs/heads/main/Accounting/acc1vid.mp4" type="video/mp4">
-                    Your browser does not support the video tag. Please update your browser or use another one.
-                </video>
+            <!-- Video Section -->
+            <section class="glassy-card video-card">
+                <h2>📹 Educational Video</h2>
+                <p>Watch the detailed lecture explanation with practical examples:</p>
+                <div class="responsive-video-wrapper">
+                    <iframe 
+                        src="https://vimeo.com/1118930673" 
+                        frameborder="0" 
+                        allow="autoplay; fullscreen; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
             </section>
 
             <section class="glassy-card">
