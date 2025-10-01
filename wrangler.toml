@@ -1,16 +1,15 @@
 # =============================================
-#  Cloudflare Pages - Athr Platform Config
+#  Cloudflare Pages Configuration
+#  منصة أثر التعليمية
 # =============================================
 
 name = "athr-platform"
 compatibility_date = "2025-10-01"
 
-# لو عندك build command
-# build = { command = "npm run build" }
+# تحديد مجلد الملفات الثابتة
+[assets]
+directory = "."
 
-# المجلد اللي فيه الملفات الثابتة
-# pages_build_output_dir = "."
-
-# Functions directory (اختياري - Cloudflare يكتشفه تلقائياً)
-[functions]
-# directory = "functions"
+# استبعاد الملفات غير الضرورية
+[assets.exclude]
+patterns = ["node_modules", ".git", "*.log", "package*.json", "wrangler.toml"]
