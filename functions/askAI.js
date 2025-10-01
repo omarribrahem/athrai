@@ -1,70 +1,91 @@
 // =================================================================
-//          ملف: functions/askAI.js
-//          النسخة المتكاملة مع Supabase للـ Caching
+//   functions/askAI.js - النسخة مع Semantic Search
 // =================================================================
 
 import { createClient } from '@supabase/supabase-js';
 
 /**
- * دالة لإنشاء hash من النص (للبحث السريع)
+ * دالة لإنشاء embedding من النص باستخدام Google AI
  */
-async function hashText(text) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+async function createEmbedding(text, apiKey) {
+  const model = 'text-embedding-004';
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${apiKey}`;
+
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      content: {
+        parts: [{ text: text }]
+      }
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('Embedding API failed');
+  }
+
+  const result = await response.json();
+  return result.embedding.values; // array of 768 numbers
 }
 
 /**
- * دالة للبحث في الـ cache قبل استدعاء API
+ * دالة للبحث عن أسئلة مشابهة دلالياً (Semantic Search)
  */
-async function getCachedResponse(supabase, questionHash) {
+async function findSimilarQuestion(supabase, questionEmbedding, threshold = 0.85) {
   try {
-    const { data, error } = await supabase
-      .from('ai_responses_cache')
-      .select('response_text, id, hit_count')
-      .eq('question_hash', questionHash)
-      .maybeSingle(); // بدل single() عشان ميديش error لو مالقاش حاجة
+    // استخدام cosine similarity للبحث
+    const { data, error } = await supabase.rpc('match_questions', {
+      query_embedding: questionEmbedding,
+      match_threshold: threshold,
+      match_count: 1
+    });
 
     if (error) {
-      console.error('Cache lookup error:', error);
+      console.error('Similarity search error:', error);
       return null;
     }
 
-    if (data) {
-      console.log(`✅ Cache HIT! Hit count: ${data.hit_count + 1}`);
+    if (data && data.length > 0) {
+      const match = data[0];
+      console.log(`✅ Found similar question! Similarity: ${(match.similarity * 100).toFixed(1)}%`);
       
-      // تحديث عداد الاستخدام ووقت آخر وصول
+      // تحديث الإحصائيات
       await supabase
         .from('ai_responses_cache')
         .update({ 
-          hit_count: data.hit_count + 1,
+          hit_count: match.hit_count + 1,
           last_accessed: new Date().toISOString()
         })
-        .eq('id', data.id);
+        .eq('id', match.id);
 
-      return data.response_text;
+      return match.response_text;
     }
 
-    console.log('❌ Cache MISS - Question not found in cache');
+    console.log('❌ No similar question found');
     return null;
   } catch (err) {
-    console.error('getCachedResponse exception:', err);
+    console.error('findSimilarQuestion exception:', err);
     return null;
   }
 }
 
 /**
- * دالة لحفظ الإجابة في الـ cache
+ * دالة لحفظ السؤال والإجابة مع embedding
  */
-async function cacheResponse(supabase, questionHash, questionText, responseText, contextHash) {
+async function cacheResponseWithEmbedding(
+  supabase, 
+  questionText, 
+  questionEmbedding,
+  responseText, 
+  contextHash
+) {
   try {
     const { error } = await supabase
       .from('ai_responses_cache')
       .insert({
-        question_hash: questionHash,
         question_text: questionText,
+        question_embedding: questionEmbedding,
         response_text: responseText,
         lecture_context_hash: contextHash,
         hit_count: 1,
@@ -75,10 +96,10 @@ async function cacheResponse(supabase, questionHash, questionText, responseText,
     if (error) {
       console.error('Cache save error:', error);
     } else {
-      console.log('💾 Response cached successfully');
+      console.log('💾 Response cached with embedding');
     }
   } catch (err) {
-    console.error('cacheResponse exception:', err);
+    console.error('cacheResponseWithEmbedding exception:', err);
   }
 }
 
@@ -122,49 +143,29 @@ async function queryGoogleAI(systemInstruction, contents, apiKey) {
 }
 
 /**
- * الدالة الرئيسية - Cloudflare Pages Function
+ * الدالة الرئيسية
  */
 export async function onRequest(context) {
   try {
     const { env, request } = context;
     
-    // استخراج المتغيرات البيئية
     const GOOGLE_API_KEY = env.GOOGLE_API_KEY;
     const SUPABASE_URL = env.SUPABASE_URL;
     const SUPABASE_ANON_KEY = env.SUPABASE_ANON_KEY;
 
-    // التحقق من الـ Method
     if (request.method !== 'POST') {
-      return new Response('Method Not Allowed', { 
-        status: 405,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response('Method Not Allowed', { status: 405 });
     }
 
-    // التحقق من المتغيرات البيئية
     if (!GOOGLE_API_KEY) {
-      console.error('❌ GOOGLE_API_KEY is missing');
       return new Response(JSON.stringify({ error: 'خطأ في إعدادات Google API.' }), {
         status: 500, 
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.warn('⚠️ Supabase credentials missing - caching disabled');
-    }
-
-    // قراءة البيانات من الطلب
     const { conversationHistory, context: lectureContext } = await request.json();
 
-    if (!conversationHistory || !Array.isArray(conversationHistory)) {
-      return new Response(JSON.stringify({ error: 'بيانات المحادثة غير صحيحة.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // استخراج آخر سؤال من المستخدم
     const lastUserMessage = conversationHistory
       .slice()
       .reverse()
@@ -180,30 +181,30 @@ export async function onRequest(context) {
     const userQuestion = lastUserMessage.content;
     console.log(`📩 User question: ${userQuestion.substring(0, 50)}...`);
 
-    // محاولة استخدام الـ Cache (إذا كان Supabase متاح)
+    // محاولة البحث الدلالي في الـ Cache
     let cachedAnswer = null;
     let supabase = null;
 
     if (SUPABASE_URL && SUPABASE_ANON_KEY) {
       supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       
-      const questionHash = await hashText(userQuestion.toLowerCase().trim());
-      const contextHash = await hashText(lectureContext || '');
-
-      console.log(`🔍 Question hash: ${questionHash.substring(0, 16)}...`);
+      // إنشاء embedding للسؤال
+      console.log('🔍 Creating question embedding...');
+      const questionEmbedding = await createEmbedding(userQuestion, GOOGLE_API_KEY);
       
-      cachedAnswer = await getCachedResponse(supabase, questionHash);
+      // البحث عن أسئلة مشابهة (85% similarity أو أكثر)
+      cachedAnswer = await findSimilarQuestion(supabase, questionEmbedding, 0.85);
 
       if (cachedAnswer) {
         return new Response(JSON.stringify({ 
           reply: cachedAnswer,
           cached: true,
-          source: 'cache'
+          source: 'semantic-cache'
         }), {
           status: 200, 
           headers: { 
             'Content-Type': 'application/json',
-            'X-Cache-Status': 'HIT'
+            'X-Cache-Status': 'HIT-SEMANTIC'
           },
         });
       }
@@ -212,25 +213,16 @@ export async function onRequest(context) {
     // استدعاء Google AI
     console.log(`🤖 Calling Google AI API...`);
 
-    const systemInstructionText = `أنت "أثر AI"، مساعد دراسي ودود ومحب للمعرفة من منصة "أثر". هدفك هو جعل التعلم تجربة ممتعة وسهلة، وإشعال فضول الطالب.
-
-### شخصيتك:
-- **ودود ومطمئن:** استخدم دائمًا عبارات لطيفة ومحفزة مثل "لا تقلق، سنفهمها معًا"، "سؤال رائع! دعنا نحلله خطوة بخطوة"، "فكرة ممتازة، هذا يقودنا إلى...".
-- **تفاعلي:** كن شريكًا في الحوار. لا تكتفِ بتقديم المعلومات، بل اجعل الطالب جزءًا من رحلة اكتشافها.
+    const systemInstructionText = `أنت "أثر AI"، مساعد دراسي ودود ومحب للمعرفة من منصة "أثر".
 
 ### قواعدك الذهبية:
-1.  **التركيز المطلق:** مهمتك **الوحيدة** هي الإجابة على الأسئلة المتعلقة بـ "المحتوى المرجعي لهذه الجلسة".
-2.  **الإيجاز أولاً:** ابدأ دائمًا بإجابة موجزة ومباشرة في نقاط.
-3.  **التنسيق الاحترافي:** استخدم تنسيق Markdown دائمًا.
-4.  **سؤال المتابعة الذكي:** بعد كل إجابة، اطرح سؤالاً متابعًا واحدًا.
-
-### الممنوعات:
-- ممنوع اختلاق المعلومات.
-- ممنوع حل الواجبات بشكل مباشر.
+1. **التركيز المطلق:** الإجابة فقط على الأسئلة المتعلقة بالمحتوى المرجعي.
+2. **الإيجاز أولاً:** ابدأ بإجابة موجزة.
+3. **Markdown:** استخدم التنسيق دائمًا.
+4. **سؤال متابعة:** اطرح سؤالاً بسيطاً بعد الإجابة.
 
 ---
-**المحتوى المرجعي لهذه الجلسة:**
-
+**المحتوى المرجعي:**
 ${lectureContext || 'لا يوجد محتوى محدد.'}
 ---
 `;
@@ -245,11 +237,21 @@ ${lectureContext || 'لا يوجد محتوى محدد.'}
 
     const newAnswer = await queryGoogleAI(systemInstructionText, contents, GOOGLE_API_KEY);
 
-    // حفظ الإجابة في الـ Cache
+    // حفظ الإجابة مع embedding
     if (supabase) {
-      const questionHash = await hashText(userQuestion.toLowerCase().trim());
-      const contextHash = await hashText(lectureContext || '');
-      await cacheResponse(supabase, questionHash, userQuestion, newAnswer.trim(), contextHash);
+      const questionEmbedding = await createEmbedding(userQuestion, GOOGLE_API_KEY);
+      const contextHash = lectureContext ? 
+        await crypto.subtle.digest('SHA-256', new TextEncoder().encode(lectureContext))
+          .then(buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join(''))
+        : '';
+      
+      await cacheResponseWithEmbedding(
+        supabase, 
+        userQuestion, 
+        questionEmbedding,
+        newAnswer.trim(), 
+        contextHash
+      );
     }
 
     return new Response(JSON.stringify({ 
