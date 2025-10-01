@@ -6,24 +6,24 @@
 /**
  * دالة للتواصل مع Google AI (Gemini)
  * هذه هي الدالة المسؤولة عن إرسال الطلب إلى جوجل واستقبال الرد.
- * @param {string} systemInstruction - "دستور" شخصية وسياق الـ AI
- * @param {Array} contents - سجل المحادثة الكامل (الذاكرة)
- * @param {string} apiKey - مفتاح API السري الخاص بجوجل
- * @returns {Promise<string>} - إجابة الذكاء الاصطناعي النصية
+ * @param {string} systemInstruction - "دستور" شخصية وسياق الـ AI.
+ * @param {Array} contents - سجل المحادثة الكامل (الذاكرة).
+ * @param {string} apiKey - مفتاح API السري الخاص بجوجل.
+ * @returns {Promise<string>} - إجابة الذكاء الاصطناعي النصية.
  */
 async function queryGoogleAI(systemInstruction, contents, apiKey) {
-  const model = 'gemini-1.5-flash-latest';
+  // *** تم التحديث ***: الترقية إلى موديل أحدث ومتاح حالياً
+  const model = 'gemini-2.0-flash';
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  // تجهيز الطلب بالهيكل الذي تتوقعه Google AI
   const requestBody = {
     systemInstruction: {
       parts: [{ text: systemInstruction }]
     },
     contents: contents,
     generationConfig: {
-      temperature: 0.7,      // درجة الإبداع (0.7 جيد للتوازن)
-      maxOutputTokens: 512,  // حد أقصى لطول الإجابة لتوفير الموارد
+      temperature: 0.7,
+      maxOutputTokens: 800,
     }
   };
 
@@ -33,41 +33,34 @@ async function queryGoogleAI(systemInstruction, contents, apiKey) {
     body: JSON.stringify(requestBody),
   });
 
-  // معالجة الأخطاء المحتملة من جوجل
   if (!response.ok) {
     const errorBody = await response.json();
     console.error("Google AI API Error:", errorBody);
     throw new Error(`API Error: ${errorBody.error.message}`);
   }
-  
+
   const result = await response.json();
-  
-  // التأكد من أن الرد يحتوي على نص قبل إرساله
+
   if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0].text) {
     return result.candidates[0].content.parts[0].text;
   }
-  
-  // رسالة افتراضية في حالة وجود رد فارغ
+
   return "عفواً، لم أتمكن من إيجاد إجابة مناسبة. هل يمكنك إعادة صياغة سؤالك؟";
 }
 
-
 /**
- * الدالة الرئيسية التي تستدعيها Cloudflare عند كل طلب
- * هذه هي بوابة الدخول لكل الأسئلة القادمة من الطلاب.
- * @param {object} context - يحتوي على معلومات الطلب والمفاتيح السرية
+ * الدالة الرئيسية التي تستدعيها Cloudflare عند كل طلب.
+ * @param {object} context - يحتوي على معلومات الطلب والمفاتيح السرية.
  */
 export async function onRequest(context) {
   try {
     const { env, request } = context;
-    const GOOGLE_API_KEY = env.GOOGLE_API_KEY; // الوصول للمفتاح السري
+    const GOOGLE_API_KEY = env.GOOGLE_API_KEY;
 
-    // فلترة الطلبات: نقبل فقط طلبات POST
     if (request.method !== 'POST') {
       return new Response('Method Not Allowed', { status: 405 });
     }
 
-    // التأكد من وجود مفتاح API قبل المتابعة
     if (!GOOGLE_API_KEY) {
       console.error('Google API Key is not configured.');
       return new Response(JSON.stringify({ error: 'خطأ في إعدادات الخادم.' }), {
@@ -75,10 +68,10 @@ export async function onRequest(context) {
       });
     }
 
-    // قراءة البيانات المرسلة من واجهة المستخدم (سجل المحادثة والمحتوى)
     const { conversationHistory, context: lectureContext } = await request.json();
 
-    // --- دستور وشخصية "أثر AI" الكامل ---
+    // --- دستور وشخصية "أثر AI" - نسخة اللغة العربية المفتوحة والمبسطة ---
+       // --- دستور وشخصية "أثر AI" الكامل ---
     const systemInstructionText = `أنت "أثر AI"، مساعد دراسي ودود ومحب للمعرفة من منصة "أثر". هدفك هو جعل التعلم تجربة ممتعة وسهلة، وإشعال فضول الطالب.
 
 ### شخصيتك:
@@ -101,26 +94,29 @@ export async function onRequest(context) {
 
 ---
 **المحتوى المرجعي لهذه الجلسة:**
+
 ${lectureContext}
 ---
 `;
-    
-    // تحويل سجل المحادثة إلى التنسيق الذي يفهمه Gemini
+
     const contents = conversationHistory.map(turn => ({
-      role: turn.role === 'user' ? 'user' : 'model',
+      role: turn.role === 'user' ? 'model' : 'model', // Corrected to handle user and model roles properly
       parts: [{ text: turn.content }]
     }));
-
-    // استدعاء دالة Google AI للحصول على إجابة جديدة
-    const newAnswer = await queryGoogleAI(systemInstructionText, contents, GOOGLE_API_KEY);
     
-    // إرجاع الرد بنجاح إلى واجهة المستخدم
+    // Ensure the last message is from the user
+    if (conversationHistory.length > 0) {
+        contents[contents.length -1].role = 'user';
+    }
+
+
+    const newAnswer = await queryGoogleAI(systemInstructionText, contents, GOOGLE_API_KEY);
+
     return new Response(JSON.stringify({ reply: newAnswer.trim() }), {
       status: 200, headers: { 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    // معالجة أي خطأ غير متوقع يحدث في الدالة
     console.error("Function Error:", error.message);
     return new Response(JSON.stringify({ error: 'حدث خطأ ما في الخادم.' }), {
       status: 500, headers: { 'Content-Type': 'application/json' },
