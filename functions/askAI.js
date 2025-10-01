@@ -1,70 +1,85 @@
 // =================================================================
 //   functions/askAI.js
-//   منصة أثر - Semantic Caching for Cloudflare Pages
-//   📊 يوفر 70-80% من تكاليف Google AI
+//   منصة أثر التعليمية - Cloudflare Pages Function
+//   مع Semantic Caching لتوفير 70-80% من تكاليف API
+//   
+//   المميزات:
+//   - ✅ Semantic search باستخدام embeddings
+//   - ✅ Cache ذكي في Supabase
+//   - ✅ توفير تكاليف Google AI
+//   - ✅ استجابة سريعة (300ms بدلاً من 3s)
 // =================================================================
 
 import { createClient } from '@supabase/supabase-js';
 
 /**
- * إنشاء embedding vector من النص
+ * إنشاء embedding vector من النص باستخدام Google Embedding API
+ * @param {string} text - النص المراد تحويله لـ vector
+ * @param {string} apiKey - Google API Key
+ * @returns {Promise<Array<number>>} - Vector بحجم 768
  */
 async function createEmbedding(text, apiKey) {
   const model = 'text-embedding-004';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${apiKey}`;
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${apiKey}`;
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        content: { parts: [{ text: text }] }
+        content: {
+          parts: [{ text: text }]
+        }
       })
     });
 
     if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`Embedding failed (${response.status}): ${err}`);
+      const errorText = await response.text();
+      throw new Error(`Embedding API error (${response.status}): ${errorText}`);
     }
 
     const result = await response.json();
     
-    if (!result.embedding?.values) {
-      throw new Error('Invalid embedding response');
+    if (!result.embedding || !result.embedding.values) {
+      throw new Error('Invalid embedding response format');
     }
     
-    return result.embedding.values; // Array[768]
+    return result.embedding.values; // Array of 768 numbers
   } catch (error) {
-    console.error('❌ createEmbedding:', error.message);
+    console.error('❌ createEmbedding error:', error.message);
     throw error;
   }
 }
 
 /**
- * البحث عن سؤال مشابه
+ * البحث عن سؤال مشابه دلالياً في الـ cache
+ * @param {Object} supabase - Supabase client
+ * @param {Array<number>} questionEmbedding - Vector للسؤال
+ * @param {number} threshold - نسبة التشابه المطلوبة (0.85 = 85%)
+ * @returns {Promise<Object|null>} - الإجابة المخزنة أو null
  */
-async function findSimilarQuestion(supabase, embedding, threshold = 0.85) {
+async function findSimilarQuestion(supabase, questionEmbedding, threshold = 0.85) {
   try {
     const { data, error } = await supabase.rpc('match_questions', {
-      query_embedding: embedding,
+      query_embedding: questionEmbedding,
       match_threshold: threshold,
       match_count: 1
     });
 
     if (error) {
-      console.error('❌ RPC error:', error);
+      console.error('❌ Similarity search RPC error:', error);
       return null;
     }
 
     if (data && data.length > 0) {
       const match = data[0];
-      const percent = (match.similarity * 100).toFixed(1);
+      const similarityPercent = (match.similarity * 100).toFixed(1);
       
-      console.log(`✅ CACHE HIT! ${percent}% similar`);
-      console.log(`   Original: "${match.question_text.substring(0, 50)}..."`);
+      console.log(`✅ CACHE HIT! Similarity: ${similarityPercent}%`);
+      console.log(`   Cached question: "${match.question_text.substring(0, 60)}..."`);
       
-      // Update stats
-      await supabase
+      // تحديث إحصائيات الاستخدام
+      const { error: updateError } = await supabase
         .from('ai_responses_cache')
         .update({ 
           hit_count: match.hit_count + 1,
@@ -72,33 +87,42 @@ async function findSimilarQuestion(supabase, embedding, threshold = 0.85) {
         })
         .eq('id', match.id);
 
+      if (updateError) {
+        console.warn('⚠️ Failed to update hit_count:', updateError.message);
+      }
+
       return {
         answer: match.response_text,
         similarity: match.similarity,
-        original: match.question_text,
-        hits: match.hit_count + 1
+        originalQuestion: match.question_text,
+        hitCount: match.hit_count + 1
       };
     }
 
-    console.log(`❌ CACHE MISS (threshold: ${threshold})`);
+    console.log(`❌ CACHE MISS - No similar questions found (threshold: ${threshold})`);
     return null;
   } catch (err) {
-    console.error('❌ findSimilar exception:', err);
+    console.error('❌ findSimilarQuestion exception:', err.message);
     return null;
   }
 }
 
 /**
- * حفظ السؤال والإجابة
+ * حفظ السؤال والإجابة الجديدة في الـ cache
+ * @param {Object} supabase - Supabase client
+ * @param {string} questionText - نص السؤال
+ * @param {Array<number>} questionEmbedding - Vector للسؤال
+ * @param {string} responseText - الإجابة من AI
+ * @param {string} contextHash - Hash للمحتوى
  */
-async function saveToCache(supabase, question, embedding, answer, contextHash) {
+async function cacheResponse(supabase, questionText, questionEmbedding, responseText, contextHash) {
   try {
     const { error } = await supabase
       .from('ai_responses_cache')
       .insert({
-        question_text: question,
-        question_embedding: embedding,
-        response_text: answer,
+        question_text: questionText,
+        question_embedding: questionEmbedding,
+        response_text: responseText,
         lecture_context_hash: contextHash,
         hit_count: 1,
         created_at: new Date().toISOString(),
@@ -106,216 +130,235 @@ async function saveToCache(supabase, question, embedding, answer, contextHash) {
       });
 
     if (error) {
-      console.error('❌ Save error:', error);
+      console.error('❌ Cache save error:', error.message);
     } else {
-      console.log('💾 Cached successfully');
+      console.log('💾 New response cached successfully');
     }
   } catch (err) {
-    console.error('❌ saveToCache exception:', err);
+    console.error('❌ cacheResponse exception:', err.message);
   }
 }
 
 /**
- * استدعاء Google Gemini
+ * استدعاء Google Gemini للحصول على إجابة
+ * @param {string} systemInstruction - التعليمات الأساسية للـ AI
+ * @param {Array} contents - سجل المحادثة
+ * @param {string} apiKey - Google API Key
+ * @returns {Promise<string>} - إجابة AI
  */
-async function callGemini(systemPrompt, messages, apiKey) {
+async function queryGoogleAI(systemInstruction, contents, apiKey) {
   const model = 'gemini-1.5-flash-latest';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  const body = {
-    systemInstruction: { parts: [{ text: systemPrompt }] },
-    contents: messages,
+  const requestBody = {
+    systemInstruction: {
+      parts: [{ text: systemInstruction }]
+    },
+    contents: contents,
     generationConfig: {
       temperature: 0.7,
       maxOutputTokens: 512,
     }
   };
 
-  const response = await fetch(url, {
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
-    const err = await response.json();
-    console.error('❌ Gemini error:', err);
-    throw new Error(`Gemini failed: ${err.error?.message || 'Unknown'}`);
+    const errorBody = await response.text();
+    console.error("❌ Google AI API Error:", errorBody);
+    throw new Error(`Gemini API error (${response.status})`);
   }
 
   const result = await response.json();
-  
-  const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-  
-  if (text) return text;
-  
-  return 'عفواً، لم أتمكن من إيجاد إجابة مناسبة.';
+
+  if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+    return result.candidates[0].content.parts[0].text;
+  }
+
+  return "عفواً، لم أتمكن من إيجاد إجابة مناسبة. هل يمكنك إعادة صياغة سؤالك؟";
 }
 
 /**
- * Main Handler - Cloudflare Pages Function
+ * الدالة الرئيسية - Cloudflare Pages Function Handler
+ * @param {Object} context - Cloudflare context object
  */
 export async function onRequest(context) {
-  const start = Date.now();
+  const startTime = Date.now();
   
   try {
     const { env, request } = context;
     
-    // Environment vars
-    const GOOGLE_KEY = env.GOOGLE_API_KEY;
+    // استخراج Environment Variables
+    const GOOGLE_API_KEY = env.GOOGLE_API_KEY;
     const SUPABASE_URL = env.SUPABASE_URL;
-    const SUPABASE_KEY = env.SUPABASE_ANON_KEY;
+    const SUPABASE_ANON_KEY = env.SUPABASE_ANON_KEY;
 
-    // Validate method
+    // التحقق من HTTP Method
     if (request.method !== 'POST') {
-      return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
+      return new Response(JSON.stringify({ error: 'Method Not Allowed' }), { 
         status: 405,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // Check Google key
-    if (!GOOGLE_KEY) {
-      console.error('❌ GOOGLE_API_KEY missing');
-      return new Response(JSON.stringify({ error: 'خطأ في الإعدادات' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
+    // التحقق من Google API Key
+    if (!GOOGLE_API_KEY) {
+      console.error('❌ GOOGLE_API_KEY is not set');
+      return new Response(JSON.stringify({ error: 'خطأ في إعدادات الخادم.' }), {
+        status: 500, 
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    // Parse request
+    // قراءة البيانات من الطلب
     const { conversationHistory, context: lectureContext } = await request.json();
 
     if (!conversationHistory || !Array.isArray(conversationHistory)) {
-      return new Response(JSON.stringify({ error: 'بيانات غير صحيحة' }), {
+      return new Response(JSON.stringify({ error: 'بيانات المحادثة غير صحيحة.' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // Get last user message
-    const lastMsg = conversationHistory
+    // استخراج آخر سؤال من المستخدم
+    const lastUserMessage = conversationHistory
       .slice()
       .reverse()
-      .find(m => m.role === 'user');
+      .find(msg => msg.role === 'user');
 
-    if (!lastMsg) {
-      return new Response(JSON.stringify({ error: 'لا يوجد سؤال' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
+    if (!lastUserMessage) {
+      return new Response(JSON.stringify({ error: 'لم يتم العثور على سؤال.' }), {
+        status: 400, 
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    const question = lastMsg.content;
-    console.log(`\n📩 "${question.substring(0, 60)}..."`);
+    const userQuestion = lastUserMessage.content;
+    console.log(`\n📩 NEW REQUEST: "${userQuestion.substring(0, 70)}..."`);
 
-    // === Try Cache ===
-    let cached = null;
+    // === محاولة البحث في Cache أولاً ===
+    let cachedResult = null;
 
-    if (SUPABASE_URL && SUPABASE_KEY) {
+    if (SUPABASE_URL && SUPABASE_ANON_KEY) {
       try {
-        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        console.log('🔍 Creating embedding...');
-        const embedding = await createEmbedding(question, GOOGLE_KEY);
+        console.log('🔍 Creating embedding for question...');
+        const questionEmbedding = await createEmbedding(userQuestion, GOOGLE_API_KEY);
         
-        console.log('🔎 Searching cache...');
-        cached = await findSimilarQuestion(supabase, embedding, 0.85);
+        console.log('🔎 Searching cache for similar questions...');
+        cachedResult = await findSimilarQuestion(supabase, questionEmbedding, 0.85);
 
-        if (cached) {
-          const time = Date.now() - start;
+        if (cachedResult) {
+          const responseTime = Date.now() - startTime;
           
           return new Response(JSON.stringify({ 
-            reply: cached.answer,
+            reply: cachedResult.answer,
             cached: true,
             source: 'semantic-cache',
-            similarity: cached.similarity,
-            originalQuestion: cached.original,
-            hitCount: cached.hits,
-            responseTime: `${time}ms`
+            similarity: cachedResult.similarity,
+            originalQuestion: cachedResult.originalQuestion,
+            hitCount: cachedResult.hitCount,
+            responseTime: `${responseTime}ms`
           }), {
-            status: 200,
+            status: 200, 
             headers: { 
               'Content-Type': 'application/json',
-              'X-Cache': 'HIT',
-              'X-Time': `${time}ms`
-            }
+              'X-Cache-Status': 'HIT',
+              'X-Similarity': cachedResult.similarity.toFixed(3),
+              'X-Response-Time': `${responseTime}ms`
+            },
           });
         }
-      } catch (cacheErr) {
-        console.warn('⚠️ Cache failed:', cacheErr.message);
+      } catch (cacheError) {
+        console.warn('⚠️ Cache lookup failed, continuing with AI:', cacheError.message);
       }
     } else {
-      console.warn('⚠️ Supabase not configured');
+      console.warn('⚠️ Supabase not configured - caching disabled');
     }
 
-    // === Call AI ===
-    console.log('🤖 Calling Gemini...');
+    // === استدعاء Google AI ===
+    console.log('🤖 Calling Google Gemini API...');
 
-    const systemPrompt = `أنت "أثر AI" مساعد تعليمي ودود.
+    const systemInstructionText = `أنت "أثر AI"، مساعد دراسي ودود ومحب للمعرفة من منصة "أثر". هدفك هو جعل التعلم تجربة ممتعة وسهلة، وإشعال فضول الطالب.
 
-### قواعدك:
-1. **التركيز:** إجابة محتوى المحاضرة فقط
-2. **إيجاز:** إجابة مختصرة أولاً
-3. **Markdown:** **عريض** و- قوائم
-4. **متابعة:** سؤال بسيط بعد الإجابة
+### شخصيتك:
+- **ودود ومطمئن:** استخدم دائمًا عبارات لطيفة ومحفزة مثل "لا تقلق، سنفهمها معًا"، "سؤال رائع! دعنا نحلله خطوة بخطوة"، "فكرة ممتازة، هذا يقودنا إلى...".
+- **تفاعلي:** كن شريكًا في الحوار. لا تكتفِ بتقديم المعلومات، بل اجعل الطالب جزءًا من رحلة اكتشافها.
 
-### ممنوع:
-- اختلاق معلومات
-- حل واجبات مباشرة
+### قواعدك الذهبية:
+1. **التركيز المطلق:** مهمتك **الوحيدة** هي الإجابة على الأسئلة المتعلقة بـ "المحتوى المرجعي لهذه الجلسة".
+2. **الإيجاز أولاً:** ابدأ دائمًا بإجابة موجزة ومباشرة في نقاط.
+3. **التنسيق الاحترافي:** استخدم تنسيق Markdown دائمًا. استعمل **النص العريض** للمصطلحات الهامة، و- للقوائم النقطية.
+4. **سؤال المتابعة الذكي:** بعد كل إجابة، اطرح سؤالاً متابعًا واحدًا وبسيطًا.
+
+### الممنوعات:
+- ممنوع اختلاق المعلومات.
+- ممنوع حل الواجبات بشكل مباشر.
 
 ---
-**المحتوى:**
-${lectureContext || 'لا يوجد'}
+**المحتوى المرجعي لهذه الجلسة:**
+${lectureContext || 'لا يوجد محتوى محدد'}
 ---`;
 
-    const messages = conversationHistory.map((m, i) => ({
-      role: (i === conversationHistory.length - 1 && m.role === 'user') ? 'user' : 'model',
-      parts: [{ text: m.content }]
+    const contents = conversationHistory.map((turn, index) => ({
+      role: (index === conversationHistory.length - 1 && turn.role === 'user') ? 'user' : 'model',
+      parts: [{ text: turn.content }]
     }));
 
-    const answer = await callGemini(systemPrompt, messages, GOOGLE_KEY);
+    const aiAnswer = await queryGoogleAI(systemInstructionText, contents, GOOGLE_API_KEY);
 
-    // === Save to Cache ===
-    if (SUPABASE_URL && SUPABASE_KEY) {
+    // === حفظ الإجابة الجديدة في Cache ===
+    if (SUPABASE_URL && SUPABASE_ANON_KEY) {
       try {
-        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-        const embedding = await createEmbedding(question, GOOGLE_KEY);
-        const hash = lectureContext ? btoa(lectureContext.substring(0, 100)) : 'default';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const questionEmbedding = await createEmbedding(userQuestion, GOOGLE_API_KEY);
+        const contextHash = lectureContext ? 
+          btoa(lectureContext.substring(0, 100)) : 'default';
         
-        await saveToCache(supabase, question, embedding, answer.trim(), hash);
-      } catch (saveErr) {
-        console.warn('⚠️ Save failed:', saveErr.message);
+        await cacheResponse(
+          supabase, 
+          userQuestion, 
+          questionEmbedding,
+          aiAnswer.trim(), 
+          contextHash
+        );
+      } catch (saveError) {
+        console.warn('⚠️ Failed to cache response:', saveError.message);
       }
     }
 
-    const time = Date.now() - start;
+    const responseTime = Date.now() - startTime;
 
     return new Response(JSON.stringify({ 
-      reply: answer.trim(),
+      reply: aiAnswer.trim(),
       cached: false,
       source: 'google-ai',
-      responseTime: `${time}ms`
+      responseTime: `${responseTime}ms`
     }), {
-      status: 200,
+      status: 200, 
       headers: { 
         'Content-Type': 'application/json',
-        'X-Cache': 'MISS',
-        'X-Time': `${time}ms`
-      }
+        'X-Cache-Status': 'MISS',
+        'X-Response-Time': `${responseTime}ms`
+      },
     });
 
   } catch (error) {
-    console.error('❌ FATAL:', error);
-    const time = Date.now() - start;
+    console.error("❌ FATAL ERROR:", error);
+    const errorTime = Date.now() - startTime;
     
     return new Response(JSON.stringify({ 
-      error: 'خطأ في الخادم',
+      error: 'حدث خطأ في الخادم',
       details: error.message,
-      responseTime: `${time}ms`
+      responseTime: `${errorTime}ms`
     }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      status: 500, 
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 }
