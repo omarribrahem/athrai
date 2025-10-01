@@ -1,16 +1,19 @@
 {
-  "name": "athrai",
+  "name": "athr-platform",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "منصة أثر التعليمية مع Semantic Caching",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "wrangler pages dev . --port 8788",
+    "deploy": "wrangler pages deploy ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@supabase/supabase-js": "^2.57.4",
-    "node-fetch": "^2.7.0"
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
