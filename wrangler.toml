@@ -1,0 +1,16 @@
+# =============================================
+#  Cloudflare Pages - Athr Platform Config
+# =============================================
+
+name = "athr-platform"
+compatibility_date = "2025-10-01"
+
+# لو عندك build command
+# build = { command = "npm run build" }
+
+# المجلد اللي فيه الملفات الثابتة
+# pages_build_output_dir = "."
+
+# Functions directory (اختياري - Cloudflare يكتشفه تلقائياً)
+[functions]
+# directory = "functions"
