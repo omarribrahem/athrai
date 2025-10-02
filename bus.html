@@ -2173,7 +2173,7 @@
         try {
           const lectureContext = arabicContent.innerText || '';
           
-          const response = await fetch('/functions/askAI', {
+          const response = await fetch('/askAI', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
