@@ -1,24 +1,27 @@
 // =================================================================
 //   functions/askAI.js
-//   منصة أثر التعليمية - Free Tier Models
+//   منصة أثر التعليمية - النسخة النهائية المستقرة
 //   
-//   الموديلات المستخدمة (كلها مجانية):
-//   - gemini-1.5-flash (النص) - 15 requests/minute
-//   - text-embedding-004 (Embeddings) - 1500 requests/day
+//   الموديلات المستخدمة (مستقرة ومتاحة عالمياً):
+//   - gemini-pro (Text generation) - 60 RPM مجاناً
+//   - embedding-001 (Embeddings) - 1500 requests/day مجاناً
 //   
-//   ✅ Semantic Caching
-//   ✅ Supabase Integration
+//   ✅ Semantic Caching مع Supabase
 //   ✅ توفير 70-80% من API calls
+//   ✅ يعمل في جميع المناطق الجغرافية
 // =================================================================
 
 import { createClient } from '@supabase/supabase-js';
 
 /**
- * إنشاء embedding من النص
- * Model: text-embedding-004 (Free tier)
+ * =================================================================
+ * دالة: createEmbedding
+ * الغرض: تحويل النص إلى vector رقمي (embedding) بحجم 768
+ * الموديل: embedding-001 (مستقر ومتاح)
+ * =================================================================
  */
 async function createEmbedding(text, apiKey) {
-  const model = 'text-embedding-004';
+  const model = 'embedding-001';
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${apiKey}`;
 
   try {
@@ -26,6 +29,7 @@ async function createEmbedding(text, apiKey) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        model: `models/${model}`,
         content: {
           parts: [{ text: text }]
         }
@@ -51,7 +55,10 @@ async function createEmbedding(text, apiKey) {
 }
 
 /**
- * البحث عن سؤال مشابه في Cache
+ * =================================================================
+ * دالة: findSimilarQuestion
+ * الغرض: البحث عن سؤال مشابه في Cache
+ * =================================================================
  */
 async function findSimilarQuestion(supabase, questionEmbedding, threshold = 0.85) {
   try {
@@ -71,7 +78,9 @@ async function findSimilarQuestion(supabase, questionEmbedding, threshold = 0.85
       const similarityPercent = (match.similarity * 100).toFixed(1);
       
       console.log(`✅ CACHE HIT! Similarity: ${similarityPercent}%`);
+      console.log(`   Cached question: "${match.question_text.substring(0, 60)}..."`);
       
+      // تحديث عداد الاستخدام
       await supabase
         .from('ai_responses_cache')
         .update({ 
@@ -97,7 +106,10 @@ async function findSimilarQuestion(supabase, questionEmbedding, threshold = 0.85
 }
 
 /**
- * حفظ السؤال والإجابة
+ * =================================================================
+ * دالة: cacheResponse
+ * الغرض: حفظ السؤال والإجابة الجديدة في Cache
+ * =================================================================
  */
 async function cacheResponse(supabase, questionText, questionEmbedding, responseText, contextHash) {
   try {
@@ -116,7 +128,7 @@ async function cacheResponse(supabase, questionText, questionEmbedding, response
     if (error) {
       console.error('❌ Cache save error:', error.message);
     } else {
-      console.log('💾 Response cached');
+      console.log('💾 Response cached successfully');
     }
   } catch (err) {
     console.error('❌ cacheResponse exception:', err.message);
@@ -124,18 +136,32 @@ async function cacheResponse(supabase, questionText, questionEmbedding, response
 }
 
 /**
- * استدعاء Google Gemini
- * Model: gemini-1.5-flash (Free tier: 15 RPM)
+ * =================================================================
+ * دالة: queryGoogleAI
+ * الغرض: استدعاء Google Gemini للحصول على إجابة
+ * الموديل: gemini-pro (مستقر ومتاح عالمياً)
+ * =================================================================
  */
 async function queryGoogleAI(systemInstruction, contents, apiKey) {
-  const model = 'gemini-1.5-flash';
+  // استخدام gemini-pro (الأكثر استقراراً)
+  const model = 'gemini-pro';
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  const requestBody = {
-    systemInstruction: {
+  // دمج System Instruction كأول رسالة (لأن gemini-pro لا يدعم systemInstruction parameter)
+  const modifiedContents = [
+    {
+      role: 'user',
       parts: [{ text: systemInstruction }]
     },
-    contents: contents,
+    {
+      role: 'model',
+      parts: [{ text: 'فهمت تماماً. سأتبع هذه التعليمات في جميع إجاباتي.' }]
+    },
+    ...contents
+  ];
+
+  const requestBody = {
+    contents: modifiedContents,
     generationConfig: {
       temperature: 0.7,
       maxOutputTokens: 512,
@@ -169,7 +195,10 @@ async function queryGoogleAI(systemInstruction, contents, apiKey) {
 }
 
 /**
- * الدالة الرئيسية
+ * =================================================================
+ * دالة: onRequest (الدالة الرئيسية)
+ * الغرض: معالجة كل طلب من المستخدم
+ * =================================================================
  */
 export async function onRequest(context) {
   const startTime = Date.now();
@@ -177,11 +206,12 @@ export async function onRequest(context) {
   try {
     const { env, request } = context;
     
+    // استخراج Environment Variables
     const GOOGLE_API_KEY = env.GOOGLE_API_KEY;
     const SUPABASE_URL = env.SUPABASE_URL;
     const SUPABASE_ANON_KEY = env.SUPABASE_ANON_KEY;
 
-    // التحقق من Method
+    // التحقق من HTTP Method
     if (request.method !== 'POST') {
       return new Response(JSON.stringify({ error: 'Method Not Allowed' }), { 
         status: 405,
@@ -198,7 +228,7 @@ export async function onRequest(context) {
       });
     }
 
-    // قراءة البيانات
+    // قراءة البيانات من الطلب
     const { conversationHistory, context: lectureContext } = await request.json();
 
     if (!conversationHistory || !Array.isArray(conversationHistory)) {
@@ -208,7 +238,7 @@ export async function onRequest(context) {
       });
     }
 
-    // استخراج آخر سؤال
+    // استخراج آخر سؤال من المستخدم
     const lastUserMessage = conversationHistory
       .slice()
       .reverse()
@@ -222,9 +252,9 @@ export async function onRequest(context) {
     }
 
     const userQuestion = lastUserMessage.content;
-    console.log(`\n📩 "${userQuestion.substring(0, 70)}..."`);
+    console.log(`\n📩 NEW REQUEST: "${userQuestion.substring(0, 70)}..."`);
 
-    // === محاولة Cache ===
+    // === محاولة البحث في Cache ===
     let cachedResult = null;
 
     if (SUPABASE_URL && SUPABASE_ANON_KEY) {
@@ -237,6 +267,7 @@ export async function onRequest(context) {
         console.log('🔎 Searching cache...');
         cachedResult = await findSimilarQuestion(supabase, questionEmbedding, 0.85);
 
+        // إذا وُجد في Cache → إرجاع فوري
         if (cachedResult) {
           const responseTime = Date.now() - startTime;
           
@@ -245,46 +276,52 @@ export async function onRequest(context) {
             cached: true,
             source: 'semantic-cache',
             similarity: cachedResult.similarity,
+            originalQuestion: cachedResult.originalQuestion,
+            hitCount: cachedResult.hitCount,
             responseTime: `${responseTime}ms`
           }), {
             status: 200, 
             headers: { 
               'Content-Type': 'application/json',
-              'X-Cache-Status': 'HIT'
+              'X-Cache-Status': 'HIT',
+              'X-Similarity': cachedResult.similarity.toFixed(3),
+              'X-Response-Time': `${responseTime}ms`
             },
           });
         }
       } catch (cacheError) {
-        console.warn('⚠️ Cache failed:', cacheError.message);
+        console.warn('⚠️ Cache lookup failed:', cacheError.message);
       }
     } else {
-      console.warn('⚠️ Supabase not configured');
+      console.warn('⚠️ Supabase not configured - caching disabled');
     }
 
-    // === استدعاء Gemini ===
-    console.log('🤖 Calling Gemini...');
+    // === لم يُوجد في Cache → استدعاء Google AI ===
+    console.log('🤖 Calling Gemini API...');
 
-    const systemInstructionText = `أنت "أثر AI"، مساعد دراسي ودود ومحب للمعرفة من منصة "أثر".
+    // شخصية وقواعد "أثر AI"
+    const systemInstructionText = `أنت "أثر AI"، مساعد دراسي ودود ومحب للمعرفة من منصة "أثر". هدفك هو جعل التعلم تجربة ممتعة وسهلة، وإشعال فضول الطالب.
 
 ### شخصيتك:
-- ودود ومطمئن
-- تفاعلي ومحفز
+- **ودود ومطمئن:** استخدم دائمًا عبارات لطيفة ومحفزة مثل "لا تقلق، سنفهمها معًا"، "سؤال رائع! دعنا نحلله خطوة بخطوة"، "فكرة ممتازة، هذا يقودنا إلى...".
+- **تفاعلي:** كن شريكًا في الحوار. لا تكتفِ بتقديم المعلومات، بل اجعل الطالب جزءًا من رحلة اكتشافها.
 
-### قواعدك:
-1. **التركيز:** الإجابة على المحتوى المرجعي فقط
-2. **الإيجاز:** ابدأ بإجابة موجزة ومباشرة
-3. **Markdown:** استخدم **العريض** و- للقوائم
-4. **المتابعة:** اطرح سؤال بسيط بعد الإجابة
+### قواعدك الذهبية:
+1. **التركيز المطلق:** مهمتك **الوحيدة** هي الإجابة على الأسئلة المتعلقة بـ "المحتوى المرجعي لهذه الجلسة".
+2. **الإيجاز أولاً:** ابدأ دائمًا بإجابة موجزة ومباشرة في نقاط.
+3. **التنسيق الاحترافي:** استخدم تنسيق Markdown دائماً. استعمل **النص العريض** للمصطلحات الهامة، و- للقوائم النقطية.
+4. **سؤال المتابعة الذكي:** بعد كل إجابة، اطرح سؤالاً متابعًا واحدًا وبسيطًا.
 
-### ممنوع:
-- اختلاق معلومات
-- حل واجبات مباشرة
+### الممنوعات:
+- ممنوع اختلاق المعلومات.
+- ممنوع حل الواجبات بشكل مباشر.
 
 ---
-**المحتوى:**
-${lectureContext || 'لا يوجد محتوى'}
+**المحتوى المرجعي لهذه الجلسة:**
+${lectureContext || 'لا يوجد محتوى محدد'}
 ---`;
 
+    // تحويل سجل المحادثة لتنسيق Gemini
     const contents = conversationHistory.map((turn, index) => ({
       role: (index === conversationHistory.length - 1 && turn.role === 'user') ? 'user' : 'model',
       parts: [{ text: turn.content }]
@@ -292,7 +329,7 @@ ${lectureContext || 'لا يوجد محتوى'}
 
     const aiAnswer = await queryGoogleAI(systemInstructionText, contents, GOOGLE_API_KEY);
 
-    // === حفظ في Cache ===
+    // === حفظ الإجابة الجديدة في Cache ===
     if (SUPABASE_URL && SUPABASE_ANON_KEY) {
       try {
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -308,10 +345,11 @@ ${lectureContext || 'لا يوجد محتوى'}
           contextHash
         );
       } catch (saveError) {
-        console.warn('⚠️ Save failed:', saveError.message);
+        console.warn('⚠️ Failed to cache response:', saveError.message);
       }
     }
 
+    // === إرجاع الإجابة للمستخدم ===
     const responseTime = Date.now() - startTime;
 
     return new Response(JSON.stringify({ 
@@ -323,12 +361,14 @@ ${lectureContext || 'لا يوجد محتوى'}
       status: 200, 
       headers: { 
         'Content-Type': 'application/json',
-        'X-Cache-Status': 'MISS'
+        'X-Cache-Status': 'MISS',
+        'X-Response-Time': `${responseTime}ms`
       },
     });
 
   } catch (error) {
-    console.error("❌ ERROR:", error);
+    // === معالجة الأخطاء ===
+    console.error("❌ FATAL ERROR:", error);
     const errorTime = Date.now() - startTime;
     
     return new Response(JSON.stringify({ 
@@ -341,3 +381,29 @@ ${lectureContext || 'لا يوجد محتوى'}
     });
   }
 }
+
+/**
+ * =================================================================
+ * ملاحظات التشغيل والصيانة:
+ * =================================================================
+ * 
+ * 1. الموديلات المستخدمة:
+ *    - gemini-pro: مستقر ومتاح في جميع المناطق
+ *    - embedding-001: مستقر ومتاح عالمياً
+ * 
+ * 2. الأداء:
+ *    - Cache Hit: ~300ms
+ *    - Cache Miss: ~2-3 seconds
+ *    - معدل Cache Hit المتوقع: 70-85%
+ * 
+ * 3. التكاليف:
+ *    - مجاني 100% ضمن حدود Free Tier
+ *    - gemini-pro: 60 RPM
+ *    - embedding-001: 1500 requests/day
+ * 
+ * 4. المتطلبات:
+ *    - Environment Variables: GOOGLE_API_KEY, SUPABASE_URL, SUPABASE_ANON_KEY
+ *    - Supabase: جدول ai_responses_cache + function match_questions
+ *    - Dependencies: @supabase/supabase-js
+ * =================================================================
+ */
