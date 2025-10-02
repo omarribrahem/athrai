@@ -2,6 +2,9 @@
   "name": "athr-platform",
   "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "dev": "echo 'Development server'"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0"
   }
