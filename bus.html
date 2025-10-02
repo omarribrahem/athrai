@@ -57,10 +57,15 @@
       0%, 100% { opacity: 0.3; }
       50% { opacity: 1; }
     }
+    @keyframes typingDots {
+      0%, 20% { opacity: 0; }
+      40% { opacity: 1; }
+      60%, 100% { opacity: 0; }
+    }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-      20%, 40%, 60%, 80% { transform: translateX(5px); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -142,7 +147,7 @@
     body[dir="ltr"] .translation-text { margin-left: 0; margin-right: 10px; }
     .translation-button:hover .translation-text { display: block; }
 
-    /* AI FAB Button - Leaf Icon */
+    /* AI FAB Button */
     .ai-fab-button {
       position: fixed; bottom: clamp(20px, 5vw, 30px); right: clamp(20px, 5vw, 30px);
       background: rgba(255,255,255,0.15); backdrop-filter: blur(30px);
@@ -179,61 +184,98 @@
     body[dir="ltr"] .ai-fab-text { margin-left: 0; margin-right: 10px; }
     .ai-fab-button:hover .ai-fab-text { display: block; }
 
-    /* AI Chat Modal - Enhanced */
+    /* AI Chat Modal */
     .ai-chat-modal {
       position: fixed; inset: 0;
-      background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
+      background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
       display: none; align-items: center; justify-content: center;
       z-index: 2000; padding: 20px;
     }
     .ai-chat-modal.visible { display: flex; animation: fadeIn 0.3s ease; }
-    .ai-chat-window {
-      background: linear-gradient(135deg, rgba(240,253,244,0.95), rgba(220,252,231,0.9));
-      backdrop-filter: blur(40px);
-      border: 2px solid rgba(255,255,255,0.5);
-      border-radius: 28px;
-      width: 100%; max-width: 650px; max-height: 85vh;
+    
+    .ai-chat-container {
+      background: var(--glass-bg); 
+      border: 2px solid var(--glass-border); 
+      border-radius: var(--border-radius);
+      width: 90%; max-width: 600px; height: 80%; max-height: 700px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
       display: flex; flex-direction: column;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.8);
-      animation: slideUp 0.4s ease;
+      transform: scale(0.95); transition: transform 0.3s ease;
+      backdrop-filter: blur(25px);
       overflow: hidden;
     }
+    .ai-chat-modal.visible .ai-chat-container { transform: scale(1); }
+    
     .ai-chat-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 24px 28px;
-      border-bottom: 2px solid rgba(255,255,255,0.3);
+      padding: 15px 20px;
+      border-bottom: 2px solid var(--glass-border);
+      display: flex; justify-content: space-between; align-items: center;
       background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent);
     }
-    .ai-chat-title {
-      display: flex; align-items: center; gap: 14px;
-      font-size: 1.4rem; font-weight: 700;
+    .ai-chat-header h3 {
       color: var(--color-primary);
+      margin: 0;
+      font-size: clamp(1.1rem, 4vw, 1.3rem);
+      font-weight: 700;
     }
-    .ai-chat-title svg { width: 28px; height: 28px; }
-    .ai-chat-close {
-      background: rgba(220, 38, 38, 0.1);
-      border: 2px solid rgba(220, 38, 38, 0.3);
-      color: #dc2626; font-size: 1.6rem;
-      width: 40px; height: 40px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.3s ease;
-      font-weight: 300;
+    .ai-chat-close-btn {
+      background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+      border: 1.5px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      color: #64748b;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-size: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+      position: relative;
+      overflow: hidden;
     }
-    .ai-chat-close:hover { 
-      background: rgba(220, 38, 38, 0.2); 
-      transform: scale(1.1) rotate(90deg); 
+    .ai-chat-close-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(220, 38, 38, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
+    .ai-chat-close-btn:hover::before {
+      opacity: 1;
+    }
+    .ai-chat-close-btn:hover {
+      border-color: rgba(220, 38, 38, 0.4);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .ai-chat-close-btn svg {
+      width: 18px;
+      height: 18px;
+      color: #64748b;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .ai-chat-close-btn:hover svg {
+      color: #dc2626;
+      transform: rotate(90deg) scale(1.1);
+    }
+    
     .ai-chat-messages {
-      flex: 1; overflow-y: auto; padding: 24px;
-      display: flex; flex-direction: column; gap: 18px;
+      flex: 1; overflow-y: auto; padding: 20px;
+      display: flex; flex-direction: column; gap: 15px;
     }
     .ai-chat-messages::-webkit-scrollbar { width: 10px; }
-    .ai-chat-messages::-webkit-scrollbar-track { 
-      background: rgba(255,255,255,0.2); 
-      border-radius: 10px; 
+    .ai-chat-messages::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
     }
     .ai-chat-messages::-webkit-scrollbar-thumb {
-      background: rgba(22, 163, 74, 0.4); 
+      background: rgba(22, 163, 74, 0.4);
       border-radius: 10px;
       border: 2px solid transparent;
       background-clip: padding-box;
@@ -242,81 +284,95 @@
       background: rgba(22, 163, 74, 0.6);
       background-clip: padding-box;
     }
-    .chat-message { display: flex; gap: 14px; animation: slideUp 0.3s ease; }
-    .chat-message.user { flex-direction: row-reverse; }
-    .chat-avatar {
-      width: 44px; height: 44px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 1.2rem; flex-shrink: 0;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    
+    .chat-message {
+      max-width: 85%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      line-height: 1.6;
+      animation: slideUp 0.3s ease;
     }
-    .chat-avatar.ai {
-      background: linear-gradient(160deg, var(--color-primary), var(--color-primary-dark));
-      color: white;
+    .user-message {
+      background: rgba(22,163,74,0.2);
+      color: #14532d;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
     }
-    .chat-avatar.user {
-      background: linear-gradient(160deg, #f59e0b, #d97706);
-      color: white;
+    body[dir="ltr"] .user-message {
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 18px;
+      align-self: flex-start;
     }
-    .chat-bubble {
-      background: rgba(255,255,255,0.5);
-      border: 1px solid rgba(255,255,255,0.6);
-      border-radius: 20px; padding: 14px 18px;
-      max-width: 72%; line-height: 1.7;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    .ai-message {
+      background: rgba(245,158,11,0.15);
+      color: #78350f;
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
     }
-    .chat-message.user .chat-bubble {
-      background: linear-gradient(180deg, rgba(22,163,74,0.2), rgba(22,163,74,0.1));
-      border-color: rgba(22,163,74,0.4);
+    body[dir="ltr"] .ai-message {
+      border-bottom-right-radius: 4px;
+      border-bottom-left-radius: 18px;
+      align-self: flex-end;
     }
-    .chat-bubble strong { color: var(--color-primary-dark); }
-    .chat-bubble ul, .chat-bubble ol { margin: 10px 0; padding-right: 22px; }
-    body[dir="ltr"] .chat-bubble ul, body[dir="ltr"] .chat-bubble ol { padding-right: 0; padding-left: 22px; }
-    .typing-indicator { display: flex; gap: 5px; padding: 14px 18px; }
-    .typing-dot {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: var(--color-primary);
-      animation: typing 1.4s infinite;
+    
+    .chat-message strong { color: #1e3a8a; font-weight: 700; }
+    .chat-message ul { margin: 8px 0; padding-right: 20px; }
+    body[dir="ltr"] .chat-message ul { padding-right: 0; padding-left: 20px; }
+    .chat-message li { margin-bottom: 4px; color: inherit; }
+    
+    .typing-indicator {
+      background: rgba(245,158,11,0.15) !important;
+      color: #9ca3af !important;
+      font-style: italic;
     }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    .dot {
+      animation: typingDots 1.5s infinite;
+      font-size: 1.2em;
+      color: var(--color-ai) !important;
+    }
+    .dot:nth-child(2) { animation-delay: 0.3s; }
+    .dot:nth-child(3) { animation-delay: 0.6s; }
+    
     .ai-chat-input-area {
-      padding: 20px 24px;
-      border-top: 2px solid rgba(255,255,255,0.3);
-      display: flex; gap: 14px; align-items: flex-end;
+      padding: 15px 20px;
+      border-top: 2px solid var(--glass-border);
+      display: flex; gap: 10px;
       background: linear-gradient(0deg, rgba(255,255,255,0.4), transparent);
     }
-    .ai-chat-input {
-      flex: 1;
-      background: rgba(255,255,255,0.5);
-      border: 2px solid rgba(255,255,255,0.6);
-      border-radius: 20px; padding: 14px 18px;
-      font-size: 1rem; line-height: 1.6;
-      resize: none; min-height: 48px; max-height: 140px;
-      outline: none; transition: all 0.3s ease;
+    #ai-chat-input {
+      flex-grow: 1;
+      border: 2px solid var(--glass-border);
+      background: rgba(255,255,255,0.3);
+      border-radius: 50px;
+      padding: 10px 18px;
+      font-size: 1rem;
       color: var(--text-color);
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
       font-family: inherit;
     }
-    .ai-chat-input:focus {
-      border-color: var(--color-primary);
-      background: rgba(255,255,255,0.6);
-      box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+    #ai-chat-input:focus {
+      border-color: var(--color-ai);
+      box-shadow: 0 0 10px rgba(245,158,11,0.3);
     }
-    .ai-chat-input:disabled { opacity: 0.6; cursor: not-allowed; }
-    .ai-chat-send {
-      background: linear-gradient(160deg, var(--color-primary), var(--color-primary-dark));
-      border: none; color: white;
-      width: 48px; height: 48px; border-radius: 50%;
+    #ai-chat-input:disabled { opacity: 0.6; cursor: not-allowed; }
+    
+    #ai-chat-send-btn {
+      background-color: var(--color-ai);
+      border: none; border-radius: 50%;
+      width: 48px; height: 48px; flex-shrink: 0;
+      cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.3s ease;
-      box-shadow: 0 6px 20px rgba(22, 163, 74, 0.35);
-      font-size: 1.3rem;
+      transition: background-color 0.3s, transform 0.2s, opacity 0.3s;
     }
-    .ai-chat-send:hover:not(:disabled) {
-      transform: scale(1.1);
-      box-shadow: 0 8px 28px rgba(22, 163, 74, 0.45);
+    #ai-chat-send-btn:hover:not(:disabled) {
+      background-color: #fbbf24;
+      transform: scale(1.05);
     }
-    .ai-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+    #ai-chat-send-btn:disabled {
+      opacity: 0.6; cursor: not-allowed; transform: none;
+    }
+    #ai-chat-send-btn svg { width: 24px; height: 24px; color: white; }
 
     /* Main Content */
     .main-content { max-width: 1200px; margin: 90px auto 0; padding: clamp(20px, 5vw, 40px); }
@@ -419,32 +475,32 @@
     }
     body[dir="ltr"] .question-container::after { left: auto; right: 28px; }
     .question-container.open::after { transform: rotate(180deg); }
-    
+
     .question-header {
       font-weight: 600;
       color: var(--color-primary);
       margin-bottom: 0;
       font-size: 1.05rem;
-      padding-right: 45px;
+      padding-left: 45px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    body[dir="ltr"] .question-header { padding-right: 0; padding-left: 45px; }
-    
+    body[dir="ltr"] .question-header { padding-left: 0; padding-right: 45px; }
+
     .question-icon {
       width: 22px;
       height: 22px;
       flex-shrink: 0;
     }
-    
+
     .question-content {
       max-height: 0;
       overflow: hidden;
       transition: max-height 1.2s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.5s ease;
     }
     .question-content.show { max-height: 3000px; margin-top: 20px; }
-    
+
     .mcq-options { list-style: none; padding: 0; margin-top: 15px; }
     .mcq-option {
       background: rgba(255,255,255,0.3);
@@ -490,25 +546,29 @@
     .solution-content strong { color: #15803d; }
 
     /* Tables */
+    .table-container { overflow-x: auto; margin: 20px 0; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
     .concepts-table {
       width: 100%;
       border-collapse: collapse;
-      margin: 20px 0;
-      background: rgba(255,255,255,0.1);
-      border-radius: 16px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
       overflow: hidden;
+      backdrop-filter: blur(15px);
     }
     .concepts-table th, .concepts-table td {
-      padding: 15px;
+      padding: clamp(8px, 2vw, 12px);
+      border: 1px solid rgba(255,255,255,0.3);
       text-align: right;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      vertical-align: top;
     }
     body[dir="ltr"] .concepts-table th,
     body[dir="ltr"] .concepts-table td { text-align: left; }
     .concepts-table th {
       background: rgba(22,163,74,0.2);
-      font-weight: 600;
+      font-weight: 700;
       color: var(--color-primary);
+      text-align: center;
     }
     .concepts-table tr:hover { background: rgba(255,255,255,0.1); }
 
@@ -546,13 +606,6 @@
       line-height: 1.6;
       margin-top: 8px;
     }
-    .footer-warning-icon {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      vertical-align: text-bottom;
-      margin-left: 4px;
-    }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -565,7 +618,6 @@
   </div>
 
   <!-- Translation Button -->
-    <!-- Translation Button -->
   <button class="translation-button" id="translationButton" aria-label="تبديل اللغة">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M2.25 12C2.25 17.3848 6.61522 21.75 12 21.75C17.3848 21.75 21.75 17.3848 21.75 12C21.75 6.61522 17.3848 2.25 12 2.25C9.36657 2.25 6.94277 3.22321 5.16629 4.83371M12.75 2.25V7.5M12.75 7.5H18M12.75 7.5L5.16629 4.83371M11.25 21.75V16.5M11.25 16.5H6M11.25 16.5L18.8337 19.1663M5.16629 4.83371C3.22321 6.94277 2.25 9.36657 2.25 12M2.25 12C2.25 14.6334 3.22321 17.0572 4.83371 18.8337M18.8337 19.1663C20.7768 17.0572 21.75 14.6334 21.75 12M18.8337 4.83371C17.0572 3.22321 14.6334 2.25 12 2.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -573,1374 +625,1642 @@
     <span class="translation-text">English</span>
   </button>
 
-
-  <!-- AI FAB Button - Smart Leaf -->
-    <!-- AI FAB Button -->
+  <!-- AI FAB Button -->
   <button class="ai-fab-button" id="aiChatButton" aria-label="مساعد أثر الذكي">
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#f59e0b"/>
-          <stop offset="100%" stop-color="#d97706"/>
-        </linearGradient>
-      </defs>
-      <!-- Brain/Circuit Pattern -->
-      <circle cx="12" cy="12" r="10" stroke="url(#aiGrad)" stroke-width="2" fill="none" opacity="0.2"/>
-      
-      <!-- Neural Network Lines -->
-      <path d="M8 10 L10 12 L8 14" stroke="url(#aiGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <path d="M16 10 L14 12 L16 14" stroke="url(#aiGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      
-      <!-- Center Core -->
-      <circle cx="12" cy="12" r="2.5" fill="url(#aiGrad)"/>
-      
-      <!-- Connection Nodes -->
-      <circle cx="12" cy="6" r="1.5" fill="url(#aiGrad)" opacity="0.8"/>
-      <circle cx="12" cy="18" r="1.5" fill="url(#aiGrad)" opacity="0.8"/>
-      <circle cx="6" cy="12" r="1.5" fill="url(#aiGrad)" opacity="0.6"/>
-      <circle cx="18" cy="12" r="1.5" fill="url(#aiGrad)" opacity="0.6"/>
-      
-      <!-- Connecting Lines -->
-      <path d="M12 6 L12 9.5" stroke="url(#aiGrad)" stroke-width="1.5" opacity="0.5"/>
-      <path d="M12 14.5 L12 18" stroke="url(#aiGrad)" stroke-width="1.5" opacity="0.5"/>
-      <path d="M6 12 L9.5 12" stroke="url(#aiGrad)" stroke-width="1.5" opacity="0.4"/>
-      <path d="M14.5 12 L18 12" stroke="url(#aiGrad)" stroke-width="1.5" opacity="0.4"/>
+    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+      <path d="M12 8V4H8"></path>
+      <rect x="4" y="12" width="16" height="8" rx="2"></rect>
+      <path d="M2 14h2"></path>
+      <path d="M20 14h2"></path>
+      <path d="M15 13v-2a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v2"></path>
     </svg>
     <span class="ai-fab-text" id="aiFabText">أثر AI</span>
   </button>
 
-
   <!-- AI Chat Modal -->
   <div class="ai-chat-modal" id="aiChatModal">
-    <div class="ai-chat-window">
-            <div class="ai-chat-header">
-        <div class="ai-chat-title">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <div class="ai-chat-container">
+      <div class="ai-chat-header">
+        <h3 id="ai-chat-title">اسأل أثر AI</h3>
+        <button class="ai-chat-close-btn" id="aiChatCloseBtn" aria-label="إغلاق">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
- <circle cx="9" cy="10" r="1" fill="currentColor"/>
-            <circle cx="15" cy="10" r="1" fill="currentColor"/>
-            <path d="M9 14c1 1 2 1.5 3 1.5s2-.5 3-1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span id="aiChatTitleText">مساعد أثر الذكي</span>
-        </div>
-        <button class="ai-chat-close" id="aiChatCloseBtn" aria-label="إغلاق">×</button>
+        </button>
       </div>
       <div class="ai-chat-messages" id="aiChatMessages"></div>
       <div class="ai-chat-input-area">
-        <textarea 
-          id="aiChatInput" 
-          class="ai-chat-input" 
-          placeholder="اكتب سؤالك هنا..."
-          rows="1"
-        ></textarea>
-        <button class="ai-chat-send" id="aiChatSendBtn" disabled aria-label="إرسال">➤</button>
+        <input type="text" id="ai-chat-input" placeholder="اكتب سؤالك هنا...">
+        <button id="ai-chat-send-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Main Content -->
   <main class="main-content">
-       <!-- Arabic Content -->
     <div id="arabicContent">
-      <section class="glassy-card">
-        <h1>إدارة الإنتاج والعمليات</h1>
-        <p style="text-align: center; font-size: 1.1rem; color: #475569;">
-          رحلتك التعليمية مع مفاهيم إدارة الإنتاج والعمليات
-        </p>
-      </section>
+  <div class="glassy-card">
+    <h1>إدارة الإنتاج والعمليات</h1>
+    <p style="text-align: center; font-size: 1.1rem; color: #15803d; margin-top: -10px;">
+      أهلاً بك يا أحمد في رحلتك مع <mark class="highlight-green">"إدارة الإنتاج والعمليات"</mark>. مهمتنا اليوم هي تحويل هذه المحاضرة إلى تجربة تعليمية شيقة ومفهومة، خطوة بخطوة. لنبدأ معاً في بناء فهم عميق لكل جزء من المادة.
+    </p>
+  </div>
 
-      <section class="glassy-card">
-        <h2>مقدمة</h2>
-        <p>أهلاً بك يا أحمد في رحلتك مع <mark class="highlight-green">إدارة الإنتاج والعمليات</mark>. مهمتنا اليوم هي تحويل هذه المحاضرة إلى تجربة تعليمية شيقة ومفهومة، خطوة بخطوة. لنبدأ معاً في بناء فهم عميق لكل جزء من المادة.</p>
-      </section>
+  <!-- المفهوم 1 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: وظائف المشروع الأساسية ووظيفة الإنتاج</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      تخيل أن أي مشروع تجاري ناجح، سواء كان مصنعاً كبيراً أو مطعماً صغيراً، هو عبارة عن آلة معقدة تعمل بأربعة أجزاء رئيسية معاً. هذه الأجزاء هي:
+    </p>
+    <ul>
+      <li><mark class="highlight-green">الإنتاج (Production):</mark> هو قلب المشروع، حيث يتم صنع المنتج أو تقديم الخدمة.</li>
+      <li><mark class="highlight-blue">التسويق (Marketing):</mark> هو صوت المشروع الذي يخبر العملاء عن هذا المنتج الرائع.</li>
+      <li><mark class="highlight-yellow">التمويل (Finance):</mark> هو المحفظة التي تدير أموال المشروع وتضمن استمراريته.</li>
+      <li><mark class="highlight-pink">الموارد البشرية (Human Resources):</mark> هم الأشخاص الذين يديرون ويشغلون كل هذه الأجزاء.</li>
+    </ul>
+    <p>
+      <strong>"وظيفة الإنتاج"</strong> هي البطل الذي نركز عليه اليوم. إنها تشمل كل نشاط يساهم بشكل مباشر في تحويل المواد الخام إلى منتج نهائي أو في تقديم خدمة متكاملة للعميل.
+    </p>
 
-      <section class="glassy-card">
-        <h2>وظائف المشروع الأساسية ووظيفة الإنتاج</h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>تخيل أن أي مشروع تجاري ناجح، سواء كان مصنعاً كبيراً أو مطعماً صغيراً، هو عبارة عن آلة معقدة تعمل بأربعة أجزاء رئيسية معاً. هذه الأجزاء هي:</p>
-        <ul>
-          <li><strong>الإنتاج <mark class="highlight-yellow">Production</mark>:</strong> هو قلب المشروع، حيث يتم صنع المنتج أو تقديم الخدمة.</li>
-          <li><strong>التسويق <mark class="highlight-yellow">Marketing</mark>:</strong> هو صوت المشروع الذي يخبر العملاء عن هذا المنتج الرائع.</li>
-          <li><strong>التمويل <mark class="highlight-yellow">Finance</mark>:</strong> هو المحفظة التي تدير أموال المشروع وتضمن استمراريته.</li>
-          <li><strong>الموارد البشرية <mark class="highlight-yellow">Human Resources</mark>:</strong> هم الأشخاص الذين يديرون ويشغلون كل هذه الأجزاء.</li>
-        </ul>
-        <p><mark class="highlight-green">وظيفة الإنتاج</mark> هي البطل الذي نركز عليه اليوم. إنها تشمل كل نشاط يساهم بشكل مباشر في تحويل المواد الخام إلى منتج نهائي أو في تقديم خدمة متكاملة للعميل.</p>
-        
-        <h3>مثال</h3>
-        <p>لنفكر في مخبز صغير. <mark class="highlight-green">وظيفة الإنتاج</mark> هنا هي كل شيء يحدث في المطبخ الخلفي:</p>
-        <ul>
-          <li>خلط الدقيق والماء <mark class="highlight-orange">تحويل المدخلات</mark></li>
-          <li>خبز العجين في الفرن <mark class="highlight-orange">عملية التحويل</mark></li>
-          <li>وضع الخبز الطازج على الرف <mark class="highlight-orange">المنتج النهائي</mark></li>
-        </ul>
-        <p>بدون هذه الوظيفة، لا يوجد خبز لبيعه أصلاً.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            سؤال اختيار من متعدد: أي من الوظائف التالية تعتبر هي المسؤولة بشكل مباشر عن خلق السلع والخدمات في المنظمة؟
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) التمويل</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) التسويق</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ج) الإنتاج والعمليات</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) الموارد البشرية</li>
-            </ul>
-          </div>
-        </div>
-      </section>
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      لنفكر في مخبز صغير. <mark class="highlight-green">"وظيفة الإنتاج"</mark> هنا هي كل شيء يحدث في المطبخ الخلفي: خلط الدقيق والماء (تحويل المدخلات)، خبز العجين في الفرن (عملية التحويل)، وحتى وضع الخبز الطازج على الرف (المنتج النهائي). بدون هذه الوظيفة، لا يوجد خبز لبيعه أصلاً.
+    </p>
 
-      <section class="glassy-card">
-        <h2>التنبؤ <mark class="highlight-yellow">Forecasting</mark></h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>التنبؤ هو بمثابة <mark class="highlight-blue">كرة الكريستال</mark> الخاصة بمدير الإنتاج. بدلاً من قراءة الطالع، هو يستخدم بيانات الماضي والحاضر ليخمن بذكاء حجم الطلب المستقبلي على منتجات الشركة. هذا التخمين ليس عشوائياً، بل هو عملية تقدير علمية لكمية الموارد <mark class="highlight-pink">من أموال وعمال ومواد</mark> التي ستحتاجها الشركة لتلبية هذا الطلب المتوقع.</p>
-        
-        <h3>مثال</h3>
-        <p>صاحب مصنع للمثلجات قبل بداية فصل الصيف:</p>
-        <ul>
-          <li>يدرس <mark class="highlight-blue">مبيعات الصيف الماضي</mark></li>
-          <li>يلاحظ <mark class="highlight-orange">موجة الحر القادمة</mark> في الأخبار</li>
-          <li>يعرف أن هناك <mark class="highlight-pink">نكهة جديدة رائجة</mark></li>
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        سؤال MCQ: أي من الوظائف التالية تعتبر المسؤولة بشكل مباشر عن خلق السلع والخدمات؟
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) التمويل</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) التسويق</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ج) الإنتاج والعمليات</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) الموارد البشرية</li>
         </ul>
-        <p>بناءً على كل هذا، <mark class="highlight-green">يتنبأ</mark> بأنه سيحتاج لإنتاج 20 طناً من المثلجات هذا الصيف، ويطلب كميات الحليب والفاكهة الكافية لذلك.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            سؤال: العملية التي يتم من خلالها تقدير الطلب المستقبلي على سلع وخدمات الشركة تُعرف بـ:
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) الجدولة</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) التنبؤ</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) تخطيط الطاقة</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) إدارة المخزون</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>عناصر الإدارة الستة <mark class="highlight-yellow">6Ms of Management</mark></h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>لكي يكون تنبؤ مدير الإنتاج دقيقاً، يجب أن يأخذ في الحسبان ستة عناصر أساسية تبدأ جميعها بحرف <mark class="highlight-orange">M</mark> باللغة الإنجليزية:</p>
-        <ol>
-          <li><strong>السوق <mark class="highlight-yellow">Market</mark>:</strong> ما هو حجم الطلب المتوقع على المنتج؟</li>
-          <li><strong>المواد <mark class="highlight-yellow">Materials</mark>:</strong> ما هي المواد الخام والمكونات التي نحتاجها؟</li>
-          <li><strong>الأيدي العاملة <mark class="highlight-yellow">Man</mark>:</strong> كم عاملاً وموظفاً نحتاج لتنفيذ العمل؟</li>
-          <li><strong>الأساليب <mark class="highlight-yellow">Methods</mark>:</strong> ما هي التقنيات والطرق التي سنستخدمها في الإنتاج؟</li>
-          <li><strong>المال <mark class="highlight-yellow">Money</mark>:</strong> ما هو حجم الموارد المالية المطلوبة لتغطية كل التكاليف؟</li>
-          <li><strong>الآلات <mark class="highlight-yellow">Machines</mark>:</strong> ما هي المعدات والأجهزة التي ستُستخدم في العملية؟</li>
-        </ol>
-        
-        <h3>مثال</h3>
-        <p>شركة قررت إطلاق هاتف ذكي جديد. مدير الإنتاج سيستخدم الـ <mark class="highlight-green">6Ms</mark> كالتالي:</p>
-        <ul>
-          <li><mark class="highlight-blue">السوق:</mark> يتنبأ ببيع مليون جهاز</li>
-          <li><mark class="highlight-blue">المواد:</mark> يحتاج مليون شاشة ومليون بطارية</li>
-          <li><mark class="highlight-blue">الأيدي العاملة:</mark> يحتاج 500 عامل على خط التجميع</li>
-          <li><mark class="highlight-blue">الأساليب:</mark> سيستخدم تقنية التجميع الآلي</li>
-          <li><mark class="highlight-blue">المال:</mark> يحتاج 10 ملايين دولار</li>
-          <li><mark class="highlight-blue">الآلات:</mark> يحتاج لشراء 20 روبوتاً جديداً</li>
-        </ul>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            سؤال مقالي: عند التخطيط لإنتاج منتج جديد، كيف يستخدم مدير الإنتاج عناصر الإدارة الستة لضمان عملية تنبؤ شاملة؟
-          </div>
-          <div class="question-content">
-            <div class="solution-content">
-              <p><strong>
-                <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: text-bottom;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                الإجابة:
-              </strong></p>
-              <p>مدير الإنتاج يستخدم الـ <mark class="highlight-green">6Ms</mark> كإطار شامل للتخطيط:</p>
-              <ul>
-                <li><mark class="highlight-blue">السوق:</mark> يحلل الطلب المتوقع وحجم السوق المستهدف</li>
-                <li><mark class="highlight-blue">المواد:</mark> يحدد المواد الخام اللازمة وكمياتها والموردين</li>
-                <li><mark class="highlight-blue">الأيدي العاملة:</mark> يخطط لعدد العمال والمهارات المطلوبة</li>
-                <li><mark class="highlight-blue">الأساليب:</mark> يختار تقنيات الإنتاج الأنسب</li>
-                <li><mark class="highlight-blue">المال:</mark> يضع ميزانية شاملة تغطي كل العناصر</li>
-                <li><mark class="highlight-blue">الآلات:</mark> يحدد المعدات اللازمة وتكاليفها</li>
-              </ul>
-              <p>هذا النهج الشامل يضمن عدم إغفال أي جانب حيوي في التخطيط.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>تخطيط الطاقة الإنتاجية <mark class="highlight-yellow">Capacity Planning</mark></h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p><mark class="highlight-green">الطاقة الإنتاجية</mark> هي ببساطة الحد الأقصى لكمية المنتجات التي يمكن لمصنعك أو شركتك إنتاجها خلال فترة معينة.</p>
-        <p><mark class="highlight-orange">تخطيط الطاقة</mark> هو فن الموازنة؛ أي التأكد من أن قدرتك على الإنتاج تتوافق مع طلب العملاء، فلا تنتج <mark class="highlight-pink">أكثر من اللازم فتهدر الموارد</mark>، ولا <mark class="highlight-pink">أقل من اللازم فتخسر العملاء</mark>.</p>
-        
-        <h3>مثال</h3>
-        <p>تخيل أنك تملك مطعماً يتسع لـ <mark class="highlight-blue">50 شخصاً</mark> في نفس الوقت <mark class="highlight-yellow">هذه هي طاقتك الإنتاجية</mark>:</p>
-        <ul>
-          <li>إذا كان الطلب <mark class="highlight-orange">30 شخصاً فقط</mark> → هناك 20 كرسياً فارغاً <mark class="highlight-pink">موارد غير مستغلة</mark></li>
-          <li>إذا حاول <mark class="highlight-orange">70 شخصاً</mark> الدخول → سيضطر 20 منهم للمغادرة <mark class="highlight-pink">عملاء غير راضين</mark></li>
-        </ul>
-        <p><mark class="highlight-green">تخطيط الطاقة</mark> هو محاولتك للتنبؤ بالليالي المزدحمة وتجهيز طاولات إضافية أو العكس.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            سؤال: الهدف الرئيسي من تخطيط الطاقة الإنتاجية هو:
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) زيادة عدد العمال دائماً</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) تقليل الفجوة بين قدرة المنظمة على الإنتاج والطلب</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) شراء أحدث المعدات</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) خفض الأسعار</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>الطاقة التصميمية مقابل الطاقة الفعالة</h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>عندما نتحدث عن الطاقة الإنتاجية، هناك نوعان:</p>
-        <ul>
-          <li><strong>الطاقة التصميمية <mark class="highlight-yellow">Design Capacity</mark>:</strong> هذا هو <mark class="highlight-blue">الحلم!</mark> إنها أقصى كمية يمكن إنتاجها نظرياً في ظروف مثالية تماماً، بدون أي توقف أو أعطال أو استراحات.</li>
-          <li><strong>الطاقة الفعالة <mark class="highlight-yellow">Effective Capacity</mark>:</strong> هذا هو <mark class="highlight-orange">الواقع.</mark> إنها الكمية الفعلية التي يمكن إنتاجها في الظروف الحالية، مع الأخذ في الاعتبار الأمور الواقعية مثل <mark class="highlight-pink">صيانة الآلات، استراحات الغداء، التوقفات غير المخطط لها</mark>.</li>
-        </ul>
-        
-        <h3>مثال</h3>
-        <p>سيارة رياضية تقول الشركة المصنعة إن سرعتها القصوى <mark class="highlight-blue">نظرياً</mark> هي 300 كم/ساعة <mark class="highlight-yellow">هذه هي الطاقة التصميمية</mark>.</p>
-        <p>لكن على أرض الواقع، مع وجود <mark class="highlight-orange">إشارات مرور، مطبات، وزحمة سير</mark>، فإن سرعتك <mark class="highlight-orange">الفعلية</mark> قد لا تتجاوز 120 كم/ساعة <mark class="highlight-yellow">الطاقة الفعالة</mark>.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            سؤال مقالي: قارن بين الطاقة التصميمية والطاقة الفعالة مع مثال من مصنع تعبئة المياه.
-          </div>
-          <div class="question-content">
-            <div class="solution-content">
-              <p><strong>
-                <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: text-bottom;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                المقارنة:
-              </strong></p>
-              <ul>
-                <li><mark class="highlight-blue">الطاقة التصميمية:</mark> أقصى إنتاج نظري في ظروف مثالية بدون توقفات</li>
-                <li><mark class="highlight-orange">الطاقة الفعالة:</mark> الإنتاج الواقعي مع الأخذ بالاعتبار العوامل الحقيقية</li>
-              </ul>
-              <p><strong>
-                <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: text-bottom;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M17 21v-8H7v8M7 3v5h8" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                مثال مصنع المياه:
-              </strong></p>
-              <p><mark class="highlight-blue">الطاقة التصميمية:</mark> 10,000 زجاجة/ساعة إذا عملت الآلات 24/7 بدون توقف</p>
-              <p><mark class="highlight-orange">الطاقة الفعالة:</mark> 7,500 زجاجة/ساعة بعد احتساب الصيانة، تغيير المناوبات، التنظيف، والأعطال المحتملة</p>
-              <p>الفرق يعكس الواقع العملي للتشغيل.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>الجدولة <mark class="highlight-yellow">Scheduling</mark></h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>الجدولة هي فن ترتيب وتنظيم المهام والموارد لتحقيق أفضل نتيجة ممكنة. تخيل أنها مثل لعبة <mark class="highlight-blue">تتريس</mark> معقدة، حيث تحاول ترتيب <mark class="highlight-green">قطع العمل المختلفة</mark> على <mark class="highlight-orange">لوحة الموارد المتاحة</mark> بأفضل طريقة لتقليل الوقت والتكلفة وتجنب <mark class="highlight-pink">الفراغات والتأخير</mark>.</p>
-        
-        <h3>مثال</h3>
-        <p>في ورشة صيانة سيارات، تصل ثلاث سيارات في نفس الوقت:</p>
-        <ul>
-          <li>سيارة تحتاج <mark class="highlight-blue">تغيير زيت</mark> → 30 دقيقة</li>
-          <li>سيارة تحتاج <mark class="highlight-orange">إصلاح محرك</mark> → 4 ساعات</li>
-          <li>سيارة تحتاج <mark class="highlight-green">تغيير إطارات</mark> → ساعة واحدة</li>
-        </ul>
-        <p><mark class="highlight-yellow">الجدولة الذكية</mark> تعني أن الميكانيكي يبدأ بـ <mark class="highlight-blue">تغيير الزيت</mark> ثم <mark class="highlight-green">تغيير الإطارات</mark>، وبهذا يسلم سيارتين للعملاء بسرعة، بدلاً من أن يجعل الجميع ينتظر انتهاء إصلاح المحرك.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            سؤال: العملية التي تهتم بتخصيص الموارد وترتيب عبء العمل بطريقة مثلى هي:
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) التنبؤ</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) توكيد الجودة</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ج) الجدولة</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) تحديد المواقع</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>إدارة المخزون <mark class="highlight-yellow">Inventory Management</mark></h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>المخزون هو كل ما تملكه الشركة وينتظر إما استخدامه في الإنتاج أو بيعه. <mark class="highlight-green">إدارة المخزون</mark> هي عملية طلب وتخزين واستخدام هذا المخزون بذكاء.</p>
-        <p>الهدف هو الاحتفاظ بكمية <mark class="highlight-blue">كافية</mark> لتلبية الاحتياجات دون توقف، ولكن ليس بكمية <mark class="highlight-pink">كبيرة جداً</mark> تستهلك مساحة وأموالاً يمكن استثمارها في مكان آخر.</p>
-        
-        <h3>أنواع المخزون الرئيسية</h3>
-        <ul>
-          <li><strong>المواد الخام <mark class="highlight-yellow">Raw Materials</mark>:</strong> المدخلات الأساسية التي تبدأ بها العملية <mark class="highlight-blue">مثل: القطن لمصنع ملابس</mark></li>
-          <li><strong>العمل قيد التنفيذ <mark class="highlight-yellow">Work in Process</mark>:</strong> منتجات نصف مصنعة لم تكتمل بعد <mark class="highlight-orange">مثل: قميص مخيط ولكن بدون أزرار</mark></li>
-          <li><strong>السلع التامة الصنع <mark class="highlight-yellow">Finished Goods</mark>:</strong> المنتجات النهائية الجاهزة للبيع <mark class="highlight-green">مثل: القميص الكامل المعبأ</mark></li>
-        </ul>
-        
-        <h3>مثال</h3>
-        <p>ثلاجتك في المنزل هي مثال ممتاز على إدارة المخزون:</p>
-        <ul>
-          <li>أنت <mark class="highlight-pink">لا تشتري</mark> طعاماً يكفي لسنة كاملة → تكاليف تخزين وتلف</li>
-          <li>أنت <mark class="highlight-pink">لا تنتظر</mark> حتى تفرغ الثلاجة تماماً → توقف الإنتاج أو الطبخ</li>
-          <li>أنت تحاول الحفاظ على <mark class="highlight-green">توازن مثالي</mark></li>
-        </ul>
-      </section>
-
-      <section class="glassy-card">
-        <h2>نظام الإنتاج في الوقت المحدد <mark class="highlight-yellow">Just-in-Time - JIT</mark></h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>نظام <mark class="highlight-green">Just-in-Time</mark>، الذي ابتكرته شركة <mark class="highlight-blue">تويوتا</mark>، هو فلسفة إنتاج تهدف إلى تحقيق <mark class="highlight-orange">صفر مخزون</mark>.</p>
-        <p>الفكرة هي أن المواد الخام والمكونات تصل إلى المصنع <mark class="highlight-pink">في اللحظة التي يحتاجها فيها خط الإنتاج بالضبط</mark>، لا قبل ولا بعد. هذا يلغي الحاجة إلى مخازن ضخمة ويقلل التكاليف بشكل كبير.</p>
-        
-        <h3>مثال</h3>
-        <p>تخيل أنك تحضر بيتزا:</p>
-        <ul>
-          <li><mark class="highlight-pink">بدلاً من</mark> تخزين كميات كبيرة من الجبن والطماطم في ثلاجتك</li>
-          <li>أنت تتصل بمحل البقالة ليحضر لك <mark class="highlight-green">المكونات الطازجة</mark></li>
-          <li><mark class="highlight-blue">قبل دقائق فقط</mark> من البدء في تحضير العجينة</li>
-        </ul>
-        <p>هذا هو جوهر نظام <mark class="highlight-yellow">JIT</mark>: <mark class="highlight-orange">الكفاءة وتقليل الهدر</mark>.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            سؤال: ما هو الهدف الأساسي لنظام الإنتاج JIT؟
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) زيادة حجم المخازن</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) الوصول إلى مستوى صفر مخزون</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) الاعتماد على مورد واحد</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) زيادة عدد العمال</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>توكيد الجودة مقابل ضبط الجودة</h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>كلا المصطلحين يهدفان لمنتج ممتاز، لكنهما يعملان بطرق مختلفة:</p>
-        <ul>
-          <li><strong>توكيد الجودة <mark class="highlight-yellow">Quality Assurance - QA</mark>:</strong> هذا هو النهج <mark class="highlight-blue">الوقائي</mark>. يركز على <mark class="highlight-green">العملية</mark> نفسها لضمان عدم حدوث عيوب من الأساس. إنه يهتم بتصميم نظام إنتاج صحيح يمنع الأخطاء.</li>
-          <li><strong>ضبط الجودة <mark class="highlight-yellow">Quality Control - QC</mark>:</strong> هذا هو النهج <mark class="highlight-orange">الكشفي</mark>. يركز على <mark class="highlight-pink">المنتج</mark> النهائي لتحديد العيوب وإزالتها بعد حدوثها. إنه مثل التفتيش في نهاية خط الإنتاج.</li>
-        </ul>
-        
-        <h3>مثال</h3>
-        <p>لنفكر في طاهٍ يقوم بإعداد طبق:</p>
-        <ul>
-          <li><mark class="highlight-blue">توكيد الجودة:</mark> التأكد من أن الوصفة نفسها دقيقة، والمكونات طازجة، والفرن معاير على درجة الحرارة الصحيحة، والطاهي مدرب جيداً → <mark class="highlight-green">كل هذا لمنع احتراق الطبق</mark></li>
-          <li><mark class="highlight-orange">ضبط الجودة:</mark> تذوق الطبق قبل تقديمه للزبون للتأكد من أنه ليس مالحاً جداً أو محترقاً → <mark class="highlight-pink">كشف الأخطاء بعد حدوثها</mark></li>
-        </ul>
-      </section>
-
-      <section class="glassy-card">
-        <h2>عملية التحويل <mark class="highlight-yellow">The Transformation Process</mark></h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>هذه هي <mark class="highlight-blue">اللمسة السحرية</mark> في الإنتاج. عملية التحويل هي أي نشاط يأخذ <mark class="highlight-green">المدخلات Inputs</mark> ويغيرها ليضيف إليها قيمة، ويحولها إلى <mark class="highlight-orange">مخرجات Outputs</mark> يرغب فيها العملاء.</p>
-        <p>هذه العملية ليست فقط التصنيع المادي، بل يمكن أن تكون <mark class="highlight-pink">أشكالاً مختلفة</mark>.</p>
-        
-        <h3>أشكال عملية التحويل</h3>
-        <ul>
-          <li><strong>إنتاج مادي:</strong> مثل تحويل <mark class="highlight-blue">الخشب</mark> إلى <mark class="highlight-green">كرسي</mark></li>
-          <li><strong>تخزين:</strong> تخزين بعض أنواع <mark class="highlight-orange">الجبن أو النبيذ</mark> لفترة معينة هو جزء من عملية نضجها وتحسين جودتها</li>
-          <li><strong>نقل:</strong> شركة توصيل الطرود لا تصنع شيئاً، لكنها تحول <mark class="highlight-pink">طرداً في الموقع أ</mark> إلى <mark class="highlight-pink">طرد في الموقع ب</mark> → وهذه خدمة ذات قيمة</li>
-          <li><strong>تبادل:</strong> البنك الذي يأخذ <mark class="highlight-blue">مدخراتك</mark> ويمنحك <mark class="highlight-green">شهادة إيداع</mark> يقوم بعملية تحويل مالية</li>
-        </ul>
-        
-        <h3>مثال</h3>
-        <p>الجامعة هي مثال رائع:</p>
-        <ul>
-          <li><mark class="highlight-blue">المدخلات:</mark> طالب ثانوي لديه معرفة أساسية</li>
-          <li><mark class="highlight-orange">عملية التحويل:</mark> محاضرات وامتحانات ومشاريع لمدة أربع سنوات</li>
-          <li><mark class="highlight-green">المخرجات:</mark> خريج لديه مهارات متخصصة</li>
-        </ul>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            سؤال: أي من الأنشطة التالية لا يعتبر شكلاً من أشكال عملية التحويل؟
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) تصنيع سيارة</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) تخزين التفاح ليتم بيعه في غير موسمه</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ج) شراء المواد الخام من مورد</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) توصيل طلبية من مطعم إلى منزل العميل</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>التغذية الراجعة <mark class="highlight-yellow">Feedback</mark></h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>التغذية الراجعة هي <mark class="highlight-blue">نظام الإنذار المبكر</mark> و<mark class="highlight-orange">أداة التصحيح</mark> في عملية الإنتاج. إنها المعلومات التي تعود من نقطة متقدمة في النظام إلى نقطة سابقة لتصحيح المسار.</p>
-        
-        <h3>هناك نوعان رئيسيان من التغذية الراجعة</h3>
-        <ol>
-          <li><strong>من العملاء إلى عملية التحويل:</strong> عندما يشتكي عميل من أن <mark class="highlight-pink">جودة المنتج سيئة</mark>، هذه المعلومة تعود للمصنع ليقوم بتعديل عملية التصنيع</li>
-          <li><strong>من عملية التحويل إلى المدخلات:</strong> عندما يكتشف خط الإنتاج أن نوعاً معيناً من <mark class="highlight-orange">المواد الخام يسبب كسراً في الآلات</mark>، هذه المعلومة تعود إلى قسم المشتريات ليغير المورد أو نوع المادة</li>
-        </ol>
-        
-        <h3>مثال</h3>
-        <p>عندما تطبخ وتطلب من شخص أن يتذوق الطعام، ثم يقول لك <mark class="highlight-blue">يحتاج المزيد من الملح</mark>. هذه هي <mark class="highlight-green">التغذية الراجعة</mark> التي تجعلك تعود وتضيف الملح <mark class="highlight-orange">تصحح المسار</mark> قبل أن يصبح الطبق جاهزاً تماماً.</p>
-      </section>
-
-      <section class="glassy-card">
-        <h2>تطور إدارة الإنتاج</h2>
-        <h3>يلا بينا نفهم الفكرة</h3>
-        <p>طريقة صنع الأشياء لم تكن دائماً كما هي اليوم. لقد مرت بثلاث مراحل تطور رئيسية:</p>
-        
-        <h4>الإنتاج الحرفي <mark class="highlight-yellow">Craft Production</mark></h4>
-        <p>قبل الثورة الصناعية، كان <mark class="highlight-blue">الحرفي الماهر</mark> مثل صانع الأحذية يصنع المنتج كاملاً من البداية إلى النهاية باستخدام <mark class="highlight-orange">أدوات بسيطة</mark>.</p>
-        <p>كانت المنتجات <mark class="highlight-green">مخصصة ومكلفة</mark>، والإنتاج <mark class="highlight-pink">بطيئاً</mark>.</p>
-        
-        <h4>الثورة الصناعية والإنتاج الضخم <mark class="highlight-yellow">Mass Production</mark></h4>
-        <p>مع اختراع الآلات، ظهرت المصانع. وبفضل مفهومين أساسيين:</p>
-        <ul>
-          <li><mark class="highlight-blue">الأجزاء القابلة للتبديل:</mark> كل المسامير بنفس الحجم تماماً</li>
-          <li><mark class="highlight-orange">تقسيم العمل:</mark> كل عامل مسؤول عن مهمة صغيرة جداً ومكررة</li>
-        </ul>
-        <p>أصبح من الممكن إنتاج <mark class="highlight-green">كميات هائلة</mark> من المنتجات الموحدة بتكلفة منخفضة جداً باستخدام <mark class="highlight-pink">عمالة غير ماهرة</mark>.</p>
-        
-        <h4>الإنتاج الرشيق <mark class="highlight-yellow">Lean Production</mark></h4>
-        <p>هذا هو التطور الحديث. يهدف إلى الجمع بين أفضل ما في العالمين:</p>
-        <ul>
-          <li><mark class="highlight-blue">كفاءة</mark> الإنتاج الضخم</li>
-          <li><mark class="highlight-green">جودة وتنوع</mark> الإنتاج الحرفي</li>
-        </ul>
-        <p>يعتمد على استخدام <mark class="highlight-orange">أقل قدر ممكن من الموارد</mark> عمال، مساحة، مخزون لإنتاج كميات كبيرة من سلع عالية الجودة ومتنوعة، بالاعتماد على <mark class="highlight-pink">عمالة ماهرة ومعدات مرنة</mark>.</p>
-        
-        <h3>مثال</h3>
-        <ul>
-          <li><mark class="highlight-blue">حرفي:</mark> صانع ساعات يصنع ساعة واحدة يدوياً في شهر</li>
-          <li><mark class="highlight-orange">ضخم:</mark> مصنع ينتج 10,000 ساعة بلاستيكية متطابقة في اليوم</li>
-          <li><mark class="highlight-green">رشيق:</mark> مصنع ينتج 500 ساعة في اليوم، ولكن يمكنه تغيير التصميم والألوان بسرعة بناءً على طلب السوق</li>
-        </ul>
-      </section>
-
-      <section class="glassy-card">
-        <h2>جدول المفاهيم الأساسية</h2>
-        <table class="concepts-table">
-          <thead>
-            <tr>
-              <th>المفهوم</th>
-              <th>التعريف الرسمي</th>
-              <th>الخلاصة بكلمتين</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>وظيفة الإنتاج</strong></td>
-              <td>جميع الأنشطة المرتبطة مباشرة بخلق السلع والخدمات</td>
-              <td>صنع الأشياء</td>
-            </tr>
-            <tr>
-              <td><strong>التنبؤ</strong></td>
-              <td>تقدير الطلب المستقبلي والموارد اللازمة لتلبيته</td>
-              <td>تخمين ذكي</td>
-            </tr>
-            <tr>
-              <td><strong>تخطيط الطاقة</strong></td>
-              <td>تحديد الطاقة الإنتاجية المطلوبة لمواجهة الطلب المتغير</td>
-              <td>موازنة العرض والطلب</td>
-            </tr>
-            <tr>
-              <td><strong>الطاقة التصميمية</strong></td>
-              <td>أقصى إنتاج نظري في ظروف مثالية</td>
-              <td>الإنتاج الحلم</td>
-            </tr>
-            <tr>
-              <td><strong>الطاقة الفعالة</strong></td>
-              <td>أقصى إنتاج ممكن في الظروف الواقعية</td>
-              <td>الإنتاج الفعلي</td>
-            </tr>
-            <tr>
-              <td><strong>الجدولة</strong></td>
-              <td>ترتيب عبء العمل والموارد بطريقة مثلى لتقليل التكلفة والوقت</td>
-              <td>تنظيم المهام</td>
-            </tr>
-            <tr>
-              <td><strong>إدارة المخزون</strong></td>
-              <td>عملية طلب وتخزين واستخدام المخزون</td>
-              <td>إدارة الممتلكات</td>
-            </tr>
-            <tr>
-              <td><strong>نظام JIT</strong></td>
-              <td>نظام إنتاجي تصل فيه المكونات قبل استخدامها مباشرة لتقليل المخزون</td>
-              <td>مخزون صفر</td>
-            </tr>
-            <tr>
-              <td><strong>توكيد الجودة QA</strong></td>
-              <td>نهج يركز على العملية لمنع حدوث العيوب من الأساس</td>
-              <td>الوقاية من الأخطاء</td>
-            </tr>
-            <tr>
-              <td><strong>ضبط الجودة QC</strong></td>
-              <td>نهج يركز على المنتج النهائي لتحديد العيوب بعد حدوثها</td>
-              <td>كشف الأخطاء</td>
-            </tr>
-            <tr>
-              <td><strong>عملية التحويل</strong></td>
-              <td>نشاط يغير المدخلات ويضيف إليها قيمة ليحولها إلى مخرجات</td>
-              <td>لمسة سحرية</td>
-            </tr>
-            <tr>
-              <td><strong>التغذية الراجعة</strong></td>
-              <td>معلومات مرتدة تستخدم للرقابة وتصحيح المسار</td>
-              <td>أداة تصحيح</td>
-            </tr>
-            <tr>
-              <td><strong>الإنتاج الحرفي</strong></td>
-              <td>نظام إنتاج يعتمد على عمالة ماهرة وأدوات بسيطة لإنتاج كميات صغيرة</td>
-              <td>صنع يدوي</td>
-            </tr>
-            <tr>
-              <td><strong>الإنتاج الضخم</strong></td>
-              <td>نظام يعتمد على عمالة غير ماهرة وآلات موحدة لإنتاج كميات ضخمة</td>
-              <td>إنتاج بكميات</td>
-            </tr>
-            <tr>
-              <td><strong>الإنتاج الرشيق</strong></td>
-              <td>نظام يستخدم الحد الأدنى من الموارد لإنتاج سلع عالية الجودة والتنوع</td>
-              <td>كفاءة ومرونة</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <div class="footer-info">
-        <div class="footer-brand">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>تم الإنشاء بواسطة منصة <strong>أثر Athr</strong></span>
-        </div>
-        <div class="footer-divider"></div>
-        <div class="footer-disclaimer">
-          <svg class="footer-warning-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 9v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 18c-.77 1.333.192 3 1.732 3z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <strong>ملاحظة هامة:</strong> هذا المحتوى التعليمي تم إنشاؤه بالكامل بواسطة الذكاء الاصطناعي. 
-          مساعد أثر الذكي قد يرتكب أخطاء في بعض الأحيان. يُنصح دائماً بمراجعة المصادر الأكاديمية الرسمية والتحقق من المعلومات المقدمة.
-        </div>
       </div>
     </div>
 
-    <!-- English Content -->
-        <!-- English Content -->
-    <div id="englishContent" class="hidden">
-      <section class="glassy-card">
-        <h1>Production and Operations Management</h1>
-        <p style="text-align: center; font-size: 1.1rem; color: #475569;">
-          Your educational journey with production and operations management concepts
-        </p>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Introduction</h2>
-        <p>Welcome, Ahmed, to your journey with <mark class="highlight-green">Production and Operations Management</mark>. Our mission today is to transform this lecture into an engaging and understandable educational experience, step by step. Let's begin together in building a deep understanding of each part of the material.</p>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Core Business Functions and Production Function</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>Imagine that any successful business project, whether a large factory or a small restaurant, is like a complex machine operating with four main parts working together. These parts are:</p>
-        <ul>
-          <li><strong>Production:</strong> The heart of the project, where the product is made or service is provided.</li>
-          <li><strong>Marketing:</strong> The voice of the project that tells customers about this great product.</li>
-          <li><strong>Finance:</strong> The wallet that manages the project's money and ensures its continuity.</li>
-          <li><strong>Human Resources:</strong> The people who manage and operate all these parts.</li>
-        </ul>
-        <p>The <mark class="highlight-green">production function</mark> is the hero we focus on today. It includes every activity that directly contributes to transforming raw materials into a final product or providing a complete service to the customer.</p>
-        
-        <h3>Example</h3>
-        <p>Consider a small bakery. The <mark class="highlight-green">production function</mark> here is everything that happens in the back kitchen:</p>
-        <ul>
-          <li>Mixing flour and water <mark class="highlight-orange">transforming inputs</mark></li>
-          <li>Baking dough in the oven <mark class="highlight-orange">transformation process</mark></li>
-          <li>Placing fresh bread on the shelf <mark class="highlight-orange">final product</mark></li>
-        </ul>
-        <p>Without this function, there is no bread to sell at all.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Multiple Choice Question: Which of the following functions is directly responsible for creating goods and services in an organization?
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Finance</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) Marketing</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) Production and Operations</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Human Resources</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Forecasting</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>Forecasting is like the production manager's <mark class="highlight-blue">crystal ball</mark>. Instead of fortune-telling, they use past and present data to intelligently predict future demand for the company's products. This isn't random guessing, but a scientific estimation process for the quantity of resources <mark class="highlight-pink">money, workers, and materials</mark> the company will need to meet this expected demand.</p>
-        
-        <h3>Example</h3>
-        <p>An ice cream factory owner before summer begins:</p>
-        <ul>
-          <li>Studies <mark class="highlight-blue">last summer's sales</mark></li>
-          <li>Notices the <mark class="highlight-orange">upcoming heatwave</mark> in the news</li>
-          <li>Knows a <mark class="highlight-pink">new flavor will be popular</mark></li>
-        </ul>
-        <p>Based on all this, they <mark class="highlight-green">forecast</mark> needing to produce 20 tons of ice cream this summer and order sufficient quantities of milk and fruit.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Question: The process of estimating future demand for company goods and services is known as:
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Scheduling</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Forecasting</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Capacity Planning</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Inventory Management</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>The 6Ms of Management</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>For accurate forecasting, production managers must consider six essential elements, all beginning with <mark class="highlight-orange">M</mark>:</p>
-        <ol>
-          <li><strong>Market:</strong> What is the expected product demand?</li>
-          <li><strong>Materials:</strong> What raw materials and components do we need?</li>
-          <li><strong>Man (Labor):</strong> How many workers and employees do we need?</li>
-          <li><strong>Methods:</strong> What techniques will we use in production?</li>
-          <li><strong>Money:</strong> What financial resources are required?</li>
-          <li><strong>Machines:</strong> What equipment will be used in the process?</li>
-        </ol>
-        
-        <h3>Example</h3>
-        <p>A company launching a new smartphone will use the <mark class="highlight-green">6Ms</mark> as follows:</p>
-        <ul>
-          <li><mark class="highlight-blue">Market:</mark> Forecast selling 1 million devices</li>
-          <li><mark class="highlight-blue">Materials:</mark> Need 1 million screens and batteries</li>
-          <li><mark class="highlight-blue">Man:</mark> Need 500 workers on assembly line</li>
-          <li><mark class="highlight-blue">Methods:</mark> Will use automated assembly technology</li>
-          <li><mark class="highlight-blue">Money:</mark> Need $10 million funding</li>
-          <li><mark class="highlight-blue">Machines:</mark> Need to purchase 20 new robots</li>
-        </ul>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Essay Question: How does a production manager use the 6Ms of Management to ensure comprehensive production planning?
-          </div>
-          <div class="question-content">
-            <div class="solution-content">
-              <p><strong>
-                <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: text-bottom;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                Answer:
-              </strong></p>
-              <p>The production manager uses the <mark class="highlight-green">6Ms</mark> as a comprehensive planning framework:</p>
-              <ul>
-                <li><mark class="highlight-blue">Market:</mark> Analyzes expected demand and target market size</li>
-                <li><mark class="highlight-blue">Materials:</mark> Identifies required raw materials, quantities, and suppliers</li>
-                <li><mark class="highlight-blue">Man:</mark> Plans worker numbers and required skills</li>
-                <li><mark class="highlight-blue">Methods:</mark> Selects most appropriate production techniques</li>
-                <li><mark class="highlight-blue">Money:</mark> Creates comprehensive budget covering all elements</li>
-                <li><mark class="highlight-blue">Machines:</mark> Determines necessary equipment and costs</li>
-              </ul>
-              <p>This comprehensive approach ensures no vital aspect of planning is overlooked.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Capacity Planning</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p><mark class="highlight-green">Production capacity</mark> is simply the maximum quantity of products your factory or company can produce during a specific period.</p>
-        <p><mark class="highlight-orange">Capacity planning</mark> is the art of balancing—ensuring your production capability matches customer demand, so you don't produce <mark class="highlight-pink">more than needed and waste resources</mark>, or <mark class="highlight-pink">less than needed and lose customers</mark>.</p>
-        
-        <h3>Example</h3>
-        <p>Imagine you own a restaurant seating <mark class="highlight-blue">50 people</mark> at once <mark class="highlight-yellow">this is your production capacity</mark>:</p>
-        <ul>
-          <li>If demand is <mark class="highlight-orange">only 30 people</mark> → 20 empty seats <mark class="highlight-pink">unused resources</mark></li>
-          <li>If <mark class="highlight-orange">70 people</mark> try to enter → 20 must leave <mark class="highlight-pink">unhappy customers</mark></li>
-        </ul>
-        <p><mark class="highlight-green">Capacity planning</mark> is your attempt to forecast busy nights and prepare extra tables or vice versa.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Question: The main goal of capacity planning is to:
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Always increase worker numbers</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Minimize the gap between production capability and demand</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Purchase the latest equipment</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Lower prices</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Design Capacity vs. Effective Capacity</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>When discussing production capacity, there are two types:</p>
-        <ul>
-          <li><strong>Design Capacity:</strong> This is the <mark class="highlight-blue">dream!</mark> It's the maximum quantity that can be theoretically produced under perfectly ideal conditions, without any stops, breakdowns, or breaks.</li>
-          <li><strong>Effective Capacity:</strong> This is <mark class="highlight-orange">reality.</mark> It's the actual quantity that can be produced under current conditions, taking into account realistic factors like <mark class="highlight-pink">machine maintenance, lunch breaks, unplanned stops</mark>.</li>
-        </ul>
-        
-        <h3>Example</h3>
-        <p>A sports car whose manufacturer says its top speed is <mark class="highlight-blue">theoretically</mark> 300 km/h <mark class="highlight-yellow">this is design capacity</mark>.</p>
-        <p>But in reality, with <mark class="highlight-orange">traffic lights, speed bumps, and traffic jams</mark>, your <mark class="highlight-orange">effective</mark> speed may not exceed 120 km/h <mark class="highlight-yellow">effective capacity</mark>.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Essay Question: Compare Design Capacity and Effective Capacity with an example from a water bottling plant.
-          </div>
-          <div class="question-content">
-            <div class="solution-content">
-              <p><strong>
-                <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: text-bottom;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                Comparison:
-              </strong></p>
-              <ul>
-                <li><mark class="highlight-blue">Design Capacity:</mark> Maximum theoretical output under ideal conditions without stops</li>
-                <li><mark class="highlight-orange">Effective Capacity:</mark> Realistic output considering real-world factors</li>
-              </ul>
-              <p><strong>
-                <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: text-bottom;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M17 21v-8H7v8M7 3v5h8" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                Water Plant Example:
-              </strong></p>
-              <p><mark class="highlight-blue">Design Capacity:</mark> 10,000 bottles/hour if machines run 24/7 without stopping</p>
-              <p><mark class="highlight-orange">Effective Capacity:</mark> 7,500 bottles/hour after accounting for maintenance, shift changes, cleaning, and potential breakdowns</p>
-              <p>The difference reflects the practical reality of operations.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Scheduling</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>Scheduling is the art of arranging and organizing tasks and resources to achieve the best possible outcome. Think of it like a complex <mark class="highlight-blue">Tetris</mark> game, where you try to arrange <mark class="highlight-green">different work pieces</mark> on the <mark class="highlight-orange">board of available resources</mark> in the best way to minimize time and cost while avoiding <mark class="highlight-pink">gaps and delays</mark>.</p>
-        
-        <h3>Example</h3>
-        <p>In an auto repair shop, three cars arrive at the same time:</p>
-        <ul>
-          <li>Car needs <mark class="highlight-blue">oil change</mark> → 30 minutes</li>
-          <li>Car needs <mark class="highlight-orange">engine repair</mark> → 4 hours</li>
-          <li>Car needs <mark class="highlight-green">tire change</mark> → 1 hour</li>
-        </ul>
-        <p><mark class="highlight-yellow">Smart scheduling</mark> means the mechanic starts with the <mark class="highlight-blue">oil change</mark> then <mark class="highlight-green">tire change</mark>, thus delivering two cars to customers quickly, rather than making everyone wait for the engine repair to finish.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Question: The process concerned with resource allocation and workload arrangement optimally is:
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Forecasting</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) Quality Assurance</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) Scheduling</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Location Planning</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Inventory Management</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>Inventory is everything the company owns waiting to be used in production or sold. <mark class="highlight-green">Inventory management</mark> is the process of intelligently ordering, storing, and using this inventory.</p>
-        <p>The goal is to maintain <mark class="highlight-blue">sufficient</mark> quantity to meet needs without stopping, but not <mark class="highlight-pink">too much</mark> that consumes space and money that could be invested elsewhere.</p>
-        
-        <h3>Types of Inventory</h3>
-        <ul>
-          <li><strong>Raw Materials:</strong> Basic inputs that start the process <mark class="highlight-blue">e.g., cotton for clothing factory</mark></li>
-          <li><strong>Work in Process:</strong> Semi-finished products not yet complete <mark class="highlight-orange">e.g., shirt sewn but without buttons</mark></li>
-          <li><strong>Finished Goods:</strong> Final products ready to sell <mark class="highlight-green">e.g., complete packaged shirt</mark></li>
-        </ul>
-        
-        <h3>Example</h3>
-        <p>Your home refrigerator is an excellent inventory management example:</p>
-        <ul>
-          <li>You <mark class="highlight-pink">don't buy</mark> food for a whole year → storage costs and spoilage</li>
-          <li>You <mark class="highlight-pink">don't wait</mark> until completely empty → production stops or cooking stops</li>
-          <li>You try to maintain <mark class="highlight-green">ideal balance</mark></li>
-        </ul>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Just-in-Time System (JIT)</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>The <mark class="highlight-green">Just-in-Time</mark> system, invented by <mark class="highlight-blue">Toyota</mark>, is a production philosophy aiming to achieve <mark class="highlight-orange">zero inventory</mark>.</p>
-        <p>The idea is that raw materials and components arrive at the factory <mark class="highlight-pink">exactly when the production line needs them</mark>, no sooner or later. This eliminates the need for huge warehouses and significantly reduces costs.</p>
-        
-        <h3>Example</h3>
-        <p>Imagine preparing pizza:</p>
-        <ul>
-          <li><mark class="highlight-pink">Instead of</mark> storing large amounts of cheese and tomatoes in your fridge</li>
-          <li>You call the grocery store to bring <mark class="highlight-green">fresh ingredients</mark></li>
-          <li><mark class="highlight-blue">Just minutes</mark> before starting to prepare the dough</li>
-        </ul>
-        <p>This is the essence of <mark class="highlight-yellow">JIT</mark>: <mark class="highlight-orange">efficiency and waste reduction</mark>.</p>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Question: What is the primary goal of the JIT production system?
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Increase warehouse size</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Achieve zero inventory level</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Rely on one supplier</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Increase worker numbers</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Quality Assurance vs. Quality Control</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>Both terms aim for an excellent product, but work differently:</p>
-        <ul>
-          <li><strong>Quality Assurance (QA):</strong> This is the <mark class="highlight-blue">preventive</mark> approach. It focuses on the <mark class="highlight-green">process</mark> itself to ensure defects don't occur in the first place. It concerns designing a correct production system that prevents errors.</li>
-          <li><strong>Quality Control (QC):</strong> This is the <mark class="highlight-orange">detective</mark> approach. It focuses on the <mark class="highlight-pink">final product</mark> to identify and remove defects after they occur. It's like inspection at the end of the production line.</li>
-        </ul>
-        
-        <h3>Example</h3>
-        <p>Consider a chef preparing a dish:</p>
-        <ul>
-          <li><mark class="highlight-blue">Quality Assurance:</mark> Ensuring the recipe is accurate, ingredients are fresh, oven is calibrated to correct temperature, and chef is well-trained → <mark class="highlight-green">all to prevent dish burning</mark></li>
-          <li><mark class="highlight-orange">Quality Control:</mark> Tasting the dish before serving to customer to ensure it's not too salty or burnt → <mark class="highlight-pink">detecting errors after they occur</mark></li>
-        </ul>
-      </section>
-
-      <section class="glassy-card">
-        <h2>The Transformation Process</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>This is the <mark class="highlight-blue">magic touch</mark> in production. The transformation process is any activity that takes <mark class="highlight-green">Inputs</mark> and changes them to add value, converting them into <mark class="highlight-orange">Outputs</mark> that customers desire.</p>
-        <p>This process isn't just physical manufacturing, but can be <mark class="highlight-pink">different forms</mark>.</p>
-        
-        <h3>Forms of Transformation</h3>
-        <ul>
-          <li><strong>Physical Production:</strong> Converting <mark class="highlight-blue">wood</mark> into a <mark class="highlight-green">chair</mark></li>
-          <li><strong>Storage:</strong> Storing certain types of <mark class="highlight-orange">cheese or wine</mark> for a period is part of aging and improving quality</li>
-          <li><strong>Transportation:</strong> A parcel delivery company doesn't manufacture anything, but converts a <mark class="highlight-pink">package at location A</mark> into a <mark class="highlight-pink">package at location B</mark> → this is a valuable service</li>
-          <li><strong>Exchange:</strong> A bank that takes your <mark class="highlight-blue">savings</mark> and gives you a <mark class="highlight-green">deposit certificate</mark> performs a financial transformation</li>
-        </ul>
-        
-        <h3>Example</h3>
-        <p>A university is an excellent example:</p>
-        <ul>
-          <li><mark class="highlight-blue">Inputs:</mark> High school student with basic knowledge</li>
-          <li><mark class="highlight-orange">Transformation Process:</mark> Lectures, exams, and projects for four years</li>
-          <li><mark class="highlight-green">Outputs:</mark> Graduate with specialized skills</li>
-        </ul>
-        
-        <div class="question-container" onclick="toggleQuestion(this)">
-          <div class="question-header">
-            <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Question: Which of the following activities is NOT a form of transformation process?
-          </div>
-          <div class="question-content">
-            <ul class="mcq-options">
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Manufacturing a car</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) Storing apples to sell out of season</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) Purchasing raw materials from supplier</li>
-              <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Delivering order from restaurant to customer's home</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Feedback</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>Feedback is the <mark class="highlight-blue">early warning system</mark> and <mark class="highlight-orange">correction tool</mark> in the production process. It's information that returns from an advanced point in the system to a previous point to correct the course.</p>
-        
-        <h3>Two Main Types of Feedback</h3>
-        <ol>
-          <li><strong>From Customers to Transformation Process:</strong> When a customer complains that <mark class="highlight-pink">product quality is poor</mark>, this information returns to the factory to modify the manufacturing process</li>
-          <li><strong>From Transformation Process to Inputs:</strong> When the production line discovers that a certain type of <mark class="highlight-orange">raw material causes machine breakage</mark>, this information returns to purchasing department to change supplier or material type</li>
-        </ol>
-        
-        <h3>Example</h3>
-        <p>When cooking and you ask someone to taste the food, then they say <mark class="highlight-blue">needs more salt</mark>. This is <mark class="highlight-green">feedback</mark> that makes you go back and add salt <mark class="highlight-orange">correct the course</mark> before the dish is fully ready.</p>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Evolution of Production Management</h2>
-        <h3>Let's Understand the Idea</h3>
-        <p>The way things are made hasn't always been as it is today. It has gone through three main evolutionary stages:</p>
-        
-        <h4>Craft Production</h4>
-        <p>Before the Industrial Revolution, the <mark class="highlight-blue">skilled craftsman</mark> like a shoemaker would make the entire product from start to finish using <mark class="highlight-orange">simple tools</mark>.</p>
-        <p>Products were <mark class="highlight-green">customized and expensive</mark>, and production was <mark class="highlight-pink">slow</mark>.</p>
-        
-        <h4>Industrial Revolution and Mass Production</h4>
-        <p>With machine invention, factories emerged. Thanks to two fundamental concepts:</p>
-        <ul>
-          <li><mark class="highlight-blue">Interchangeable Parts:</mark> All screws exactly the same size</li>
-          <li><mark class="highlight-orange">Division of Labor:</mark> Each worker responsible for very small, repetitive task</li>
-        </ul>
-        <p>It became possible to produce <mark class="highlight-green">enormous quantities</mark> of standardized products at very low cost using <mark class="highlight-pink">unskilled labor</mark>.</p>
-        
-        <h4>Lean Production</h4>
-        <p>This is the modern evolution. It aims to combine the best of both worlds:</p>
-        <ul>
-          <li><mark class="highlight-blue">Efficiency</mark> of mass production</li>
-          <li><mark class="highlight-green">Quality and variety</mark> of craft production</li>
-        </ul>
-        <p>It relies on using <mark class="highlight-orange">minimal resources</mark> workers, space, inventory to produce large quantities of high-quality, diverse goods, relying on <mark class="highlight-pink">skilled labor and flexible equipment</mark>.</p>
-        
-        <h3>Example</h3>
-        <ul>
-          <li><mark class="highlight-blue">Craft:</mark> Watchmaker creates one watch manually in a month</li>
-          <li><mark class="highlight-orange">Mass:</mark> Factory produces 10,000 identical plastic watches daily</li>
-          <li><mark class="highlight-green">Lean:</mark> Factory produces 500 watches daily, but can quickly change design and colors based on market demand</li>
-        </ul>
-      </section>
-
-      <section class="glassy-card">
-        <h2>Key Concepts Table</h2>
-        <table class="concepts-table">
-          <thead>
-            <tr>
-              <th>Concept</th>
-              <th>Formal Definition</th>
-              <th>Two-Word Summary</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Production Function</strong></td>
-              <td>All activities directly related to creating goods and services</td>
-              <td>Making Things</td>
-            </tr>
-            <tr>
-              <td><strong>Forecasting</strong></td>
-              <td>Estimating future demand and resources needed to meet it</td>
-              <td>Smart Guessing</td>
-            </tr>
-            <tr>
-              <td><strong>Capacity Planning</strong></td>
-              <td>Determining production capacity needed to meet changing demand</td>
-              <td>Balancing Supply/Demand</td>
-            </tr>
-            <tr>
-              <td><strong>Design Capacity</strong></td>
-              <td>Maximum theoretical output under ideal conditions</td>
-              <td>Dream Production</td>
-            </tr>
-            <tr>
-              <td><strong>Effective Capacity</strong></td>
-              <td>Maximum possible output under realistic conditions</td>
-              <td>Actual Production</td>
-            </tr>
-            <tr>
-              <td><strong>Scheduling</strong></td>
-              <td>Arranging workload and resources optimally to minimize cost and time</td>
-              <td>Task Organization</td>
-            </tr>
-            <tr>
-              <td><strong>Inventory Management</strong></td>
-              <td>Process of ordering, storing, and using inventory</td>
-              <td>Managing Assets</td>
-            </tr>
-            <tr>
-              <td><strong>JIT System</strong></td>
-              <td>Production system where components arrive just before use to minimize inventory</td>
-              <td>Zero Inventory</td>
-            </tr>
-            <tr>
-              <td><strong>Quality Assurance (QA)</strong></td>
-              <td>Approach focusing on process to prevent defects from occurring</td>
-              <td>Preventing Errors</td>
-            </tr>
-            <tr>
-              <td><strong>Quality Control (QC)</strong></td>
-              <td>Approach focusing on final product to identify defects after they occur</td>
-              <td>Detecting Errors</td>
-            </tr>
-            <tr>
-              <td><strong>Transformation Process</strong></td>
-              <td>Activity that changes inputs and adds value to convert them into outputs</td>
-              <td>Magic Touch</td>
-            </tr>
-            <tr>
-              <td><strong>Feedback</strong></td>
-              <td>Return information used for control and course correction</td>
-              <td>Correction Tool</td>
-            </tr>
-            <tr>
-              <td><strong>Craft Production</strong></td>
-              <td>Production system relying on skilled labor and simple tools for small quantities</td>
-              <td>Manual Making</td>
-            </tr>
-            <tr>
-              <td><strong>Mass Production</strong></td>
-              <td>System relying on unskilled labor and standardized machines for huge quantities</td>
-              <td>Volume Production</td>
-            </tr>
-            <tr>
-              <td><strong>Lean Production</strong></td>
-              <td>System using minimal resources to produce high-quality, diverse goods</td>
-              <td>Efficiency/Flexibility</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <div class="footer-info">
-        <div class="footer-brand">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Created by <strong>Athr Platform</strong></span>
-        </div>
-        <div class="footer-divider"></div>
-        <div class="footer-disclaimer">
-          <svg class="footer-warning-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 9v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 18c-.77 1.333.192 3 1.732 3z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <strong>Important Note:</strong> This educational content was created entirely by artificial intelligence. 
-          Athr's AI assistant may occasionally make mistakes. Always review official academic sources and verify information provided.
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        سؤال مقالي: اشرح بإيجاز الأنشطة الخمسة الرئيسية التي تندرج تحت وظيفة الإنتاج والعمليات
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>الإجابة:</strong></p>
+          <ol>
+            <li><strong>التنبؤ:</strong> تقدير الطلب المستقبلي والموارد اللازمة</li>
+            <li><strong>تخطيط الطاقة:</strong> تحديد القدرة الإنتاجية المطلوبة</li>
+            <li><strong>الجدولة:</strong> ترتيب المهام والموارد بطريقة مثلى</li>
+            <li><strong>إدارة المخزون:</strong> التحكم في مستويات المواد الخام والمنتجات</li>
+            <li><strong>ضمان الجودة:</strong> التأكد من مطابقة المنتجات للمعايير</li>
+          </ol>
         </div>
       </div>
     </div>
-  </main>
-</body>
-</html>
+  </div>
+
+  <!-- المفهوم 2 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: التنبؤ (Forecasting)</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      التنبؤ هو بمثابة <mark class="highlight-blue">"كرة الكريستال"</mark> الخاصة بمدير الإنتاج. بدلاً من قراءة الطالع، هو يستخدم بيانات الماضي والحاضر ليخمن بذكاء حجم الطلب المستقبلي على منتجات الشركة. هذا التخمين ليس عشوائياً، بل هو عملية تقدير علمية لكمية الموارد (من أموال وعمال ومواد) التي ستحتاجها الشركة لتلبية هذا الطلب المتوقع.
+    </p>
+
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      صاحب مصنع للمثلجات قبل بداية فصل الصيف. يقوم بدراسة مبيعات الصيف الماضي، ويلاحظ موجة الحر القادمة في الأخبار، ويعرف أن هناك نكهة جديدة ستكون رائجة. بناءً على كل هذا، <mark class="highlight-green">"يتنبأ"</mark> بأنه سيحتاج لإنتاج 20 طناً من المثلجات هذا الصيف، ويطلب كميات الحليب والفاكهة الكافية لذلك. هذا هو التنبؤ في أبسط صوره.
+    </p>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        العملية التي يتم من خلالها تقدير الطلب المستقبلي على سلع وخدمات الشركة تُعرف بـ:
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) الجدولة</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) التنبؤ</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) تخطيط الطاقة</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) إدارة المخزون</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- المفهوم 3 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: عناصر الإدارة الستة (6Ms of Management)</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      لكي يكون تنبؤ مدير الإنتاج دقيقاً، يجب أن يأخذ في الحسبان ستة عناصر أساسية تبدأ جميعها بحرف "M" باللغة الإنجليزية. هذه العناصر هي قائمة المراجعة التي تضمن عدم نسيان أي جزء مهم في عملية الإنتاج:
+    </p>
+    <ol>
+      <li><mark class="highlight-green">السوق (Market):</mark> ما هو حجم الطلب المتوقع على المنتج؟</li>
+      <li><mark class="highlight-blue">المواد (Materials):</mark> ما هي المواد الخام والمكونات التي نحتاجها؟</li>
+      <li><mark class="highlight-yellow">الأيدي العاملة (Man):</mark> كم عاملاً وموظفاً نحتاج لتنفيذ العمل؟</li>
+      <li><mark class="highlight-orange">الأساليب (Methods):</mark> ما هي التقنيات والطرق التي سنستخدمها في الإنتاج؟</li>
+      <li><mark class="highlight-pink">المال (Money):</mark> ما هو حجم الموارد المالية المطلوبة لتغطية كل التكاليف؟</li>
+      <li><mark class="highlight-green">الآلات (Machines):</mark> ما هي المعدات والأجهزة التي ستُستخدم في العملية؟</li>
+    </ol>
+
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      شركة قررت إطلاق هاتف ذكي جديد. مدير الإنتاج سيستخدم الـ <mark class="highlight-blue">6Ms</mark> كالتالي:
+    </p>
+    <ul>
+      <li><strong>السوق:</strong> يتنبأ ببيع مليون جهاز.</li>
+      <li><strong>المواد:</strong> يحتاج مليون شاشة، مليون بطارية، وهكذا.</li>
+      <li><strong>الأيدي العاملة:</strong> يحتاج 500 عامل على خط التجميع.</li>
+      <li><strong>الأساليب:</strong> سيستخدم تقنية التجميع الآلي لزيادة الدقة.</li>
+      <li><strong>المال:</strong> يحتاج 10 ملايين دولار لتمويل الدفعة الأولى من الإنتاج.</li>
+      <li><strong>الآلات:</strong> يحتاج لشراء 20 روبوتاً جديداً لخط التجميع.</li>
+    </ul>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        سؤال مقالي: عند التخطيط لإنتاج منتج جديد، كيف يستخدم مدير الإنتاج عناصر الإدارة الستة (6Ms)؟
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>الإجابة:</strong></p>
+          <p>مدير الإنتاج يستخدم الـ <mark class="highlight-green">6Ms</mark> كإطار شامل للتخطيط:</p>
+          <ul>
+            <li><mark class="highlight-blue">السوق:</mark> يحلل الطلب المتوقع وحجم السوق المستهدف</li>
+            <li><mark class="highlight-blue">المواد:</mark> يحدد المواد الخام اللازمة وكمياتها والموردين</li>
+            <li><mark class="highlight-blue">الأيدي العاملة:</mark> يخطط لعدد العمال والمهارات المطلوبة</li>
+            <li><mark class="highlight-blue">الأساليب:</mark> يختار تقنيات الإنتاج الأنسب</li>
+            <li><mark class="highlight-blue">المال:</mark> يضع ميزانية شاملة تغطي كل العناصر</li>
+            <li><mark class="highlight-blue">الآلات:</mark> يحدد المعدات اللازمة وتكاليفها</li>
+          </ul>
+          <p>هذا النهج الشامل يضمن عدم إغفال أي جانب حيوي في التخطيط.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- المفهوم 4 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: تخطيط الطاقة الإنتاجية (Capacity Planning)</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      <mark class="highlight-green">"الطاقة الإنتاجية"</mark> هي ببساطة الحد الأقصى لكمية المنتجات التي يمكن لمصنعك أو شركتك إنتاجها خلال فترة معينة. <mark class="highlight-blue">"تخطيط الطاقة"</mark> هو فن الموازنة؛ أي التأكد من أن قدرتك على الإنتاج تتوافق مع طلب العملاء، فلا تنتج أكثر من اللازم فتهدر الموارد، ولا أقل من اللازم فتخسر العملاء.
+    </p>
+
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      تخيل أنك تملك مطعماً يتسع لـ 50 شخصاً في نفس الوقت (هذه هي طاقتك الإنتاجية). إذا كان الطلب في ليلة معينة هو 30 شخصاً فقط، فهناك 20 كرسياً فارغاً (موارد غير مستغلة). أما إذا حاول 70 شخصاً الدخول، فسوف يضطر 20 منهم للانتظار أو المغادرة (عملاء غير راضين). <mark class="highlight-yellow">"تخطيط الطاقة"</mark> هو محاولتك للتنبؤ بالليالي المزدحمة وتجهيز طاولات إضافية أو العكس.
+    </p>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        الهدف الرئيسي من تخطيط الطاقة الإنتاجية هو:
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) زيادة عدد العمال دائماً</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) تقليل الفجوة بين قدرة المنظمة على الإنتاج والطلب على منتجاتها</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) شراء أحدث المعدات المتاحة</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) خفض أسعار المنتجات</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- المفهوم 5 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: الطاقة التصميمية مقابل الطاقة الفعالة</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      عندما نتحدث عن الطاقة الإنتاجية، هناك نوعان:
+    </p>
+    <ul>
+      <li><mark class="highlight-blue">الطاقة التصميمية (Design Capacity):</mark> هذا هو الحلم! إنها أقصى كمية يمكن إنتاجها نظرياً في ظروف مثالية تماماً، بدون أي توقف أو أعطال أو استراحات.</li>
+      <li><mark class="highlight-green">الطاقة الفعالة (Effective Capacity):</mark> هذا هو الواقع. إنها الكمية الفعلية التي يمكن إنتاجها في الظروف الحالية، مع الأخذ في الاعتبار الأمور الواقعية مثل صيانة الآلات، استراحات الغداء للعمال، والتوقفات غير المخطط لها.</li>
+    </ul>
+
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      سيارة رياضية تقول الشركة المصنعة إن سرعتها القصوى "نظرياً" هي 300 كم/ساعة (هذه هي الطاقة التصميمية). لكن على أرض الواقع، مع وجود إشارات مرور، مطبات، وزحمة سير، فإن سرعتك "الفعالة" قد لا تتجاوز 120 كم/ساعة.
+    </p>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        سؤال مقالي: قارن بين "الطاقة التصميمية" و"الطاقة الفعالة" مع مثال من مصنع تعبئة المياه
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>المقارنة:</strong></p>
+          <ul>
+            <li><mark class="highlight-blue">الطاقة التصميمية:</mark> أقصى إنتاج نظري في ظروف مثالية بدون توقفات</li>
+            <li><mark class="highlight-orange">الطاقة الفعالة:</mark> الإنتاج الواقعي مع الأخذ بالاعتبار العوامل الحقيقية</li>
+          </ul>
+          <p><strong>مثال من مصنع تعبئة المياه:</strong></p>
+          <p><mark class="highlight-blue">الطاقة التصميمية:</mark> خط التعبئة مصمم لإنتاج 10,000 زجاجة/ساعة في ظروف مثالية</p>
+          <p><mark class="highlight-orange">الطاقة الفعالة:</mark> في الواقع ينتج 7,500 زجاجة/ساعة بسبب: وقت تبديل القوالب، صيانة دورية، استراحات العمال، والتوقفات الطارئة</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- المفهوم 6 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: الجدولة (Scheduling)</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      الجدولة هي فن ترتيب وتنظيم المهام والموارد لتحقيق أفضل نتيجة ممكنة. تخيل أنها مثل لعبة <mark class="highlight-yellow">"تتريس"</mark> معقدة، حيث تحاول ترتيب "قطع" العمل المختلفة (المهام) على "لوحة" الموارد المتاحة (العمال والآلات) بأفضل طريقة لتقليل الوقت والتكلفة وتجنب الفراغات (التأخير).
+    </p>
+
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      في ورشة صيانة سيارات، تصل ثلاث سيارات في نفس الوقت: واحدة تحتاج تغيير زيت (30 دقيقة)، والثانية تحتاج إصلاح محرك (4 ساعات)، والثالثة تحتاج تغيير إطارات (ساعة واحدة). <mark class="highlight-green">"الجدولة"</mark> الذكية تعني أن الميكانيكي يبدأ بالسيارة التي تحتاج تغيير زيت ثم تغيير الإطارات، وبهذا يسلم سيارتين للعملاء بسرعة، بدلاً من أن يجعل الجميع ينتظر انتهاء إصلاح المحرك.
+    </p>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        العملية التي تهتم بتخصيص الموارد وترتيب عبء العمل بطريقة مثلى لتقليل التكلفة والوقت هي:
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) التنبؤ</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) توكيد الجودة</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ج) الجدولة</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) تحديد المواقع</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- المفهوم 7 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: إدارة المخزون (Inventory Management)</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      المخزون هو كل ما تملكه الشركة وينتظر إما استخدامه في الإنتاج أو بيعه. <mark class="highlight-green">"إدارة المخزون"</mark> هي عملية طلب وتخزين واستخدام هذا المخزون بذكاء. الهدف هو الاحتفاظ بكمية كافية لتلبية الاحتياجات دون توقف، ولكن ليس بكمية كبيرة جداً تستهلك مساحة وأموالاً يمكن استثمارها في مكان آخر.
+    </p>
+    <p><strong>أنواع المخزون الرئيسية:</strong></p>
+    <ul>
+      <li><mark class="highlight-blue">المواد الخام (Raw Materials):</mark> المدخلات الأساسية التي تبدأ بها العملية (مثل: القطن لمصنع ملابس).</li>
+      <li><mark class="highlight-yellow">العمل قيد التنفيذ (Work in Process):</mark> منتجات نصف مصنعة لم تكتمل بعد (مثل: قميص مخيط ولكن بدون أزرار).</li>
+      <li><mark class="highlight-green">السلع التامة الصنع (Finished Goods):</mark> المنتجات النهائية الجاهزة للبيع (مثل: القميص الكامل المعبأ).</li>
+    </ul>
+
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      ثلاجتك في المنزل هي مثال ممتاز على إدارة المخزون. أنت لا تشتري طعاماً يكفي لسنة كاملة (تكاليف تخزين وتلف)، ولا تنتظر حتى تفرغ الثلاجة تماماً لتبدأ بالتسوق (توقف "الإنتاج" أو الطبخ). أنت تحاول الحفاظ على توازن مثالي.
+    </p>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        سؤال مقالي: اذكر الأنواع الثلاثة للمخزون، واشرح لماذا يعتبر الاحتفاظ بكمية كبيرة جداً من مخزون السلع التامة الصنع أمراً غير مرغوب فيه
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>أنواع المخزون الثلاثة:</strong></p>
+          <ol>
+            <li><mark class="highlight-blue">المواد الخام:</mark> مدخلات الإنتاج الأساسية</li>
+            <li><mark class="highlight-yellow">العمل قيد التنفيذ:</mark> منتجات نصف مصنعة</li>
+            <li><mark class="highlight-green">السلع التامة الصنع:</mark> منتجات نهائية جاهزة للبيع</li>
+          </ol>
+          <p><strong>سلبيات الاحتفاظ بكميات كبيرة من السلع التامة:</strong></p>
+          <ul>
+            <li><mark class="highlight-orange">تكاليف التخزين:</mark> إيجار المخازن، التأمين، الحراسة</li>
+            <li><mark class="highlight-pink">تجميد رأس المال:</mark> أموال محبوسة يمكن استثمارها في مجالات أخرى</li>
+            <li><mark class="highlight-blue">خطر التقادم:</mark> المنتجات قد تصبح قديمة أو تتلف</li>
+            <li><mark class="highlight-yellow">فقدان القيمة:</mark> انخفاض قيمة المنتج مع الوقت</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- المفهوم 8 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: نظام الإنتاج في الوقت المحدد (Just-in-Time - JIT)</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      نظام <mark class="highlight-green">"Just-in-Time" (JIT)</mark>، الذي ابتكرته شركة تويوتا، هو فلسفة إنتاج تهدف إلى تحقيق "صفر مخزون". الفكرة هي أن المواد الخام والمكونات تصل إلى المصنع في اللحظة التي يحتاجها فيها خط الإنتاج بالضبط، لا قبل ولا بعد. هذا يلغي الحاجة إلى مخازن ضخمة ويقلل التكاليف بشكل كبير.
+    </p>
+
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      تخيل أنك تحضر بيتزا. بدلاً من تخزين كميات كبيرة من الجبن والطماطم في ثلاجتك، أنت تتصل بمحل البقالة ليحضر لك المكونات الطازجة قبل دقائق فقط من البدء في تحضير العجينة. هذا هو جوهر نظام <mark class="highlight-blue">JIT</mark>: الكفاءة وتقليل الهدر.
+    </p>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        ما هو الهدف الأساسي لنظام الإنتاج (JIT)؟
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) زيادة حجم المخازن</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) الوصول إلى مستوى "صفر مخزون"</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) الاعتماد على عدد قليل من الموردين</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) زيادة عدد العمال</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        سؤال مقالي: ما هي المخاطر أو العيوب الرئيسية التي قد تواجه شركة تطبق نظام (JIT)؟
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>مخاطر وعيوب نظام JIT:</strong></p>
+          <ul>
+            <li><mark class="highlight-orange">الاعتماد الكلي على الموردين:</mark> أي تأخير من المورد يوقف الإنتاج فوراً</li>
+            <li><mark class="highlight-pink">حساسية للاضطرابات:</mark> الكوارث الطبيعية أو الأزمات تؤثر بشدة</li>
+            <li><mark class="highlight-blue">تكاليف نقل أعلى:</mark> شحنات صغيرة ومتكررة أغلى من الشحنات الكبيرة</li>
+            <li><mark class="highlight-yellow">صعوبة مواجهة الطلب المفاجئ:</mark> لا يوجد مخزون احتياطي لتلبية الزيادة غير المتوقعة</li>
+            <li><mark class="highlight-green">حاجة لتنسيق مثالي:</mark> يتطلب تواصل دقيق مع الموردين والعملاء</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- المفهوم 9 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: توكيد الجودة مقابل ضبط الجودة</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      كلا المصطلحين يهدفان لمنتج ممتاز، لكنهما يعملان بطرق مختلفة:
+    </p>
+    <ul>
+      <li><mark class="highlight-blue">توكيد الجودة (Quality Assurance):</mark> هذا هو النهج "الوقائي". يركز على <strong>العملية</strong> نفسها لضمان عدم حدوث عيوب من الأساس. إنه يهتم بتصميم نظام إنتاج صحيح يمنع الأخطاء.</li>
+      <li><mark class="highlight-yellow">ضبط الجودة (Quality Control):</mark> هذا هو النهج "الكشفي". يركز على <strong>المنتج</strong> النهائي لتحديد العيوب وإزالتها بعد حدوثها. إنه مثل التفتيش في نهاية خط الإنتاج.</li>
+    </ul>
+
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      لنفكر في طاهٍ يقوم بإعداد طبق.
+    </p>
+    <ul>
+      <li><strong>توكيد الجودة:</strong> هو التأكد من أن الوصفة نفسها دقيقة، والمكونات طازجة، والفرن معاير على درجة الحرارة الصحيحة، والطاهي مدرب جيداً. كل هذا لمنع احتراق الطبق.</li>
+      <li><strong>ضبط الجودة:</strong> هو تذوق الطبق قبل تقديمه للزبون للتأكد من أنه ليس مالحاً جداً أو محترقاً.</li>
+    </ul>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        سؤال مقالي: "توكيد الجودة يركز على العملية، بينما ضبط الجودة يركز على المنتج". اشرح هذه العبارة مع مثال من قطاع الخدمات
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>الشرح:</strong></p>
+          <p><mark class="highlight-blue">توكيد الجودة (QA):</mark> يعمل على منع المشاكل قبل حدوثها من خلال تحسين العملية ذاتها.</p>
+          <p><mark class="highlight-yellow">ضبط الجودة (QC):</mark> يعمل على اكتشاف المشاكل بعد حدوثها من خلال فحص المنتج النهائي.</p>
+          <p><strong>مثال من مركز اتصال (Call Center):</strong></p>
+          <ul>
+            <li><mark class="highlight-blue">توكيد الجودة:</mark> تدريب الموظفين بشكل جيد، وضع سكريبتات واضحة، تحديث قاعدة المعرفة باستمرار، تصميم نظام CRM فعال</li>
+            <li><mark class="highlight-yellow">ضبط الجودة:</mark> مراجعة عينات من المكالمات المسجلة، قياس رضا العملاء بعد كل مكالمة، تقييم أداء الموظفين بناءً على معايير محددة</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- المفهوم 10 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: عملية التحويل (The Transformation Process)</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      هذه هي <mark class="highlight-pink">"اللمسة السحرية"</mark> في الإنتاج. عملية التحويل هي أي نشاط يأخذ "المدخلات" (Inputs) ويغيرها ليضيف إليها قيمة، ويحولها إلى "مخرجات" (Outputs) يرغب فيها العملاء. هذه العملية ليست فقط التصنيع المادي، بل يمكن أن تكون أشكالاً مختلفة.
+    </p>
+    <p><strong>أشكال عملية التحويل:</strong></p>
+    <ul>
+      <li><mark class="highlight-green">إنتاج مادي:</mark> مثل تحويل الخشب إلى كرسي.</li>
+      <li><mark class="highlight-blue">تخزين:</mark> تخزين بعض أنواع الجبن أو النبيذ لفترة معينة هو جزء من عملية نضجها وتحسين جودتها.</li>
+      <li><mark class="highlight-yellow">نقل:</mark> شركة توصيل الطرود لا تصنع شيئاً، لكنها تحول "طرداً في الموقع أ" إلى "طرد في الموقع ب"، وهذه خدمة ذات قيمة.</li>
+      <li><mark class="highlight-orange">تبادل:</mark> البنك الذي يأخذ مدخراتك (مدخل) ويمنحك شهادة إيداع (مخرج) يقوم بعملية تحويل مالية.</li>
+    </ul>
+
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      الجامعة هي مثال رائع. تأخذ "طالباً ثانوياً" لديه معرفة أساسية (مدخلات)، وتمرره عبر "عملية تحويل" مكونة من محاضرات وامتحانات ومشاريع لمدة أربع سنوات، لتنتج "خريجاً" لديه مهارات متخصصة (مخرجات).
+    </p>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        أي من الأنشطة التالية لا يعتبر شكلاً من أشكال عملية التحويل؟
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) تصنيع سيارة</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) تخزين التفاح ليتم بيعه في غير موسمه</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ج) شراء المواد الخام من مورد</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) توصيل طلبية من مطعم إلى منزل العميل</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- المفهوم 11 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: التغذية الراجعة (Feedback)</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      التغذية الراجعة هي <mark class="highlight-blue">"نظام الإنذار المبكر"</mark> و<mark class="highlight-green">"أداة التصحيح"</mark> في عملية الإنتاج. إنها المعلومات التي تعود من نقطة متقدمة في النظام إلى نقطة سابقة لتصحيح المسار. هناك نوعان رئيسيان من التغذية الراجعة:
+    </p>
+    <ol>
+      <li><strong>من العملاء إلى عملية التحويل:</strong> عندما يشتكي عميل من أن جودة المنتج سيئة، هذه المعلومة تعود للمصنع ليقوم بتعديل عملية التصنيع.</li>
+      <li><strong>من عملية التحويل إلى المدخلات:</strong> عندما يكتشف خط الإنتاج أن نوعاً معيناً من المواد الخام يسبب كسراً في الآلات، هذه المعلومة تعود إلى قسم المشتريات ليغير المورد أو نوع المادة.</li>
+    </ol>
+
+    <h3>2. مثال من الواقع:</h3>
+    <p>
+      عندما تطبخ وتطلب من شخص أن يتذوق الطعام، ثم يقول لك "يحتاج المزيد من الملح". هذه هي <mark class="highlight-yellow">التغذية الراجعة</mark> التي تجعلك تعود وتضيف الملح (تصحح المسار) قبل أن يصبح الطبق جاهزاً تماماً.
+    </p>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        سؤال مقالي: اشرح كيف تعمل التغذية الراجعة كأداة للرقابة (Control) في نظام الإنتاج، مع مثال من مستشفى
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>الشرح:</strong></p>
+          <p>التغذية الراجعة هي <mark class="highlight-green">حلقة الرقابة</mark> التي تسمح بتصحيح الانحرافات عن المعايير المطلوبة. تعمل على ثلاث خطوات:</p>
+          <ol>
+            <li><mark class="highlight-blue">القياس:</mark> جمع البيانات عن الأداء الفعلي</li>
+            <li><mark class="highlight-yellow">المقارنة:</mark> مقارنة الأداء الفعلي بالمعايير المحددة</li>
+            <li><mark class="highlight-orange">التصحيح:</mark> اتخاذ إجراءات لتصحيح الانحرافات</li>
+          </ol>
+          <p><strong>مثال من مستشفى:</strong></p>
+          <p><mark class="highlight-pink">دورة التغذية الراجعة:</mark></p>
+          <ul>
+            <li><strong>المدخلات:</strong> مرضى، أدوية، أطباء، معدات</li>
+            <li><strong>العملية:</strong> تشخيص وعلاج</li>
+            <li><strong>المخرجات:</strong> مرضى متعافون</li>
+            <li><strong>التغذية الراجعة:</strong> إذا ارتفعت نسبة العدوى في المستشفى (معلومة من المخرجات)، يتم مراجعة إجراءات التعقيم (تصحيح العملية) وربما تحسين جودة المطهرات المستخدمة (تصحيح المدخلات)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- المفهوم 12 -->
+  <div class="glassy-card">
+    <h2>شرح مفهوم: تطور إدارة الإنتاج</h2>
+    
+    <h3>1. يلا بينا نفهم الفكرة:</h3>
+    <p>
+      طريقة صنع الأشياء لم تكن دائماً كما هي اليوم. لقد مرت بثلاث مراحل تطور رئيسية:
+    </p>
+    <ol>
+      <li><mark class="highlight-blue">الإنتاج الحرفي (Craft Production):</mark> قبل الثورة الصناعية، كان الحرفي الماهر (مثل صانع الأحذية) يصنع المنتج كاملاً من البداية إلى النهاية باستخدام أدوات بسيطة. كانت المنتجات مخصصة ومكلفة، والإنتاج بطيئاً.</li>
+      <li><mark class="highlight-yellow">الثورة الصناعية والإنتاج الضخم (Mass Production):</mark> مع اختراع الآلات، ظهرت المصانع. وبفضل مفهومين أساسيين هما "الأجزاء القابلة للتبديل" (كل المسامير بنفس الحجم تماماً) و"تقسيم العمل" (كل عامل مسؤول عن مهمة صغيرة جداً ومكررة)، أصبح من الممكن إنتاج كميات هائلة من المنتجات الموحدة بتكلفة منخفضة جداً باستخدام عمالة غير ماهرة.</li>
+      <li><mark class="highlight-green">الإنتاج الرشيق (Lean Production):</mark> هذا هو التطور الحديث. يهدف إلى الجمع بين أفضل ما في العالمين: كفاءة الإنتاج الضخم وجودة وتنوع الإنتاج الحرفي. يعتمد على استخدام أقل قدر ممكن من الموارد (عمال، مساحة، مخزون) لإنتاج كميات كبيرة من سلع عالية الجودة ومتنوعة، بالاعتماد على عمالة ماهرة ومعدات مرنة.</li>
+    </ol>
+
+    <h3>2. مثال من الواقع:</h3>
+    <ul>
+      <li><strong>حرفي:</strong> صانع ساعات يصنع ساعة واحدة يدوياً في شهر.</li>
+      <li><strong>ضخم:</strong> مصنع ينتج 10,000 ساعة بلاستيكية متطابقة في اليوم.</li>
+      <li><strong>رشيق:</strong> مصنع ينتج 500 ساعة في اليوم، ولكن يمكنه تغيير التصميم والألوان بسرعة بناءً على طلب السوق.</li>
+    </ul>
+
+    <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        سؤال مقالي: قارن بين نظام "الإنتاج الضخم" ونظام "الإنتاج الرشيق" من حيث نوع العمالة المستخدمة، حجم المخزون، ودرجة تنوع المنتجات
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>المقارنة:</strong></p>
+          <div class="table-container">
+            <table class="concepts-table">
+              <thead>
+                <tr>
+                  <th>وجه المقارنة</th>
+                  <th>الإنتاج الضخم</th>
+                  <th>الإنتاج الرشيق</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>نوع العمالة</strong></td>
+                  <td>عمالة غير ماهرة تؤدي مهام متكررة بسيطة</td>
+                  <td>عمالة ماهرة ومتعددة المهارات</td>
+                </tr>
+                <tr>
+                  <td><strong>حجم المخزون</strong></td>
+                  <td>مخزون كبير جداً (مواد خام ومنتجات نهائية)</td>
+                  <td>مخزون قليل جداً أو صفري (نظام JIT)</td>
+                </tr>
+                <tr>
+                  <td><strong>تنوع المنتجات</strong></td>
+                  <td>منتجات موحدة بتنوع محدود جداً</td>
+                  <td>تنوع كبير مع القدرة على التخصيص السريع</td>
+                </tr>
+                <tr>
+                  <td><strong>المعدات</strong></td>
+                  <td>آلات متخصصة لمنتج واحد</td>
+                  <td>معدات مرنة قابلة للتكيف</td>
+                </tr>
+                <tr>
+                  <td><strong>الهدف</strong></td>
+                  <td>تقليل التكلفة عبر الإنتاج بكميات ضخمة</td>
+                  <td>تقليل الهدر مع الحفاظ على الجودة والمرونة</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- جدول المفاهيم الأساسية -->
+  <div class="glassy-card">
+    <h2>جدول المفاهيم الأساسية</h2>
+    <div class="table-container">
+      <table class="concepts-table">
+        <thead>
+          <tr>
+            <th>المفهوم</th>
+            <th>التعريف الرسمي</th>
+            <th>الخلاصة بكلمتين</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>وظيفة الإنتاج</strong></td>
+            <td>جميع الأنشطة المرتبطة مباشرة بخلق السلع والخدمات</td>
+            <td>صنع الأشياء.</td>
+          </tr>
+          <tr>
+            <td><strong>التنبؤ (Forecasting)</strong></td>
+            <td>تقدير الطلب المستقبلي والموارد اللازمة لتلبيته</td>
+            <td>تخمين ذكي.</td>
+          </tr>
+          <tr>
+            <td><strong>تخطيط الطاقة</strong></td>
+            <td>تحديد الطاقة الإنتاجية المطلوبة لمواجهة الطلب المتغير</td>
+            <td>موازنة العرض والطلب.</td>
+          </tr>
+          <tr>
+            <td><strong>الطاقة التصميمية</strong></td>
+            <td>أقصى إنتاج نظري في ظروف مثالية</td>
+            <td>الإنتاج الحلم.</td>
+          </tr>
+          <tr>
+            <td><strong>الطاقة الفعالة</strong></td>
+            <td>أقصى إنتاج ممكن في الظروف الواقعية</td>
+            <td>الإنتاج الفعلي.</td>
+          </tr>
+          <tr>
+            <td><strong>الجدولة (Scheduling)</strong></td>
+            <td>ترتيب عبء العمل والموارد بطريقة مثلى لتقليل التكلفة والوقت</td>
+            <td>تنظيم المهام.</td>
+          </tr>
+          <tr>
+            <td><strong>إدارة المخزون</strong></td>
+            <td>عملية طلب وتخزين واستخدام المخزون</td>
+            <td>إدارة الممتلكات.</td>
+          </tr>
+          <tr>
+            <td><strong>نظام JIT</strong></td>
+            <td>نظام إنتاجي تصل فيه المكونات قبل استخدامها مباشرة لتقليل المخزون</td>
+            <td>مخزون صفر.</td>
+          </tr>
+          <tr>
+            <td><strong>توكيد الجودة (QA)</strong></td>
+            <td>نهج يركز على العملية لمنع حدوث العيوب من الأساس</td>
+            <td>الوقاية من الأخطاء.</td>
+          </tr>
+          <tr>
+            <td><strong>ضبط الجودة (QC)</strong></td>
+            <td>نهج يركز على المنتج النهائي لتحديد العيوب بعد حدوثها</td>
+            <td>كشف الأخطاء.</td>
+          </tr>
+          <tr>
+            <td><strong>عملية التحويل</strong></td>
+            <td>نشاط يغير المدخلات ويضيف إليها قيمة ليحولها إلى مخرجات</td>
+            <td>لمسة سحرية.</td>
+          </tr>
+          <tr>
+            <td><strong>التغذية الراجعة</strong></td>
+            <td>معلومات مرتدة تستخدم للرقابة وتصحيح المسار</td>
+            <td>أداة تصحيح.</td>
+          </tr>
+          <tr>
+            <td><strong>الإنتاج الحرفي</strong></td>
+            <td>نظام إنتاج يعتمد على عمالة ماهرة وأدوات بسيطة لإنتاج كميات صغيرة</td>
+            <td>صنع يدوي.</td>
+          </tr>
+          <tr>
+            <td><strong>الإنتاج الضخم</strong></td>
+            <td>نظام يعتمد على عمالة غير ماهرة وآلات موحدة لإنتاج كميات ضخمة</td>
+            <td>إنتاج بكميات.</td>
+          </tr>
+          <tr>
+            <td><strong>الإنتاج الرشيق</strong></td>
+            <td>نظام يستخدم الحد الأدنى من الموارد لإنتاج سلع عالية الجودة والتنوع</td>
+            <td>كفاءة ومرونة.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-info">
+    <div class="footer-brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+      </svg>
+      منصة أثر التعليمية
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-disclaimer">
+      هذا المحتوى التعليمي مُصمم خصيصاً لمساعدتك في الفهم العميق للمادة. جميع الحقوق محفوظة © 2025
+    </div>
+  </div>
+</div>
+
+  <div id="englishContent" class="hidden">
+  <div class="glassy-card">
+    <h1>Production and Operations Management</h1>
+    <p style="text-align: center; font-size: 1.1rem; color: #15803d; margin-top: -10px;">
+      Welcome Ahmed on your journey with <mark class="highlight-green">"Production and Operations Management"</mark>. Our mission today is to transform this lecture into an engaging and understandable learning experience, step by step. Let's build a deep understanding of each part together.
+    </p>
+  </div>
+
+  <!-- Concept 1 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: Basic Business Functions and Production Function</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      Imagine that any successful business, whether a large factory or a small restaurant, is like a complex machine operating with four main parts working together. These parts are:
+    </p>
+    <ul>
+      <li><mark class="highlight-green">Production:</mark> The heart of the business, where products are made or services are provided.</li>
+      <li><mark class="highlight-blue">Marketing:</mark> The voice of the business that tells customers about this amazing product.</li>
+      <li><mark class="highlight-yellow">Finance:</mark> The wallet that manages the business's money and ensures its continuity.</li>
+      <li><mark class="highlight-pink">Human Resources:</mark> The people who manage and operate all these parts.</li>
+    </ul>
+    <p>
+      <strong>"The Production Function"</strong> is the hero we focus on today. It includes every activity that directly contributes to transforming raw materials into a final product or providing a complete service to the customer.
+    </p>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      Think of a small bakery. The <mark class="highlight-green">"Production Function"</mark> here is everything that happens in the back kitchen: mixing flour and water (transforming inputs), baking dough in the oven (transformation process), and placing fresh bread on the shelf (final product). Without this function, there's no bread to sell at all.
+    </p>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        MCQ Question: Which of the following functions is directly responsible for creating goods and services?
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Finance</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) Marketing</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) Production and Operations</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Human Resources</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Essay Question: Briefly explain the five main activities under the production and operations function
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>Answer:</strong></p>
+          <ol>
+            <li><strong>Forecasting:</strong> Estimating future demand and required resources</li>
+            <li><strong>Capacity Planning:</strong> Determining the required production capacity</li>
+            <li><strong>Scheduling:</strong> Arranging tasks and resources optimally</li>
+            <li><strong>Inventory Management:</strong> Controlling levels of raw materials and products</li>
+            <li><strong>Quality Assurance:</strong> Ensuring products meet standards</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 2 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: Forecasting</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      Forecasting is like the production manager's <mark class="highlight-blue">"crystal ball"</mark>. Instead of fortune-telling, they use past and present data to intelligently predict the future demand for the company's products. This prediction isn't random; it's a scientific estimation process for the amount of resources (money, workers, and materials) the company will need to meet this expected demand.
+    </p>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      An ice cream factory owner before summer begins. They study last summer's sales, notice the upcoming heat wave in the news, and know a new flavor will be popular. Based on all this, they <mark class="highlight-green">"forecast"</mark> needing to produce 20 tons of ice cream this summer and order sufficient quantities of milk and fruit. This is forecasting in its simplest form.
+    </p>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        The process of estimating future demand for a company's goods and services is known as:
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Scheduling</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Forecasting</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Capacity Planning</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Inventory Management</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 3 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: The 6Ms of Management</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      For a production manager's forecast to be accurate, they must consider six essential elements all starting with the letter "M". These elements are the checklist ensuring no important part of the production process is forgotten:
+    </p>
+    <ol>
+      <li><mark class="highlight-green">Market:</mark> What is the expected demand size for the product?</li>
+      <li><mark class="highlight-blue">Materials:</mark> What raw materials and components do we need?</li>
+      <li><mark class="highlight-yellow">Man:</mark> How many workers and employees do we need to execute the work?</li>
+      <li><mark class="highlight-orange">Methods:</mark> What techniques and methods will we use in production?</li>
+      <li><mark class="highlight-pink">Money:</mark> What is the size of financial resources required to cover all costs?</li>
+      <li><mark class="highlight-green">Machines:</mark> What equipment and devices will be used in the process?</li>
+    </ol>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      A company decided to launch a new smartphone. The production manager will use the <mark class="highlight-blue">6Ms</mark> as follows:
+    </p>
+    <ul>
+      <li><strong>Market:</strong> Forecasts selling one million devices.</li>
+      <li><strong>Materials:</strong> Needs one million screens, one million batteries, etc.</li>
+      <li><strong>Man:</strong> Needs 500 workers on the assembly line.</li>
+      <li><strong>Methods:</strong> Will use automated assembly technology for increased precision.</li>
+      <li><strong>Money:</strong> Needs $10 million to finance the first production batch.</li>
+      <li><strong>Machines:</strong> Needs to purchase 20 new robots for the assembly line.</li>
+    </ul>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Essay Question: When planning to produce a new product, how does a production manager use the 6Ms to ensure a comprehensive forecasting process?
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>Answer:</strong></p>
+          <p>The production manager uses the <mark class="highlight-green">6Ms</mark> as a comprehensive planning framework:</p>
+          <ul>
+            <li><mark class="highlight-blue">Market:</mark> Analyzes expected demand and target market size</li>
+            <li><mark class="highlight-blue">Materials:</mark> Determines required raw materials, quantities, and suppliers</li>
+            <li><mark class="highlight-blue">Man:</mark> Plans for number of workers and required skills</li>
+            <li><mark class="highlight-blue">Methods:</mark> Selects the most suitable production techniques</li>
+            <li><mark class="highlight-blue">Money:</mark> Creates comprehensive budget covering all elements</li>
+            <li><mark class="highlight-blue">Machines:</mark> Determines necessary equipment and their costs</li>
+          </ul>
+          <p>This comprehensive approach ensures no vital aspect of planning is overlooked.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 4 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: Capacity Planning</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      <mark class="highlight-green">"Production Capacity"</mark> is simply the maximum quantity of products your factory or company can produce during a specific period. <mark class="highlight-blue">"Capacity Planning"</mark> is the art of balancing; ensuring your production ability matches customer demand, so you don't produce more than necessary and waste resources, or less than necessary and lose customers.
+    </p>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      Imagine you own a restaurant that seats 50 people at once (this is your production capacity). If demand on a certain night is only 30 people, there are 20 empty chairs (unused resources). But if 70 people try to enter, 20 of them will have to wait or leave (unsatisfied customers). <mark class="highlight-yellow">"Capacity Planning"</mark> is your attempt to predict busy nights and prepare extra tables or vice versa.
+    </p>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        The main goal of production capacity planning is:
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Always increasing the number of workers</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Reducing the gap between the organization's production ability and demand for its products</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Buying the latest available equipment</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Lowering product prices</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 5 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: Design Capacity vs. Effective Capacity</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      When we talk about production capacity, there are two types:
+    </p>
+    <ul>
+      <li><mark class="highlight-blue">Design Capacity:</mark> This is the dream! It's the maximum quantity that can be produced theoretically under perfectly ideal conditions, without any stops, breakdowns, or breaks.</li>
+      <li><mark class="highlight-green">Effective Capacity:</mark> This is reality. It's the actual quantity that can be produced under current conditions, considering realistic factors like machine maintenance, lunch breaks for workers, and unplanned stoppages.</li>
+    </ul>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      A sports car manufacturer says its top speed "theoretically" is 300 km/h (this is design capacity). But in reality, with traffic lights, speed bumps, and traffic congestion, your "effective" speed may not exceed 120 km/h.
+    </p>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Essay Question: Compare "Design Capacity" and "Effective Capacity" with an example from a water bottling plant
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>Comparison:</strong></p>
+          <ul>
+            <li><mark class="highlight-blue">Design Capacity:</mark> Maximum theoretical production under ideal conditions without stoppages</li>
+            <li><mark class="highlight-orange">Effective Capacity:</mark> Actual production considering real-world factors</li>
+          </ul>
+          <p><strong>Example from water bottling plant:</strong></p>
+          <p><mark class="highlight-blue">Design Capacity:</mark> The filling line is designed to produce 10,000 bottles/hour under ideal conditions</p>
+          <p><mark class="highlight-orange">Effective Capacity:</mark> In reality, it produces 7,500 bottles/hour due to: mold changeover time, periodic maintenance, worker breaks, and emergency stoppages</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 6 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: Scheduling</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      Scheduling is the art of arranging and organizing tasks and resources to achieve the best possible result. Imagine it's like a complex <mark class="highlight-yellow">"Tetris"</mark> game, where you try to arrange different work "pieces" (tasks) on the "board" of available resources (workers and machines) in the best way to minimize time and cost and avoid gaps (delays).
+    </p>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      In a car repair shop, three cars arrive at the same time: one needs an oil change (30 minutes), the second needs engine repair (4 hours), and the third needs tire replacement (one hour). Smart <mark class="highlight-green">"scheduling"</mark> means the mechanic starts with the oil change car then tire replacement, delivering two cars to customers quickly, instead of making everyone wait for the engine repair to finish.
+    </p>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        The process concerned with allocating resources and arranging workload optimally to minimize cost and time is:
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Forecasting</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) Quality Assurance</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) Scheduling</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Location Planning</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 7 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: Inventory Management</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      Inventory is everything the company owns that's waiting to be either used in production or sold. <mark class="highlight-green">"Inventory Management"</mark> is the process of ordering, storing, and using this inventory intelligently. The goal is to keep enough quantity to meet needs without stopping, but not so much that it consumes space and money that could be invested elsewhere.
+    </p>
+    <p><strong>Main Types of Inventory:</strong></p>
+    <ul>
+      <li><mark class="highlight-blue">Raw Materials:</mark> Basic inputs that start the process (e.g., cotton for a clothing factory).</li>
+      <li><mark class="highlight-yellow">Work in Process:</mark> Semi-finished products not yet complete (e.g., a shirt sewn but without buttons).</li>
+      <li><mark class="highlight-green">Finished Goods:</mark> Final products ready for sale (e.g., the complete packaged shirt).</li>
+    </ul>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      Your home refrigerator is an excellent example of inventory management. You don't buy food for a whole year (storage costs and spoilage), and you don't wait until the fridge is completely empty to start shopping (stopping "production" or cooking). You try to maintain an ideal balance.
+    </p>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Essay Question: List the three types of inventory, and explain why holding very large quantities of finished goods inventory is undesirable
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>Three Types of Inventory:</strong></p>
+          <ol>
+            <li><mark class="highlight-blue">Raw Materials:</mark> Basic production inputs</li>
+            <li><mark class="highlight-yellow">Work in Process:</mark> Semi-finished products</li>
+            <li><mark class="highlight-green">Finished Goods:</mark> Final products ready for sale</li>
+          </ol>
+          <p><strong>Disadvantages of holding large quantities of finished goods:</strong></p>
+          <ul>
+            <li><mark class="highlight-orange">Storage Costs:</mark> Warehouse rent, insurance, security</li>
+            <li><mark class="highlight-pink">Capital Tied Up:</mark> Money locked that could be invested elsewhere</li>
+            <li><mark class="highlight-blue">Risk of Obsolescence:</mark> Products may become outdated or spoiled</li>
+            <li><mark class="highlight-yellow">Loss of Value:</mark> Product value decreases over time</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 8 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: Just-in-Time (JIT) System</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      The <mark class="highlight-green">"Just-in-Time" (JIT)</mark> system, pioneered by Toyota, is a production philosophy aimed at achieving "zero inventory". The idea is that raw materials and components arrive at the factory at exactly the moment the production line needs them, not before or after. This eliminates the need for huge warehouses and significantly reduces costs.
+    </p>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      Imagine you're making pizza. Instead of storing large quantities of cheese and tomatoes in your fridge, you call the grocery store to bring you fresh ingredients just minutes before you start preparing the dough. This is the essence of <mark class="highlight-blue">JIT</mark>: efficiency and waste reduction.
+    </p>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        What is the main goal of the JIT production system?
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Increasing warehouse size</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Achieving "zero inventory" level</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Relying on few suppliers</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Increasing number of workers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Essay Question: What are the main risks or disadvantages a company might face when implementing JIT system?
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>Risks and Disadvantages of JIT:</strong></p>
+          <ul>
+            <li><mark class="highlight-orange">Complete Dependence on Suppliers:</mark> Any supplier delay stops production immediately</li>
+            <li><mark class="highlight-pink">Sensitivity to Disruptions:</mark> Natural disasters or crises heavily impact operations</li>
+            <li><mark class="highlight-blue">Higher Transportation Costs:</mark> Small, frequent shipments are more expensive than large shipments</li>
+            <li><mark class="highlight-yellow">Difficulty Meeting Sudden Demand:</mark> No reserve inventory to meet unexpected increases</li>
+            <li><mark class="highlight-green">Need for Perfect Coordination:</mark> Requires precise communication with suppliers and customers</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 9 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: Quality Assurance vs. Quality Control</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      Both terms aim for an excellent product, but they work in different ways:
+    </p>
+    <ul>
+      <li><mark class="highlight-blue">Quality Assurance (QA):</mark> This is the "preventive" approach. It focuses on the <strong>process</strong> itself to ensure defects don't occur in the first place. It cares about designing a correct production system that prevents errors.</li>
+      <li><mark class="highlight-yellow">Quality Control (QC):</mark> This is the "detective" approach. It focuses on the final <strong>product</strong> to identify and remove defects after they occur. It's like inspection at the end of the production line.</li>
+    </ul>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      Think of a chef preparing a dish.
+    </p>
+    <ul>
+      <li><strong>Quality Assurance:</strong> Ensuring the recipe itself is accurate, ingredients are fresh, the oven is calibrated to the right temperature, and the chef is well-trained. All this to prevent the dish from burning.</li>
+      <li><strong>Quality Control:</strong> Tasting the dish before serving it to the customer to ensure it's not too salty or burnt.</li>
+    </ul>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Essay Question: "Quality Assurance focuses on the process, while Quality Control focuses on the product". Explain this statement with an example from the service sector
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>Explanation:</strong></p>
+          <p><mark class="highlight-blue">Quality Assurance (QA):</mark> Works to prevent problems before they occur by improving the process itself.</p>
+          <p><mark class="highlight-yellow">Quality Control (QC):</mark> Works to detect problems after they occur by inspecting the final product.</p>
+          <p><strong>Example from Call Center:</strong></p>
+          <ul>
+            <li><mark class="highlight-blue">Quality Assurance:</mark> Training employees well, establishing clear scripts, continuously updating knowledge base, designing effective CRM system</li>
+            <li><mark class="highlight-yellow">Quality Control:</mark> Reviewing samples of recorded calls, measuring customer satisfaction after each call, evaluating employee performance based on specific criteria</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 10 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: The Transformation Process</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      This is the <mark class="highlight-pink">"magic touch"</mark> in production. The transformation process is any activity that takes "inputs" and changes them to add value, transforming them into "outputs" that customers desire. This process isn't just physical manufacturing; it can take different forms.
+    </p>
+    <p><strong>Forms of Transformation Process:</strong></p>
+    <ul>
+      <li><mark class="highlight-green">Physical Production:</mark> Like transforming wood into a chair.</li>
+      <li><mark class="highlight-blue">Storage:</mark> Storing certain types of cheese or wine for a period is part of their aging and quality improvement process.</li>
+      <li><mark class="highlight-yellow">Transportation:</mark> A package delivery company doesn't manufacture anything, but it transforms "a package at location A" into "a package at location B", which is a valuable service.</li>
+      <li><mark class="highlight-orange">Exchange:</mark> The bank that takes your savings (input) and gives you a deposit certificate (output) performs a financial transformation process.</li>
+    </ul>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      A university is an excellent example. It takes a "high school student" with basic knowledge (inputs), passes them through a "transformation process" consisting of lectures, exams, and projects for four years, to produce a "graduate" with specialized skills (outputs).
+    </p>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Which of the following activities is NOT considered a form of transformation process?
+      </div>
+      <div class="question-content">
+        <ul class="mcq-options">
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Manufacturing a car</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) Storing apples to be sold off-season</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) Purchasing raw materials from a supplier</li>
+          <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Delivering an order from a restaurant to customer's home</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 11 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: Feedback</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      Feedback is the <mark class="highlight-blue">"early warning system"</mark> and <mark class="highlight-green">"correction tool"</mark> in the production process. It's the information that returns from an advanced point in the system to a previous point to correct the course. There are two main types of feedback:
+    </p>
+    <ol>
+      <li><strong>From Customers to Transformation Process:</strong> When a customer complains that product quality is poor, this information returns to the factory to modify the manufacturing process.</li>
+      <li><strong>From Transformation Process to Inputs:</strong> When the production line discovers that a certain type of raw material causes machine breakage, this information returns to the purchasing department to change the supplier or material type.</li>
+    </ol>
+
+    <h3>2. Real-World Example:</h3>
+    <p>
+      When you're cooking and ask someone to taste the food, then they say "it needs more salt". This is the <mark class="highlight-yellow">feedback</mark> that makes you go back and add salt (correct the course) before the dish is completely ready.
+    </p>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Essay Question: Explain how feedback works as a control tool in a production system, with an example from a hospital
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>Explanation:</strong></p>
+          <p>Feedback is the <mark class="highlight-green">control loop</mark> that allows correction of deviations from required standards. It works in three steps:</p>
+          <ol>
+            <li><mark class="highlight-blue">Measurement:</mark> Collecting data on actual performance</li>
+            <li><mark class="highlight-yellow">Comparison:</mark> Comparing actual performance with set standards</li>
+            <li><mark class="highlight-orange">Correction:</mark> Taking actions to correct deviations</li>
+          </ol>
+          <p><strong>Hospital Example:</strong></p>
+          <p><mark class="highlight-pink">Feedback Loop:</mark></p>
+          <ul>
+            <li><strong>Inputs:</strong> Patients, medicines, doctors, equipment</li>
+            <li><strong>Process:</strong> Diagnosis and treatment</li>
+            <li><strong>Outputs:</strong> Recovered patients</li>
+            <li><strong>Feedback:</strong> If hospital infection rates rise (information from outputs), sterilization procedures are reviewed (process correction) and perhaps disinfectant quality is improved (input correction)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept 12 -->
+  <div class="glassy-card">
+    <h2>Concept Explanation: Evolution of Production Management</h2>
+    
+    <h3>1. Let's Understand the Idea:</h3>
+    <p>
+      The way things are made hasn't always been as it is today. It has gone through three main evolutionary stages:
+    </p>
+    <ol>
+      <li><mark class="highlight-blue">Craft Production:</mark> Before the Industrial Revolution, a skilled craftsman (like a shoemaker) made the entire product from start to finish using simple tools. Products were customized and expensive, and production was slow.</li>
+      <li><mark class="highlight-yellow">Industrial Revolution and Mass Production:</mark> With the invention of machines, factories appeared. Thanks to two key concepts "interchangeable parts" (all screws are exactly the same size) and "division of labor" (each worker responsible for a very small, repetitive task), it became possible to produce huge quantities of standardized products at very low cost using unskilled labor.</li>
+      <li><mark class="highlight-green">Lean Production:</mark> This is the modern development. It aims to combine the best of both worlds: the efficiency of mass production and the quality and variety of craft production. It relies on using the minimum amount of resources (workers, space, inventory) to produce large quantities of high-quality, diverse goods, depending on skilled labor and flexible equipment.</li>
+    </ol>
+
+    <h3>2. Real-World Example:</h3>
+    <ul>
+      <li><strong>Craft:</strong> A watchmaker makes one watch by hand in a month.</li>
+      <li><strong>Mass:</strong> A factory produces 10,000 identical plastic watches in a day.</li>
+      <li><strong>Lean:</strong> A factory produces 500 watches a day, but can quickly change design and colors based on market demand.</li>
+    </ul>
+
+    <h3>3. Possible Exam Questions:</h3>
+    <div class="question-container" onclick="toggleQuestion(this)">
+      <div class="question-header">
+        <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Essay Question: Compare "Mass Production" and "Lean Production" systems in terms of labor type, inventory size, and product variety
+      </div>
+      <div class="question-content">
+        <div class="solution-content">
+          <p><strong>Comparison:</strong></p>
+          <div class="table-container">
+            <table class="concepts-table">
+              <thead>
+                <tr>
+                  <th>Comparison Point</th>
+                  <th>Mass Production</th>
+                  <th>Lean Production</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Labor Type</strong></td>
+                  <td>Unskilled labor performing simple repetitive tasks</td>
+                  <td>Skilled, multi-talented labor</td>
+                </tr>
+                <tr>
+                  <td><strong>Inventory Size</strong></td>
+                  <td>Very large inventory (raw materials and finished products)</td>
+                  <td>Very little or zero inventory (JIT system)</td>
+                </tr>
+                <tr>
+                  <td><strong>Product Variety</strong></td>
+                  <td>Standardized products with very limited variety</td>
+                  <td>High variety with ability for quick customization</td>
+                </tr>
+                <tr>
+                  <td><strong>Equipment</strong></td>
+                  <td>Specialized machines for one product</td>
+                  <td>Flexible, adaptable equipment</td>
+                </tr>
+                <tr>
+                  <td><strong>Goal</strong></td>
+                  <td>Cost reduction through massive production quantities</td>
+                  <td>Waste reduction while maintaining quality and flexibility</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Concepts Table -->
+  <div class="glassy-card">
+    <h2>Key Concepts Summary Table</h2>
+    <div class="table-container">
+      <table class="concepts-table">
+        <thead>
+          <tr>
+            <th>Concept</th>
+            <th>Formal Definition</th>
+            <th>Summary (Two Words)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Production Function</strong></td>
+            <td>All activities directly related to creating goods and services</td>
+            <td>Making things.</td>
+          </tr>
+          <tr>
+            <td><strong>Forecasting</strong></td>
+            <td>Estimating future demand and resources needed to meet it</td>
+            <td>Smart prediction.</td>
+          </tr>
+          <tr>
+            <td><strong>Capacity Planning</strong></td>
+            <td>Determining required production capacity to meet changing demand</td>
+            <td>Balancing supply-demand.</td>
+          </tr>
+          <tr>
+            <td><strong>Design Capacity</strong></td>
+            <td>Maximum theoretical output under ideal conditions</td>
+            <td>Dream production.</td>
+          </tr>
+          <tr>
+            <td><strong>Effective Capacity</strong></td>
+            <td>Maximum possible output under realistic conditions</td>
+            <td>Actual production.</td>
+          </tr>
+          <tr>
+            <td><strong>Scheduling</strong></td>
+            <td>Arranging workload and resources optimally to minimize cost and time</td>
+            <td>Task organization.</td>
+          </tr>
+          <tr>
+            <td><strong>Inventory Management</strong></td>
+            <td>Process of ordering, storing, and using inventory</td>
+            <td>Asset management.</td>
+          </tr>
+          <tr>
+            <td><strong>JIT System</strong></td>
+            <td>Production system where components arrive just before use to minimize inventory</td>
+            <td>Zero inventory.</td>
+          </tr>
+          <tr>
+            <td><strong>Quality Assurance (QA)</strong></td>
+            <td>Approach focusing on process to prevent defects from occurring</td>
+            <td>Error prevention.</td>
+          </tr>
+          <tr>
+            <td><strong>Quality Control (QC)</strong></td>
+            <td>Approach focusing on final product to identify defects after occurrence</td>
+            <td>Error detection.</td>
+          </tr>
+          <tr>
+            <td><strong>Transformation Process</strong></td>
+            <td>Activity that changes inputs and adds value to transform them into outputs</td>
+            <td>Magic touch.</td>
+          </tr>
+          <tr>
+            <td><strong>Feedback</strong></td>
+            <td>Returned information used for control and course correction</td>
+            <td>Correction tool.</td>
+          </tr>
+          <tr>
+            <td><strong>Craft Production</strong></td>
+            <td>Production system relying on skilled labor and simple tools for small quantities</td>
+            <td>Manual making.</td>
+          </tr>
+          <tr>
+            <td><strong>Mass Production</strong></td>
+            <td>System relying on unskilled labor and standardized machines for huge quantities</td>
+            <td>Quantity production.</td>
+          </tr>
+          <tr>
+            <td><strong>Lean Production</strong></td>
+            <td>System using minimum resources to produce high-quality, diverse goods</td>
+            <td>Efficiency-flexibility.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-info">
+    <div class="footer-brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+      </svg>
+      Athr Educational Platform
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-disclaimer">
+      This educational content is specifically designed to help you deeply understand the material. All rights reserved © 2025
+    </div>
+  </div>
+</div>
 
   </main>
 
   <script>
-    // Global Variables
-    const API_ENDPOINT = '/askAI';
-    const lectureContent = `المحتوى الكامل للمحاضرة...`;
-    
-    let conversationHistory = [];
-    let isFirstMessage = true;
-    let isArabic = true;
-
-    // DOM Elements
-    const translationButton = document.getElementById('translationButton');
-    const aiChatButton = document.getElementById('aiChatButton');
-    const aiChatModal = document.getElementById('aiChatModal');
-    const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
-    const aiChatMessages = document.getElementById('aiChatMessages');
-    const aiChatInput = document.getElementById('aiChatInput');
-    const aiChatSendBtn = document.getElementById('aiChatSendBtn');
-    const arabicContent = document.getElementById('arabicContent');
-    const englishContent = document.getElementById('englishContent');
-    const aiFabText = document.getElementById('aiFabText');
-    const aiChatTitleText = document.getElementById('aiChatTitleText');
-    
-    const html = document.documentElement;
-    const body = document.body;
-
-    // Translation
-    function switchLanguage() {
-      isArabic = !isArabic;
+    document.addEventListener('DOMContentLoaded', function () {
+      const translationButton = document.getElementById('translationButton');
+      const translationText = translationButton.querySelector('.translation-text');
+      const arabicContent = document.getElementById('arabicContent');
+      const englishContent = document.getElementById('englishContent');
+      const html = document.documentElement;
+      const body = document.body;
+      let isArabic = true;
       
-      if (isArabic) {
-        html.setAttribute('lang', 'ar');
-        html.setAttribute('dir', 'rtl');
-        body.setAttribute('dir', 'rtl');
-        arabicContent.classList.remove('hidden');
-        englishContent.classList.add('hidden');
-        translationButton.querySelector('.translation-text').textContent = 'English';
-        aiFabText.textContent = 'أثر AI';
-        aiChatTitleText.textContent = 'مساعد أثر الذكي';
-        aiChatInput.placeholder = 'اكتب سؤالك هنا...';
-      } else {
-        html.setAttribute('lang', 'en');
-        html.setAttribute('dir', 'ltr');
-        body.setAttribute('dir', 'ltr');
-        arabicContent.classList.add('hidden');
-        englishContent.classList.remove('hidden');
-        translationButton.querySelector('.translation-text').textContent = 'العربية';
-        aiFabText.textContent = 'Athr AI';
-        aiChatTitleText.textContent = 'Athr AI Assistant';
-        aiChatInput.placeholder = 'Ask your question...';
+      const aiChatButton = document.getElementById('aiChatButton');
+      const aiChatModal = document.getElementById('aiChatModal');
+      const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
+      const aiChatMessages = document.getElementById('aiChatMessages');
+      const aiChatInput = document.getElementById('ai-chat-input');
+      const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
+      const aiChatTitle = document.getElementById('ai-chat-title');
+      const aiChatButtonText = document.getElementById('aiFabText');
+
+      let conversationHistory = [];
+      let isFirstMessage = true;
+
+      function showTypingIndicator(show) {
+        const existingIndicator = aiChatMessages.querySelector('.typing-indicator');
+        if (existingIndicator) existingIndicator.remove();
+        
+        if (show) {
+          const indicatorElement = document.createElement('div');
+          indicatorElement.classList.add('chat-message', 'ai-message', 'typing-indicator');
+          indicatorElement.innerHTML = '<span>أثر AI يكتب الآن</span><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>';
+          aiChatMessages.appendChild(indicatorElement);
+          aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+        }
       }
-    }
 
-    translationButton.addEventListener('click', switchLanguage);
-
-    // AI Chat Modal
-    aiChatButton.addEventListener('click', () => {
-      aiChatModal.classList.add('visible');
-      aiChatInput.focus();
-      if (isFirstMessage) {
-        addWelcomeMessage();
-        isFirstMessage = false;
-      }
-    });
-
-    aiChatCloseBtn.addEventListener('click', () => {
-      aiChatModal.classList.remove('visible');
-    });
-
-    aiChatModal.addEventListener('click', (e) => {
-      if (e.target === aiChatModal) {
-        aiChatModal.classList.remove('visible');
-      }
-    });
-
-    function addWelcomeMessage() {
-      const welcomeMsg = isArabic 
-        ? 'مرحباً! أنا مساعد أثر الذكي. جاهز لمساعدتك في فهم المحتوى. اسألني أي سؤال!'
-        : 'Welcome! I am Athr AI Assistant. Ready to help you understand the content. Ask me anything!';
-      addMessage(welcomeMsg, 'ai');
-    }
-
-    function addMessage(text, sender) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = `chat-message ${sender}`;
-      
-      const avatar = document.createElement('div');
-      avatar.className = `chat-avatar ${sender}`;
-      avatar.textContent = sender === 'ai' ? 'أ' : 'أ';
-      
-      const bubble = document.createElement('div');
-      bubble.className = 'chat-bubble';
-      
-      if (sender === 'ai' && typeof marked !== 'undefined') {
-        bubble.innerHTML = marked.parse(text);
-      } else {
-        bubble.textContent = text;
+      function addMessage(text, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', `${sender}-message`);
+        messageElement.innerHTML = marked.parse(text);
+        aiChatMessages.appendChild(messageElement);
+        aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
       }
       
-      if (sender === 'user') {
-        msgDiv.appendChild(bubble);
-        msgDiv.appendChild(avatar);
-      } else {
-        msgDiv.appendChild(avatar);
-        msgDiv.appendChild(bubble);
+      function applyLanguage(arabic) {
+        isArabic = arabic;
+        const lang = isArabic ? 'ar' : 'en';
+        const dir = isArabic ? 'rtl' : 'ltr';
+        
+        html.setAttribute('lang', lang);
+        html.setAttribute('dir', dir);
+        body.setAttribute('dir', dir);
+        
+        arabicContent.classList.toggle('hidden', !isArabic);
+        englishContent.classList.toggle('hidden', isArabic);
+        
+        translationText.textContent = isArabic ? 'English' : 'العربية';
+        document.title = isArabic ? 'إدارة الإنتاج والعمليات - منصة أثر' : 'Production and Operations Management - Athr Platform';
+        
+        aiChatTitle.textContent = isArabic ? 'اسأل أثر AI' : 'Ask Athr AI';
+        aiChatInput.placeholder = isArabic ? 'اكتب سؤالك هنا...' : 'Type your question here...';
+        aiChatButtonText.textContent = isArabic ? 'أثر AI' : 'Athr AI';
       }
       
-      aiChatMessages.appendChild(msgDiv);
-      aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-    }
+      translationButton.addEventListener('click', function() {
+        applyLanguage(!isArabic);
+      });
 
-    function showTypingIndicator() {
-      const typingDiv = document.createElement('div');
-      typingDiv.className = 'chat-message';
-      typingDiv.id = 'typing-indicator';
-      typingDiv.innerHTML = `
-        <div class="chat-avatar ai">أ</div>
-        <div class="chat-bubble">
-          <div class="typing-indicator">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-          </div>
-        </div>
-      `;
-      aiChatMessages.appendChild(typingDiv);
-      aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-    }
-
-    function hideTypingIndicator() {
-      const typing = document.getElementById('typing-indicator');
-      if (typing) typing.remove();
-    }
-
-    async function sendMessage() {
-      const userMessage = aiChatInput.value.trim();
-      if (!userMessage) return;
-      
-      addMessage(userMessage, 'user');
-      conversationHistory.push({ role: 'user', content: userMessage });
-      
-      aiChatInput.value = '';
-      aiChatInput.style.height = 'auto';
-      
-      showTypingIndicator();
-      
-      aiChatInput.disabled = true;
-      aiChatSendBtn.disabled = true;
-      setTimeout(() => {
-        aiChatInput.disabled = false;
-        aiChatSendBtn.disabled = false;
+      aiChatButton.addEventListener('click', function() {
+        aiChatModal.classList.add('visible');
+        
+        if (isFirstMessage) {
+          const welcomeMsg = isArabic 
+            ? "مرحباً! أنا **أثر AI**، مساعدك الدراسي الذكي. سأساعدك في فهم محتوى هذا الدرس بطريقة سهلة وممتعة. اسألني أي شيء عن المحتوى!"
+            : "Hello! I'm **Athr AI**, your intelligent study assistant. I'll help you understand this lesson content in an easy and fun way. Ask me anything about the content!";
+          addMessage(welcomeMsg, 'ai');
+          isFirstMessage = false;
+        }
+        
         aiChatInput.focus();
-      }, 5000);
-      
-      try {
-        const response = await fetch(API_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            conversationHistory: conversationHistory,
-            context: lectureContent
-          })
+      });
+
+      aiChatCloseBtn.addEventListener('click', function() {
+        aiChatModal.classList.remove('visible');
+      });
+
+      aiChatModal.addEventListener('click', function(e) {
+        if (e.target === aiChatModal) {
+          aiChatModal.classList.remove('visible');
+        }
+      });
+
+      async function sendMessage() {
+        const userMessage = aiChatInput.value.trim();
+        if (!userMessage) return;
+
+        addMessage(userMessage, 'user');
+        conversationHistory.push({ role: 'user', content: userMessage });
+        
+        aiChatInput.value = '';
+        aiChatInput.disabled = true;
+        aiChatSendBtn.disabled = true;
+        
+        showTypingIndicator(true);
+
+        try {
+          const lectureContext = arabicContent.innerText || '';
+          
+          const response = await fetch('/functions/askAI', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              conversationHistory: conversationHistory,
+              context: lectureContext
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          showTypingIndicator(false);
+
+          if (data.reply) {
+            addMessage(data.reply, 'ai');
+            conversationHistory.push({ role: 'assistant', content: data.reply });
+          } else {
+            throw new Error('No reply from AI');
+          }
+
+        } catch (error) {
+          console.error('Error:', error);
+          showTypingIndicator(false);
+          
+          const errorMsg = isArabic
+            ? "عذراً، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى."
+            : "Sorry, a connection error occurred. Please try again.";
+          addMessage(errorMsg, 'ai');
+        } finally {
+          aiChatInput.disabled = false;
+          aiChatSendBtn.disabled = false;
+          aiChatInput.focus();
+        }
+      }
+
+      aiChatSendBtn.addEventListener('click', sendMessage);
+      aiChatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      // Question Toggle Function
+      window.toggleQuestion = function(element) {
+        const content = element.querySelector('.question-content');
+        element.classList.toggle('open');
+        content.classList.toggle('show');
+        
+        if (content.classList.contains('show')) {
+          setTimeout(() => {
+            content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 300);
+        }
+      };
+
+      // MCQ Selection Function
+      window.selectMCQ = function(element, isCorrect) {
+        const options = element.parentNode.querySelectorAll('.mcq-option');
+        
+        options.forEach(option => {
+          option.style.pointerEvents = 'none';
+          option.classList.remove('selected', 'correct', 'incorrect');
         });
         
-        if (!response.ok) throw new Error('API request failed');
+        element.classList.add('selected');
         
-        const data = await response.json();
-        hideTypingIndicator();
-        
-        addMessage(data.reply, 'ai');
-        conversationHistory.push({ role: 'model', content: data.reply });
-        
-      } catch (error) {
-        console.error('Error:', error);
-        hideTypingIndicator();
-        const errorMsg = isArabic 
-          ? 'عذراً، حدث خطأ. حاول مرة أخرى.'
-          : 'Sorry, an error occurred. Please try again.';
-        addMessage(errorMsg, 'ai');
-      }
-    }
-
-    aiChatInput.addEventListener('input', function() {
-      this.style.height = 'auto';
-      this.style.height = Math.min(this.scrollHeight, 140) + 'px';
-      aiChatSendBtn.disabled = this.value.trim().length === 0;
-    });
-
-    aiChatInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    aiChatSendBtn.addEventListener('click', sendMessage);
-
-    // Question Toggle
-    function toggleQuestion(element) {
-      const content = element.querySelector('.question-content');
-      element.classList.toggle('open');
-      content.classList.toggle('show');
-      
-      if (content.classList.contains('show')) {
         setTimeout(() => {
-          content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 300);
-      }
-    }
-
-    // MCQ Selection
-    function selectMCQ(element, isCorrect) {
-      const options = element.parentNode.querySelectorAll('.mcq-option');
-      
-      options.forEach(option => {
-        option.style.pointerEvents = 'none';
-        option.classList.remove('selected', 'correct', 'incorrect');
-      });
-      
-      element.classList.add('selected');
-      
-      setTimeout(() => {
-        if (isCorrect) {
-          element.classList.add('correct');
-          element.innerHTML += ' ✓';
-        } else {
-          element.classList.add('incorrect');
-          element.innerHTML += ' ✗';
-          
-          options.forEach(option => {
-            const onclick = option.getAttribute('onclick');
-            if (onclick && onclick.includes('true')) {
-              option.classList.add('correct');
-              option.innerHTML += ' ✓';
-            }
-          });
-        }
-      }, 500);
-    }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('Athr Platform - Production Management Module Loaded');
+          if (isCorrect) {
+            element.classList.add('correct');
+            element.innerHTML += ' ✓';
+          } else {
+            element.classList.add('incorrect');
+            element.innerHTML += ' ✗';
+            
+            options.forEach(option => {
+              const onclick = option.getAttribute('onclick');
+              if (onclick && onclick.includes('true')) {
+                option.classList.add('correct');
+                option.innerHTML += ' ✓';
+              }
+            });
+          }
+        }, 500);
+      };
     });
   </script>
 </body>
