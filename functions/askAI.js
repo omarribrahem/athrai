@@ -1,53 +1,23 @@
 // =================================================================
 //   functions/askAI.js
-//   منصة أثر التعليمية - Cloudflare Pages Function
+//   منصة أثر التعليمية - Free Tier Models
 //   
-//   📊 النظام الذكي لتوفير 70-80% من تكاليف Google AI API
-//   🚀 يستخدم Semantic Search مع Supabase للـ Caching الذكي
+//   الموديلات المستخدمة (كلها مجانية):
+//   - gemini-1.5-flash (النص) - 15 requests/minute
+//   - text-embedding-004 (Embeddings) - 1500 requests/day
 //   
-//   المميزات:
-//   ✅ بحث دلالي (Semantic Search) - يفهم معنى السؤال
-//   ✅ تخزين ذكي في Supabase مع pgvector
-//   ✅ استجابة فورية (300ms بدل 3 ثوانٍ) للأسئلة المشابهة
-//   ✅ توفير هائل في التكاليف (70-80%)
-//   ✅ تتبع شعبية الأسئلة
-//   
-//   آلية العمل:
-//   1. يستلم سؤال من الطالب
-//   2. يحوّل السؤال إلى vector (embedding) باستخدام Google
-//   3. يبحث في Supabase عن أسئلة مشابهة دلالياً (>85% تشابه)
-//   4. إذا وُجد → يرجع الإجابة المخزنة فوراً (Cache Hit)
-//   5. إذا لم يُوجد → يستدعي Google AI ويحفظ الإجابة
-//   
-//   متطلبات التشغيل:
-//   - Supabase Database مع pgvector extension
-//   - جدول ai_responses_cache مع الـ SQL المرفق
-//   - Environment Variables: GOOGLE_API_KEY, SUPABASE_URL, SUPABASE_ANON_KEY
+//   ✅ Semantic Caching
+//   ✅ Supabase Integration
+//   ✅ توفير 70-80% من API calls
 // =================================================================
 
 import { createClient } from '@supabase/supabase-js';
 
 /**
- * =================================================================
- * دالة: createEmbedding
- * الغرض: تحويل النص إلى vector رقمي (embedding) بحجم 768
- * =================================================================
- * 
- * ما هو Embedding؟
- * - هو تمثيل رقمي للنص يعبّر عن "معناه"
- * - مثال: "ما هو التنبؤ؟" → [0.23, -0.45, 0.89, ... 768 رقم]
- * - الأسئلة المتشابهة في المعنى تكون embeddings قريبة من بعضها
- * 
- * لماذا نستخدمه؟
- * - للبحث الدلالي: "ما هو التنبؤ؟" يطابق "عرف التنبؤ" (94% تشابه)
- * - البحث النصي التقليدي لا يفهم أن السؤالين نفس المعنى
- * 
- * @param {string} text - النص المراد تحويله (السؤال)
- * @param {string} apiKey - Google API Key
- * @returns {Promise<Array<number>>} - Array من 768 رقم (vector)
+ * إنشاء embedding من النص
+ * Model: text-embedding-004 (Free tier)
  */
 async function createEmbedding(text, apiKey) {
-  // استخدام موديل Google للـ embeddings
   const model = 'text-embedding-004';
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${apiKey}`;
 
@@ -69,14 +39,11 @@ async function createEmbedding(text, apiKey) {
 
     const result = await response.json();
     
-    // التحقق من صحة الاستجابة
     if (!result.embedding || !result.embedding.values) {
       throw new Error('Invalid embedding response format');
     }
     
-    // إرجاع الـ vector (768 رقم)
     return result.embedding.values;
-    
   } catch (error) {
     console.error('❌ createEmbedding error:', error.message);
     throw error;
@@ -84,61 +51,34 @@ async function createEmbedding(text, apiKey) {
 }
 
 /**
- * =================================================================
- * دالة: findSimilarQuestion
- * الغرض: البحث عن سؤال مشابه دلالياً في قاعدة البيانات
- * =================================================================
- * 
- * آلية العمل:
- * 1. تستقبل vector للسؤال الجديد
- * 2. تستدعي function في Supabase (match_questions)
- * 3. تستخدم cosine similarity للمقارنة بين vectors
- * 4. ترجع أقرب سؤال إذا كان التشابه > 85%
- * 
- * مثال عملي:
- * - سؤال مخزن: "ما هو التنبؤ؟"
- * - سؤال جديد: "عرف التنبؤ"
- * - النتيجة: تشابه 94% → Cache Hit! ✅
- * 
- * @param {Object} supabase - Supabase client
- * @param {Array<number>} questionEmbedding - Vector السؤال الجديد
- * @param {number} threshold - الحد الأدنى للتشابه (0.85 = 85%)
- * @returns {Promise<Object|null>} - الإجابة المخزنة أو null
+ * البحث عن سؤال مشابه في Cache
  */
 async function findSimilarQuestion(supabase, questionEmbedding, threshold = 0.85) {
   try {
-    // استدعاء الـ RPC function في Supabase
     const { data, error } = await supabase.rpc('match_questions', {
       query_embedding: questionEmbedding,
       match_threshold: threshold,
-      match_count: 1  // نريد أقرب نتيجة واحدة فقط
+      match_count: 1
     });
 
     if (error) {
-      console.error('❌ Similarity search RPC error:', error);
+      console.error('❌ Similarity search error:', error);
       return null;
     }
 
-    // إذا وُجد سؤال مشابه
     if (data && data.length > 0) {
       const match = data[0];
       const similarityPercent = (match.similarity * 100).toFixed(1);
       
       console.log(`✅ CACHE HIT! Similarity: ${similarityPercent}%`);
-      console.log(`   Cached question: "${match.question_text.substring(0, 60)}..."`);
       
-      // تحديث إحصائيات الاستخدام (عدد مرات الاستخدام)
-      const { error: updateError } = await supabase
+      await supabase
         .from('ai_responses_cache')
         .update({ 
           hit_count: match.hit_count + 1,
           last_accessed: new Date().toISOString()
         })
         .eq('id', match.id);
-
-      if (updateError) {
-        console.warn('⚠️ Failed to update hit_count:', updateError.message);
-      }
 
       return {
         answer: match.response_text,
@@ -148,9 +88,8 @@ async function findSimilarQuestion(supabase, questionEmbedding, threshold = 0.85
       };
     }
 
-    console.log(`❌ CACHE MISS - No similar questions found (threshold: ${threshold})`);
+    console.log('❌ CACHE MISS');
     return null;
-    
   } catch (err) {
     console.error('❌ findSimilarQuestion exception:', err.message);
     return null;
@@ -158,28 +97,7 @@ async function findSimilarQuestion(supabase, questionEmbedding, threshold = 0.85
 }
 
 /**
- * =================================================================
- * دالة: cacheResponse
- * الغرض: حفظ السؤال والإجابة الجديدة في قاعدة البيانات
- * =================================================================
- * 
- * متى تُستدعى؟
- * - بعد الحصول على إجابة جديدة من Google AI
- * - لحفظها للاستخدام المستقبلي
- * 
- * ماذا يُحفظ؟
- * - نص السؤال (question_text)
- * - Vector السؤال (question_embedding) - للبحث الدلالي
- * - نص الإجابة (response_text)
- * - Hash المحتوى (lecture_context_hash) - لربطها بالمحاضرة
- * - عداد الاستخدام (hit_count = 1)
- * - تاريخ الإنشاء والوصول
- * 
- * @param {Object} supabase - Supabase client
- * @param {string} questionText - نص السؤال الأصلي
- * @param {Array<number>} questionEmbedding - Vector السؤال
- * @param {string} responseText - الإجابة من AI
- * @param {string} contextHash - Hash المحتوى التعليمي
+ * حفظ السؤال والإجابة
  */
 async function cacheResponse(supabase, questionText, questionEmbedding, responseText, contextHash) {
   try {
@@ -198,7 +116,7 @@ async function cacheResponse(supabase, questionText, questionEmbedding, response
     if (error) {
       console.error('❌ Cache save error:', error.message);
     } else {
-      console.log('💾 New response cached successfully');
+      console.log('💾 Response cached');
     }
   } catch (err) {
     console.error('❌ cacheResponse exception:', err.message);
@@ -206,26 +124,11 @@ async function cacheResponse(supabase, questionText, questionEmbedding, response
 }
 
 /**
- * =================================================================
- * دالة: queryGoogleAI
- * الغرض: استدعاء Google Gemini للحصول على إجابة جديدة
- * =================================================================
- * 
- * متى تُستدعى؟
- * - عندما لا يُوجد سؤال مشابه في الـ cache (Cache Miss)
- * 
- * المعاملات:
- * - systemInstruction: شخصية وقواعد "أثر AI"
- * - contents: سجل المحادثة الكامل (للذاكرة والسياق)
- * - apiKey: Google API Key
- * 
- * @param {string} systemInstruction - التعليمات الأساسية للـ AI
- * @param {Array} contents - سجل المحادثة
- * @param {string} apiKey - Google API Key
- * @returns {Promise<string>} - إجابة AI النصية
+ * استدعاء Google Gemini
+ * Model: gemini-1.5-flash (Free tier: 15 RPM)
  */
 async function queryGoogleAI(systemInstruction, contents, apiKey) {
-  const model = 'gemini-1.5-flash-latest';
+  const model = 'gemini-1.5-flash';
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   const requestBody = {
@@ -234,56 +137,39 @@ async function queryGoogleAI(systemInstruction, contents, apiKey) {
     },
     contents: contents,
     generationConfig: {
-      temperature: 0.7,      // توازن بين الإبداع والدقة
-      maxOutputTokens: 512,  // حد أقصى لطول الإجابة (للتوفير)
+      temperature: 0.7,
+      maxOutputTokens: 512,
     }
   };
 
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(requestBody),
-  });
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    });
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    console.error("❌ Google AI API Error:", errorBody);
-    throw new Error(`Gemini API error (${response.status})`);
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("❌ Gemini API Error:", errorBody);
+      throw new Error(`Gemini API error (${response.status})`);
+    }
+
+    const result = await response.json();
+
+    if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return result.candidates[0].content.parts[0].text;
+    }
+
+    return "عفواً، لم أتمكن من إيجاد إجابة مناسبة. هل يمكنك إعادة صياغة سؤالك؟";
+  } catch (error) {
+    console.error("❌ queryGoogleAI error:", error.message);
+    throw error;
   }
-
-  const result = await response.json();
-
-  // استخراج النص من الاستجابة
-  if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-    return result.candidates[0].content.parts[0].text;
-  }
-
-  // رسالة افتراضية في حالة عدم وجود إجابة
-  return "عفواً، لم أتمكن من إيجاد إجابة مناسبة. هل يمكنك إعادة صياغة سؤالك؟";
 }
 
 /**
- * =================================================================
- * دالة: onRequest (الدالة الرئيسية)
- * الغرض: معالجة كل طلب من المستخدم
- * =================================================================
- * 
- * تدفق العمل الكامل:
- * 
- * 1. استقبال الطلب والتحقق من صحته
- * 2. استخراج Environment Variables
- * 3. قراءة سؤال المستخدم من سجل المحادثة
- * 4. محاولة البحث في Cache:
- *    a. تحويل السؤال لـ embedding
- *    b. البحث عن أسئلة مشابهة
- *    c. إذا وُجد → إرجاع الإجابة المخزنة (سريع!)
- * 5. إذا لم يُوجد (Cache Miss):
- *    a. استدعاء Google Gemini
- *    b. حفظ السؤال والإجابة الجديدة
- *    c. إرجاع الإجابة للمستخدم
- * 
- * @param {Object} context - Cloudflare context object
- * @returns {Response} - استجابة JSON تحتوي على الإجابة
+ * الدالة الرئيسية
  */
 export async function onRequest(context) {
   const startTime = Date.now();
@@ -291,12 +177,11 @@ export async function onRequest(context) {
   try {
     const { env, request } = context;
     
-    // ===== 1. استخراج Environment Variables =====
     const GOOGLE_API_KEY = env.GOOGLE_API_KEY;
     const SUPABASE_URL = env.SUPABASE_URL;
     const SUPABASE_ANON_KEY = env.SUPABASE_ANON_KEY;
 
-    // ===== 2. التحقق من HTTP Method =====
+    // التحقق من Method
     if (request.method !== 'POST') {
       return new Response(JSON.stringify({ error: 'Method Not Allowed' }), { 
         status: 405,
@@ -304,19 +189,18 @@ export async function onRequest(context) {
       });
     }
 
-    // ===== 3. التحقق من وجود المفاتيح =====
+    // التحقق من Google API Key
     if (!GOOGLE_API_KEY) {
-      console.error('❌ GOOGLE_API_KEY is not set');
+      console.error('❌ GOOGLE_API_KEY missing');
       return new Response(JSON.stringify({ error: 'خطأ في إعدادات الخادم.' }), {
         status: 500, 
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    // ===== 4. قراءة البيانات من الطلب =====
+    // قراءة البيانات
     const { conversationHistory, context: lectureContext } = await request.json();
 
-    // التحقق من صحة البيانات
     if (!conversationHistory || !Array.isArray(conversationHistory)) {
       return new Response(JSON.stringify({ error: 'بيانات المحادثة غير صحيحة.' }), {
         status: 400,
@@ -324,7 +208,7 @@ export async function onRequest(context) {
       });
     }
 
-    // ===== 5. استخراج آخر سؤال من المستخدم =====
+    // استخراج آخر سؤال
     const lastUserMessage = conversationHistory
       .slice()
       .reverse()
@@ -338,22 +222,21 @@ export async function onRequest(context) {
     }
 
     const userQuestion = lastUserMessage.content;
-    console.log(`\n📩 NEW REQUEST: "${userQuestion.substring(0, 70)}..."`);
+    console.log(`\n📩 "${userQuestion.substring(0, 70)}..."`);
 
-    // ===== 6. محاولة البحث في Cache =====
+    // === محاولة Cache ===
     let cachedResult = null;
 
     if (SUPABASE_URL && SUPABASE_ANON_KEY) {
       try {
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        console.log('🔍 Creating embedding for question...');
+        console.log('🔍 Creating embedding...');
         const questionEmbedding = await createEmbedding(userQuestion, GOOGLE_API_KEY);
         
-        console.log('🔎 Searching cache for similar questions...');
+        console.log('🔎 Searching cache...');
         cachedResult = await findSimilarQuestion(supabase, questionEmbedding, 0.85);
 
-        // ===== 7. إذا وُجد في Cache → إرجاع فوري =====
         if (cachedResult) {
           const responseTime = Date.now() - startTime;
           
@@ -362,52 +245,46 @@ export async function onRequest(context) {
             cached: true,
             source: 'semantic-cache',
             similarity: cachedResult.similarity,
-            originalQuestion: cachedResult.originalQuestion,
-            hitCount: cachedResult.hitCount,
             responseTime: `${responseTime}ms`
           }), {
             status: 200, 
             headers: { 
               'Content-Type': 'application/json',
-              'X-Cache-Status': 'HIT',
-              'X-Similarity': cachedResult.similarity.toFixed(3),
-              'X-Response-Time': `${responseTime}ms`
+              'X-Cache-Status': 'HIT'
             },
           });
         }
       } catch (cacheError) {
-        console.warn('⚠️ Cache lookup failed, continuing with AI:', cacheError.message);
+        console.warn('⚠️ Cache failed:', cacheError.message);
       }
     } else {
-      console.warn('⚠️ Supabase not configured - caching disabled');
+      console.warn('⚠️ Supabase not configured');
     }
 
-    // ===== 8. لم يُوجد في Cache → استدعاء Google AI =====
-    console.log('🤖 Calling Google Gemini API...');
+    // === استدعاء Gemini ===
+    console.log('🤖 Calling Gemini...');
 
-    // شخصية وقواعد "أثر AI"
-    const systemInstructionText = `أنت "أثر AI"، مساعد دراسي ودود ومحب للمعرفة من منصة "أثر". هدفك هو جعل التعلم تجربة ممتعة وسهلة، وإشعال فضول الطالب.
+    const systemInstructionText = `أنت "أثر AI"، مساعد دراسي ودود ومحب للمعرفة من منصة "أثر".
 
 ### شخصيتك:
-- **ودود ومطمئن:** استخدم دائمًا عبارات لطيفة ومحفزة مثل "لا تقلق، سنفهمها معًا"، "سؤال رائع! دعنا نحلله خطوة بخطوة"، "فكرة ممتازة، هذا يقودنا إلى...".
-- **تفاعلي:** كن شريكًا في الحوار. لا تكتفِ بتقديم المعلومات، بل اجعل الطالب جزءًا من رحلة اكتشافها.
+- ودود ومطمئن
+- تفاعلي ومحفز
 
-### قواعدك الذهبية:
-1. **التركيز المطلق:** مهمتك **الوحيدة** هي الإجابة على الأسئلة المتعلقة بـ "المحتوى المرجعي لهذه الجلسة".
-2. **الإيجاز أولاً:** ابدأ دائمًا بإجابة موجزة ومباشرة في نقاط.
-3. **التنسيق الاحترافي:** استخدم تنسيق Markdown دائمًا. استعمل **النص العريض** للمصطلحات الهامة، و- للقوائم النقطية.
-4. **سؤال المتابعة الذكي:** بعد كل إجابة، اطرح سؤالاً متابعًا واحدًا وبسيطًا.
+### قواعدك:
+1. **التركيز:** الإجابة على المحتوى المرجعي فقط
+2. **الإيجاز:** ابدأ بإجابة موجزة ومباشرة
+3. **Markdown:** استخدم **العريض** و- للقوائم
+4. **المتابعة:** اطرح سؤال بسيط بعد الإجابة
 
-### الممنوعات:
-- ممنوع اختلاق المعلومات.
-- ممنوع حل الواجبات بشكل مباشر.
+### ممنوع:
+- اختلاق معلومات
+- حل واجبات مباشرة
 
 ---
-**المحتوى المرجعي لهذه الجلسة:**
-${lectureContext || 'لا يوجد محتوى محدد'}
+**المحتوى:**
+${lectureContext || 'لا يوجد محتوى'}
 ---`;
 
-    // تحويل سجل المحادثة لتنسيق Gemini
     const contents = conversationHistory.map((turn, index) => ({
       role: (index === conversationHistory.length - 1 && turn.role === 'user') ? 'user' : 'model',
       parts: [{ text: turn.content }]
@@ -415,7 +292,7 @@ ${lectureContext || 'لا يوجد محتوى محدد'}
 
     const aiAnswer = await queryGoogleAI(systemInstructionText, contents, GOOGLE_API_KEY);
 
-    // ===== 9. حفظ الإجابة الجديدة في Cache =====
+    // === حفظ في Cache ===
     if (SUPABASE_URL && SUPABASE_ANON_KEY) {
       try {
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -431,11 +308,10 @@ ${lectureContext || 'لا يوجد محتوى محدد'}
           contextHash
         );
       } catch (saveError) {
-        console.warn('⚠️ Failed to cache response:', saveError.message);
+        console.warn('⚠️ Save failed:', saveError.message);
       }
     }
 
-    // ===== 10. إرجاع الإجابة للمستخدم =====
     const responseTime = Date.now() - startTime;
 
     return new Response(JSON.stringify({ 
@@ -447,14 +323,12 @@ ${lectureContext || 'لا يوجد محتوى محدد'}
       status: 200, 
       headers: { 
         'Content-Type': 'application/json',
-        'X-Cache-Status': 'MISS',
-        'X-Response-Time': `${responseTime}ms`
+        'X-Cache-Status': 'MISS'
       },
     });
 
   } catch (error) {
-    // ===== معالجة الأخطاء =====
-    console.error("❌ FATAL ERROR:", error);
+    console.error("❌ ERROR:", error);
     const errorTime = Date.now() - startTime;
     
     return new Response(JSON.stringify({ 
@@ -467,37 +341,3 @@ ${lectureContext || 'لا يوجد محتوى محدد'}
     });
   }
 }
-
-/**
- * =================================================================
- * ملاحظات مهمة للصيانة والتطوير:
- * =================================================================
- * 
- * 1. الأداء:
- *    - Cache Hit: ~300ms
- *    - Cache Miss: ~3000ms (استدعاء AI + حفظ)
- *    - معدل Cache Hit المتوقع: 70-85% بعد يومين
- * 
- * 2. التكاليف:
- *    - Embedding API: $0.00025 per 1K characters
- *    - Gemini API: ~$0.002 per request
- *    - التوفير المتوقع: 70-80% من التكلفة الأصلية
- * 
- * 3. الصيانة:
- *    - مراقبة hit_count في Supabase لمعرفة الأسئلة الشائعة
- *    - حذف الأسئلة القديمة غير المستخدمة (>30 يوم، hit_count < 3)
- *    - تعديل threshold (0.85) حسب الحاجة:
- *      * أعلى (0.90) = دقة أكثر، توفير أقل
- *      * أقل (0.80) = توفير أكثر، دقة أقل
- * 
- * 4. الأمان:
- *    - جميع المفاتيح في Environment Variables (آمنة)
- *    - Row Level Security مفعّل في Supabase
- *    - لا يتم تخزين معلومات شخصية
- * 
- * 5. المتطلبات:
- *    - Supabase: جدول ai_responses_cache + function match_questions
- *    - Environment Variables: GOOGLE_API_KEY, SUPABASE_URL, SUPABASE_ANON_KEY
- *    - Dependencies: @supabase/supabase-js
- * =================================================================
- */
