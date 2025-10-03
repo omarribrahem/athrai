@@ -1,0 +1,2747 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>إدارة الإنتاج والعمليات - منصة أثر</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Marked.js for Markdown -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <style>
+    :root {
+      --color-primary: #16a34a;
+      --color-primary-dark: #4d7c0f;
+      --color-primary-medium: #22c55e;
+      --color-ai: #f59e0b;
+      --glass-bg: rgba(240, 253, 244, 0.25);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --text-color: #0f172a;
+      --border-radius: 24px;
+      --font-arabic: 'IBM Plex Sans Arabic', 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-english: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* Animations */
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes waveFlow {
+      0%, 100% { transform: translateX(-25%) scaleY(1) scaleX(1); }
+      33% { transform: translateX(-10%) scaleY(1.1) scaleX(0.9); }
+      66% { transform: translateX(10%) scaleY(0.9) scaleX(1.1); }
+    }
+    @keyframes translate-glow {
+      0%, 100% { box-shadow: 0 0 15px -5px rgba(77, 124, 15, 0.4), inset 0 2px 0 rgba(255,255,255,0.4); }
+      50% { box-shadow: 0 0 25px 0px rgba(77, 124, 15, 0.6), inset 0 2px 0 rgba(255,255,255,0.6); }
+    }
+    @keyframes ai-glow {
+      0%, 100% { box-shadow: 0 0 15px -5px rgba(245, 158, 11, 0.4), inset 0 2px 0 rgba(255,255,255,0.4); }
+      50% { box-shadow: 0 0 25px 0px rgba(245, 158, 11, 0.6), inset 0 2px 0 rgba(255,255,255,0.6); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes typing {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    @keyframes typingDots {
+      0%, 20% { opacity: 0; }
+      40% { opacity: 1; }
+      60%, 100% { opacity: 0; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { 
+      font-size: clamp(0.9rem, 2.5vw, 1.05rem); 
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      font-family: var(--font-arabic);
+      background: #f0fdf4;
+      color: var(--text-color);
+      line-height: 1.8;
+      overflow-x: hidden;
+      direction: rtl;
+      padding: clamp(10px, 3vw, 20px);
+      font-weight: 400;
+    }
+    body[dir="ltr"] { 
+      direction: ltr; 
+      font-family: var(--font-english);
+    }
+
+    /* Background Waves */
+    .background-waves {
+      position: fixed; inset: 0; z-index: -2;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 25%, #fefce8 50%, #ecfccb 75%, #f0fdf4 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+    }
+    .wave-layer {
+      position: absolute; bottom: -10%; left: -10%; width: 120%; height: 300px;
+      background: linear-gradient(90deg, rgba(22,163,74,0.08), rgba(77,124,15,0.08), rgba(34,197,94,0.08));
+      border-radius: 60% 40% 0 0;
+      animation: waveFlow 15s ease-in-out infinite;
+    }
+    .wave-layer:nth-child(2) {
+      bottom: -5%; height: 250px; animation-delay: -5s;
+      background: linear-gradient(90deg, rgba(77,124,15,0.06), rgba(34,197,94,0.06));
+      border-radius: 40% 60% 0 0;
+    }
+    .wave-layer:nth-child(3) {
+      bottom: 0%; height: 200px; animation-delay: -10s;
+      background: linear-gradient(90deg, rgba(34,197,94,0.04), rgba(22,163,74,0.04));
+      border-radius: 80% 20% 0 0;
+    }
+
+    /* Translation Button */
+    .translation-button {
+      position: fixed; top: clamp(20px, 5vw, 30px); right: clamp(20px, 5vw, 30px);
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(30px);
+      border: 2px solid var(--glass-border); border-radius: 50px;
+      padding: clamp(8px, 2vw, 12px); cursor: pointer; z-index: 1000;
+      width: clamp(50px, 12vw, 60px); height: clamp(50px, 12vw, 60px);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 8px 25px -10px rgba(0,0,0,0.2), inset 0 2px 0 rgba(255,255,255,0.6);
+    }
+    .translation-button svg { width: 28px; height: 28px; flex-shrink: 0; transition: transform 0.3s ease; }
+    .translation-button svg path, .translation-button svg circle { stroke: var(--color-primary-dark); }
+    body[dir="ltr"] .translation-button { right: auto; left: clamp(20px, 5vw, 30px); }
+    .translation-button:hover {
+      width: auto; padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 22px);
+      border-color: var(--color-primary-dark);
+      background: rgba(77, 124, 15, 0.15);
+      transform: translateY(-3px);
+      animation: translate-glow 2.5s infinite alternate;
+    }
+    .translation-button:hover svg { transform: scale(0.9); }
+    .translation-text {
+      font-size: clamp(0.85rem, 2.2vw, 1rem); 
+      font-weight: 600;
+      color: var(--color-primary-dark); 
+      white-space: nowrap;
+      display: none; 
+      margin-left: 10px;
+    }
+    body[dir="ltr"] .translation-text { margin-left: 0; margin-right: 10px; }
+    .translation-button:hover .translation-text { display: block; }
+
+    /* AI FAB Button */
+    .ai-fab-button {
+      position: fixed; bottom: clamp(20px, 5vw, 30px); right: clamp(20px, 5vw, 30px);
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(30px);
+      border: 2px solid var(--glass-border); border-radius: 50px;
+      padding: clamp(10px, 2.5vw, 14px); cursor: pointer; z-index: 1000;
+      width: clamp(56px, 14vw, 70px); height: clamp(56px, 14vw, 70px);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 8px 25px -10px rgba(245, 158, 11, 0.3), inset 0 2px 0 rgba(255,255,255,0.6);
+    }
+    body[dir="ltr"] .ai-fab-button { right: auto; left: clamp(20px, 5vw, 30px); }
+    .ai-fab-button:hover {
+      width: auto; padding: clamp(10px, 2.5vw, 14px) clamp(18px, 4.5vw, 24px);
+      border-color: var(--color-ai);
+      background: rgba(245, 158, 11, 0.15);
+      transform: translateY(-3px);
+      animation: ai-glow 2.5s infinite alternate;
+    }
+    .ai-fab-button svg { 
+      width: clamp(28px, 7vw, 36px); 
+      height: clamp(28px, 7vw, 36px); 
+      flex-shrink: 0; 
+      transition: transform 0.3s ease; 
+    }
+    .ai-fab-button:hover svg { transform: scale(0.9) rotate(5deg); }
+    .ai-fab-text {
+      font-size: clamp(0.85rem, 2.2vw, 1rem); 
+      font-weight: 600;
+      color: var(--color-ai); 
+      white-space: nowrap;
+      display: none; 
+      margin-left: 10px;
+    }
+    body[dir="ltr"] .ai-fab-text { margin-left: 0; margin-right: 10px; }
+    .ai-fab-button:hover .ai-fab-text { display: block; }
+
+    /* AI Chat Modal */
+    .ai-chat-modal {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 2000; padding: 20px;
+    }
+    .ai-chat-modal.visible { display: flex; animation: fadeIn 0.3s ease; }
+    
+    .ai-chat-container {
+      background: var(--glass-bg); 
+      border: 2px solid var(--glass-border); 
+      border-radius: var(--border-radius);
+      width: 90%; max-width: 600px; height: 80%; max-height: 700px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      display: flex; flex-direction: column;
+      transform: scale(0.95); transition: transform 0.3s ease;
+      backdrop-filter: blur(25px);
+      overflow: hidden;
+    }
+    .ai-chat-modal.visible .ai-chat-container { transform: scale(1); }
+    
+    .ai-chat-header {
+      padding: 15px 20px;
+      border-bottom: 2px solid var(--glass-border);
+      display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent);
+    }
+    .ai-chat-header h3 {
+      color: var(--color-primary);
+      margin: 0;
+      font-size: clamp(1.1rem, 4vw, 1.3rem);
+      font-weight: 700;
+    }
+    .ai-chat-close-btn {
+      background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+      border: 1.5px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      color: #64748b;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-size: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+    .ai-chat-close-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(220, 38, 38, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .ai-chat-close-btn:hover::before {
+      opacity: 1;
+    }
+    .ai-chat-close-btn:hover {
+      border-color: rgba(220, 38, 38, 0.4);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .ai-chat-close-btn svg {
+      width: 18px;
+      height: 18px;
+      color: #64748b;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .ai-chat-close-btn:hover svg {
+      color: #dc2626;
+      transform: rotate(90deg) scale(1.1);
+    }
+    
+    .ai-chat-messages {
+      flex: 1; overflow-y: auto; padding: 20px;
+      display: flex; flex-direction: column; gap: 15px;
+    }
+    .ai-chat-messages::-webkit-scrollbar { width: 10px; }
+    .ai-chat-messages::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+    }
+    .ai-chat-messages::-webkit-scrollbar-thumb {
+      background: rgba(22, 163, 74, 0.4);
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    .ai-chat-messages::-webkit-scrollbar-thumb:hover {
+      background: rgba(22, 163, 74, 0.6);
+      background-clip: padding-box;
+    }
+    
+    .chat-message {
+      max-width: 85%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      line-height: 1.6;
+      animation: slideUp 0.3s ease;
+    }
+    .user-message {
+      background: rgba(22,163,74,0.2);
+      color: #14532d;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+    body[dir="ltr"] .user-message {
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 18px;
+      align-self: flex-start;
+    }
+    .ai-message {
+      background: rgba(245,158,11,0.15);
+      color: #78350f;
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+    body[dir="ltr"] .ai-message {
+      border-bottom-right-radius: 4px;
+      border-bottom-left-radius: 18px;
+      align-self: flex-end;
+    }
+    
+    .chat-message strong { color: #1e3a8a; font-weight: 700; }
+    .chat-message ul { margin: 8px 0; padding-right: 20px; }
+    body[dir="ltr"] .chat-message ul { padding-right: 0; padding-left: 20px; }
+    .chat-message li { margin-bottom: 4px; color: inherit; }
+    
+    .typing-indicator {
+      background: rgba(245,158,11,0.15) !important;
+      color: #9ca3af !important;
+      font-style: italic;
+    }
+    .dot {
+      animation: typingDots 1.5s infinite;
+      font-size: 1.2em;
+      color: var(--color-ai) !important;
+    }
+    .dot:nth-child(2) { animation-delay: 0.3s; }
+    .dot:nth-child(3) { animation-delay: 0.6s; }
+    
+    .ai-chat-input-area {
+      padding: 15px 20px;
+      border-top: 2px solid var(--glass-border);
+      display: flex; gap: 10px;
+      background: linear-gradient(0deg, rgba(255,255,255,0.4), transparent);
+    }
+    #ai-chat-input {
+      flex-grow: 1;
+      border: 2px solid var(--glass-border);
+      background: rgba(255,255,255,0.3);
+      border-radius: 50px;
+      padding: 10px 18px;
+      font-size: 1rem;
+      color: var(--text-color);
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      font-family: inherit;
+    }
+    #ai-chat-input:focus {
+      border-color: var(--color-ai);
+      box-shadow: 0 0 10px rgba(245,158,11,0.3);
+    }
+    #ai-chat-input:disabled { opacity: 0.6; cursor: not-allowed; }
+    
+    #ai-chat-send-btn {
+      background-color: var(--color-ai);
+      border: none; border-radius: 50%;
+      width: 48px; height: 48px; flex-shrink: 0;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.3s, transform 0.2s, opacity 0.3s;
+    }
+    #ai-chat-send-btn:hover:not(:disabled) {
+      background-color: #fbbf24;
+      transform: scale(1.05);
+    }
+    #ai-chat-send-btn:disabled {
+      opacity: 0.6; cursor: not-allowed; transform: none;
+    }
+    #ai-chat-send-btn svg { width: 24px; height: 24px; color: white; }
+
+    /* Main Content */
+    .main-content { max-width: 1200px; margin: 90px auto 0; padding: clamp(20px, 5vw, 40px); }
+    .glassy-card {
+      background: var(--glass-bg);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--border-radius);
+      padding: clamp(20px, 5vw, 30px);
+      margin-bottom: clamp(25px, 5vw, 35px);
+      backdrop-filter: blur(25px);
+      transition: all 0.4s ease;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.5);
+    }
+    .glassy-card:hover { transform: translateY(-5px) scale(1.01); border-color: rgba(255,255,255,0.7); }
+
+    /* Typography */
+    h1, h2, h3, h4, h5 { 
+      font-weight: 700; 
+      text-shadow: 0 2px 8px rgba(255,255,255,0.8);
+      letter-spacing: -0.02em;
+    }
+    h1 {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      text-align: center;
+      margin-bottom: clamp(20px, 4vw, 30px);
+      color: #14532d;
+      font-weight: 800;
+    }
+    h2 {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      border-bottom: 3px solid rgba(22,163,74,0.3);
+      padding-bottom: clamp(10px, 2vw, 15px);
+      margin-bottom: clamp(20px, 4vw, 30px);
+      color: #166534;
+      font-weight: 700;
+    }
+    h3 {
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      margin-bottom: clamp(15px, 3vw, 20px);
+      color: #15803d;
+      font-weight: 600;
+    }
+    h4 {
+      font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+      color: var(--color-primary);
+      margin-bottom: clamp(12px, 2vw, 15px);
+      font-weight: 600;
+    }
+    p, li { 
+      color: #475569; 
+      margin-bottom: clamp(10px, 2vw, 12px);
+      line-height: 1.85;
+    }
+    strong { color: #14532d; font-weight: 600; }
+    ul, ol { padding-right: clamp(20px, 4vw, 25px); margin-bottom: 20px; }
+    body[dir="ltr"] ul, body[dir="ltr"] ol { padding-right: 0; padding-left: clamp(20px, 4vw, 25px); }
+
+    /* Highlighters */
+    mark {
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-weight: 500;
+      border: none;
+    }
+    .highlight-green { background: rgba(22,163,74,0.2); color: #14532d; }
+    .highlight-blue { background: rgba(59,130,246,0.2); color: #1e3a8a; }
+    .highlight-yellow { background: rgba(234,179,8,0.2); color: #713f12; }
+    .highlight-orange { background: rgba(249,115,22,0.2); color: #7c2d12; }
+    .highlight-pink { background: rgba(236,72,153,0.2); color: #831843; }
+
+    /* Interactive Questions */
+    .question-container {
+      background: rgba(22,163,74,0.08);
+      border: 2px solid rgba(22,163,74,0.2);
+      border-radius: 18px;
+      padding: 25px;
+      margin: 20px 0;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.4s ease;
+    }
+    .question-container:hover {
+      transform: translateY(-3px);
+      border-color: var(--color-primary-medium);
+      background: rgba(22,163,74,0.12);
+    }
+    .question-container.open {
+      border-color: var(--color-primary-medium);
+      background: rgba(22,163,74,0.15);
+    }
+    .question-container::after {
+      content: "";
+      position: absolute;
+      top: 28px;
+      left: 28px;
+      width: 20px;
+      height: 20px;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2316a34a" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>') center/contain no-repeat;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body[dir="ltr"] .question-container::after { left: auto; right: 28px; }
+    .question-container.open::after { transform: rotate(180deg); }
+
+    .question-header {
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-bottom: 0;
+      font-size: 1.05rem;
+      padding-left: 45px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    body[dir="ltr"] .question-header { padding-left: 0; padding-right: 45px; }
+
+    .question-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .question-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 1.2s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.5s ease;
+    }
+    .question-content.show { max-height: 3000px; margin-top: 20px; }
+
+    .mcq-options { list-style: none; padding: 0; margin-top: 15px; }
+    .mcq-option {
+      background: rgba(255,255,255,0.3);
+      border: 2px solid rgba(255,255,255,0.4);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+    }
+    .mcq-option:hover {
+      background: rgba(22,163,74,0.15);
+      transform: translateX(-5px);
+      border-color: var(--color-primary);
+    }
+    body[dir="ltr"] .mcq-option:hover { transform: translateX(5px); }
+    .mcq-option.selected {
+      background: rgba(22,163,74,0.2);
+      border-color: var(--color-primary);
+      transform: scale(1.02);
+    }
+    .mcq-option.correct {
+      background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(22,163,74,0.2));
+      border-color: var(--color-primary-medium);
+      color: #14532d;
+      font-weight: 600;
+    }
+    .mcq-option.incorrect {
+      background: linear-gradient(135deg, rgba(239,68,68,0.3), rgba(220,38,38,0.2));
+      border-color: #dc2626;
+      color: #7f1d1d;
+      animation: shake 0.5s ease;
+    }
+
+    .solution-content {
+      background: rgba(255,255,255,0.3);
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 20px;
+      border-radius: 14px;
+      animation: slideUp 0.6s ease;
+    }
+    .solution-content strong { color: #15803d; }
+
+    /* Tables */
+    .table-container { overflow-x: auto; margin: 20px 0; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .concepts-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      backdrop-filter: blur(15px);
+    }
+    .concepts-table th, .concepts-table td {
+      padding: clamp(8px, 2vw, 12px);
+      border: 1px solid rgba(255,255,255,0.3);
+      text-align: right;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      vertical-align: top;
+    }
+    body[dir="ltr"] .concepts-table th,
+    body[dir="ltr"] .concepts-table td { text-align: left; }
+    .concepts-table th {
+      background: rgba(22,163,74,0.2);
+      font-weight: 700;
+      color: var(--color-primary);
+      text-align: center;
+    }
+    .concepts-table tr:hover { background: rgba(255,255,255,0.1); }
+
+    /* Footer */
+    .footer-info {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-top: 40px;
+      text-align: center;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    .footer-brand {
+      font-size: 0.95rem;
+      color: var(--color-primary-dark);
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .footer-brand svg { width: 20px; height: 20px; }
+    .footer-divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+      margin: 12px auto;
+    }
+    .footer-disclaimer {
+      font-size: 0.85rem;
+      color: #64748b;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <!-- Background -->
+  <div class="background-waves">
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+  </div>
+
+  <!-- Translation Button -->
+  <button class="translation-button" id="translationButton" aria-label="تبديل اللغة">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2.25 12C2.25 17.3848 6.61522 21.75 12 21.75C17.3848 21.75 21.75 17.3848 21.75 12C21.75 6.61522 17.3848 2.25 12 2.25C9.36657 2.25 6.94277 3.22321 5.16629 4.83371M12.75 2.25V7.5M12.75 7.5H18M12.75 7.5L5.16629 4.83371M11.25 21.75V16.5M11.25 16.5H6M11.25 16.5L18.8337 19.1663M5.16629 4.83371C3.22321 6.94277 2.25 9.36657 2.25 12M2.25 12C2.25 14.6334 3.22321 17.0572 4.83371 18.8337M18.8337 19.1663C20.7768 17.0572 21.75 14.6334 21.75 12M18.8337 4.83371C17.0572 3.22321 14.6334 2.25 12 2.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="translation-text">English</span>
+  </button>
+
+  <!-- AI FAB Button -->
+  <button class="ai-fab-button" id="aiChatButton" aria-label="مساعد أثر الذكي">
+    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+      <path d="M12 8V4H8"></path>
+      <rect x="4" y="12" width="16" height="8" rx="2"></rect>
+      <path d="M2 14h2"></path>
+      <path d="M20 14h2"></path>
+      <path d="M15 13v-2a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v2"></path>
+    </svg>
+    <span class="ai-fab-text" id="aiFabText">أثر AI</span>
+  </button>
+
+  <!-- AI Chat Modal -->
+  <div class="ai-chat-modal" id="aiChatModal">
+    <div class="ai-chat-container">
+      <div class="ai-chat-header">
+        <h3 id="ai-chat-title">اسأل أثر AI</h3>
+        <button class="ai-chat-close-btn" id="aiChatCloseBtn" aria-label="إغلاق">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="ai-chat-messages" id="aiChatMessages"></div>
+      <div class="ai-chat-input-area">
+        <input type="text" id="ai-chat-input" placeholder="اكتب سؤالك هنا...">
+        <button id="ai-chat-send-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div id="arabicContent">
+<div class="glassy-card">
+  <h1>إدارة الإنتاج - الفصل الثاني: التنبؤ</h1>
+  <p style="text-align: center; font-size: 1.1rem; color: #15803d; margin-top: -10px;">
+    دليلك الشامل لفهم التنبؤ في إدارة الإنتاج
+  </p>
+</div>
+
+<!-- المفهوم 1: التنبؤ -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: التنبؤ (Forecasting)</h2>
+  
+  <h3>1. يلا بينا نفهم الفكرة:</h3>
+  <p>
+    التنبؤ هو ببساطة محاولة استشراف المستقبل. في عالم الأعمال، هو عملية <mark class="highlight-green">تقدير حجم الطلب المستقبلي</mark> على منتجات الشركة، وبناءً على هذا التقدير، نحدد كمية الموارد التي سنحتاجها لإنتاج هذه الكمية. قسم التسويق هو المسؤول عن توقع حجم الطلب، ثم يأخذ قسم الإنتاج هذه التوقعات ويترجمها إلى خطط عمل: كم نحتاج من <mark class="highlight-blue">المخزون، العمال، المعدات، والوقت</mark>.
+  </p>
+
+  <p><strong>نقاط مهمة لازم تعرفها:</strong></p>
+  <ul>
+    <li><mark class="highlight-yellow">التنبؤات نادراً ما تكون مثالية:</mark> هي مجرد تقديرات، وليست حقائق مؤكدة.</li>
+    <li><mark class="highlight-pink">التنبؤ لمجموعة أفضل من التنبؤ لفرد:</mark> من الأسهل أن تتنبأ بإجمالي مبيعات المشروبات الغازية في الصيف، من أن تتنبأ بمبيعات نوع معين بالضبط.</li>
+    <li><mark class="highlight-orange">كلما طالت المدة، قلت الدقة:</mark> التنبؤ بمبيعات الأسبوع القادم أدق بكثير من التنبؤ بمبيعات العام القادم.</li>
+  </ul>
+
+  <h3>2. مثال:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض المثال
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>تخيل أنك صاحب مطعم بيتزا. التنبؤ هو أن تسأل نفسك: <strong>"كم بيتزا سأبيع في عطلة نهاية الأسبوع القادمة؟"</strong></p>
+        <p>بناءً على خبرتك السابقة (بيانات تاريخية) وعلى حقيقة أن هناك مباراة كرة قدم مهمة (عوامل مؤثرة)، تتوقع أن الطلب سيزيد بنسبة 20%. هذا التنبؤ يجعلك تشتري كمية إضافية من الدقيق والجبن وتجهز عددًا كافيًا من عمال التوصيل.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال MCQ محتمل: أي من العبارات التالية يعتبر صحيحاً فيما يتعلق بالتنبؤ؟
+    </div>
+    <div class="question-content">
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) التنبؤات دقيقة بنسبة 100%</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) التنبؤ لفترة طويلة يكون أكثر دقة</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ج) التنبؤ لمجموعة من المنتجات يكون أكثر دقة من التنبؤ لمنتج فردي</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) قسم الإنتاج هو المسؤول الأول عن تقدير طلب السوق</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال مقالي محتمل: لماذا تعتبر التنبؤات أساساً يبني عليه قسم الإنتاج خططه؟
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>الإجابة المقترحة:</strong></p>
+        <p>التنبؤات تساعد قسم الإنتاج على تحديد كمية <mark class="highlight-green">المواد الخام</mark> المطلوبة، تخطيط <mark class="highlight-blue">عدد العمال</mark> اللازمين، جدولة <mark class="highlight-yellow">وقت التشغيل</mark> للآلات، وإدارة <mark class="highlight-pink">المخزون</mark> بكفاءة.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- المفهوم 2: أساليب التنبؤ ودورة حياة المنتج -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: أساليب التنبؤ ودورة حياة المنتج</h2>
+  
+  <h3>1. يلا بينا نفهم الفكرة:</h3>
+  <p>هناك طريقتان رئيسيتان للتنبؤ:</p>
+  <ul>
+    <li><mark class="highlight-green">الأساليب النوعية (Qualitative):</mark> تعتمد على الحكم الشخصي والآراء والخبرة.</li>
+    <li><mark class="highlight-blue">الأساليب الكمية (Quantitative):</mark> تعتمد على الأرقام والبيانات التاريخية والمعادلات الرياضية.</li>
+  </ul>
+
+  <p>الاختيار بينهما يعتمد على مرحلة المنتج في <mark class="highlight-yellow">"دورة حياته"</mark>:</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>المرحلة</th>
+          <th>الأسلوب المناسب</th>
+          <th>السبب</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>التقديم (Introduction)</strong></td>
+          <td>نوعي</td>
+          <td>المنتج جديد، لا توجد بيانات تاريخية</td>
+        </tr>
+        <tr>
+          <td><strong>النمو (Growth)</strong></td>
+          <td>كمي</td>
+          <td>المنتج ناجح، القرارات يجب أن تكون دقيقة</td>
+        </tr>
+        <tr>
+          <td><strong>النضج (Maturity)</strong></td>
+          <td>نوعي</td>
+          <td>المبيعات مستقرة والقرارات روتينية</td>
+        </tr>
+        <tr>
+          <td><strong>الانحدار (Decline)</strong></td>
+          <td>نوعي</td>
+          <td>المبيعات تتناقص والموارد محدودة</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2. مثال:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض المثال
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>عندما أطلقت شركة "آبل" أول جهاز "آيفون"، لم يكن لديهم أي بيانات عن مبيعاته السابقة. اعتمدوا على <mark class="highlight-green">رؤية ستيف جوبز وفريقه</mark> (أسلوب نوعي).</p>
+        <p>الآن، بعد سنوات، عندما يريدون التنبؤ بمبيعات الأجهزة الجديدة، فإنهم يستخدمون <mark class="highlight-blue">بيانات مبيعات الأجهزة السابقة</mark> (أسلوب كمي).</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      في أي مرحلة من مراحل دورة حياة المنتج يكون الاعتماد على الأساليب الكمية في التنبؤ هو الأنسب؟
+    </div>
+    <div class="question-content">
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) مرحلة التقديم</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) مرحلة النمو</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) مرحلة النضج</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) مرحلة الانحدار</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- المفهوم 3: الأساليب النوعية للتنبؤ -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: الأساليب النوعية للتنبؤ</h2>
+  
+  <h3>1. يلا بينا نفهم الفكرة:</h3>
+  <p>هذه الأساليب هي فن أكثر من كونها علماً. نستخدمها عندما لا يكون لدينا وقت أو بيانات كافية.</p>
+
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>الأسلوب</th>
+          <th>الوصف</th>
+          <th>متى يُستخدم</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>آراء المديرين التنفيذيين</strong></td>
+          <td>مجموعة من كبار المديرين يقدرون المبيعات بناءً على خبرتهم</td>
+          <td>قرارات استراتيجية سريعة</td>
+        </tr>
+        <tr>
+          <td><strong>أسلوب دلفي</strong></td>
+          <td>جمع آراء الخبراء بشكل مستقل ومجهول</td>
+          <td>عندما نريد تجنب التحيز الجماعي</td>
+        </tr>
+        <tr>
+          <td><strong>آراء رجال البيع</strong></td>
+          <td>سؤال فريق المبيعات عن توقعاتهم</td>
+          <td>للحصول على رؤية من الميدان</td>
+        </tr>
+        <tr>
+          <td><strong>استطلاعات المستهلكين</strong></td>
+          <td>سؤال العملاء مباشرة عن نواياهم الشرائية</td>
+          <td>منتجات جديدة أو أسواق جديدة</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2. مثال:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض الأمثلة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <ul>
+          <li><strong>آراء المديرين:</strong> اجتماع مجلس إدارة قناة تلفزيونية لتقدير نجاح مسلسل جديد</li>
+          <li><strong>دلفي:</strong> إرسال بريد إلكتروني مجهول لـ 10 خبراء اقتصاديين للوصول إلى تقدير موحد</li>
+          <li><strong>آراء رجال البيع:</strong> مندوب مبيعات سيارات يتوقع بيع 20 سيارة الشهر القادم</li>
+          <li><strong>استطلاع المستهلكين:</strong> شركة "بيبسي" تجري استطلاعاً لسؤال الناس عن منتج جديد</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      قارن بين أسلوب "آراء المديرين التنفيذيين" و"أسلوب دلفي"
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>وجه المقارنة</th>
+                <th>آراء المديرين</th>
+                <th>أسلوب دلفي</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>آلية العمل</strong></td>
+                <td>اجتماع وجهاً لوجه</td>
+                <td>استشارة مستقلة ومجهولة</td>
+              </tr>
+              <tr>
+                <td><strong>التأثير الاجتماعي</strong></td>
+                <td>قد يحدث "تفكير جماعي"</td>
+                <td>لا يوجد ضغط جماعي</td>
+              </tr>
+              <tr>
+                <td><strong>السرعة</strong></td>
+                <td>سريع (اجتماع واحد)</td>
+                <td>أبطأ (عدة جولات)</td>
+              </tr>
+              <tr>
+                <td><strong>الموضوعية</strong></td>
+                <td>قد تتأثر بالهيمنة</td>
+                <td>أكثر موضوعية</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- المفهوم 4: السلاسل الزمنية -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: الأساليب الكمية - السلاسل الزمنية</h2>
+  
+  <h3>1. يلا بينا نفهم الفكرة:</h3>
+  <p>الأساليب الكمية تعتمد على البيانات والأرقام. أشهرها <mark class="highlight-green">"تحليل السلاسل الزمنية"</mark>، وفكرته: <strong>"الماضي هو أفضل مؤشر للمستقبل"</strong>.</p>
+
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>النمط</th>
+          <th>التعريف</th>
+          <th>مثال</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>الاتجاه (Trend)</strong></td>
+          <td>حركة طويلة المدى (صعود أو هبوط)</td>
+          <td>زيادة المبيعات 5% سنوياً</td>
+        </tr>
+        <tr>
+          <td><strong>الموسمية (Seasonality)</strong></td>
+          <td>تقلبات منتظمة قصيرة المدى</td>
+          <td>ذروة مبيعات الآيس كريم في الصيف</td>
+        </tr>
+        <tr>
+          <td><strong>الدورات (Cycles)</strong></td>
+          <td>تقلبات تستمر لأكثر من عام</td>
+          <td>ركود اقتصادي كل 7 سنوات</td>
+        </tr>
+        <tr>
+          <td><strong>تقلبات غير منتظمة</strong></td>
+          <td>أحداث مفاجئة وغير متوقعة</td>
+          <td>انقطاع الكهرباء المفاجئ</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2. مثال:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض المثال
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>محل آيس كريم يحلل مبيعاته:</strong></p>
+        <ul>
+          <li><mark class="highlight-blue">الاتجاه:</mark> زيادة 5% سنوياً</li>
+          <li><mark class="highlight-yellow">الموسمية:</mark> ذروة في أغسطس، انخفاض في يناير</li>
+          <li><mark class="highlight-orange">الدورات:</mark> انخفاض قبل عامين بسبب ركود</li>
+          <li><mark class="highlight-pink">غير منتظم:</mark> انقطاع كهرباء يومين</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      زيادة مبيعات الملابس الشتوية في ديسمبر تعتبر مثالاً على أي نمط؟
+    </div>
+    <div class="question-content">
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) الاتجاه</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) الموسمية</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) الدورات</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) التقلبات غير المنتظمة</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- المفهوم 5: الطريقة الساذجة -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: الطريقة الساذجة (Naïve Method)</h2>
+  
+  <h3>1. يلا بينا نفهم الفكرة:</h3>
+  <p>هذه هي أبسط طريقة تنبؤ كمية. "ساذجة" لأنها تفترض أن ما حدث في الفترة السابقة سيحدث بالضبط في الفترة التالية.</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>العنصر</th>
+          <th>الوصف</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>المعادلة</strong></td>
+          <td>تنبؤ الفترة القادمة = القيمة الفعلية للفترة الحالية</td>
+        </tr>
+        <tr>
+          <td><strong>المميزات</strong></td>
+          <td>سهلة وسريعة، لا تحتاج حسابات معقدة</td>
+        </tr>
+        <tr>
+          <td><strong>العيوب</strong></td>
+          <td>لا تأخذ في الاعتبار الاتجاهات أو الأنماط</td>
+        </tr>
+        <tr>
+          <td><strong>متى تُستخدم</strong></td>
+          <td>عندما لا يوجد وقت أو بيانات كافية</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2. مثال:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض المثال
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>إذا سألتك "كم ساعة ستستخدم فيها هاتفك غداً؟"، وأجبت: "مثل اليوم تماماً، حوالي 5 ساعات". هذه هي الطريقة الساذجة!</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>3. سؤال ممكن يجيلك في الامتحان:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      إذا كانت مبيعات يناير = 100 وحدة، فما التنبؤ لفبراير بالطريقة الساذجة؟
+    </div>
+    <div class="question-content">
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) 90</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) 110</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ج) 100</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) لا يمكن التحديد</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- الحالات العملية 1 و 2 -->
+<div class="glassy-card">
+  <h2>الحالة العملية (1 و 2): تطبيق الطريقة الساذجة</h2>
+  
+  <h3>مثال 1: ثلاجات LG</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض الحل الكامل
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>البيانات:</strong> الطلب السنوي = 10,000 ثلاجة | كل ثلاجة تحتاج: 4 أرفف، بابين، محرك واحد</p>
+        
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>العنصر</th>
+                <th>الحساب</th>
+                <th>النتيجة</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>تنبؤ الطلب</strong></td>
+                <td>نفس العام الماضي</td>
+                <td>10,000 ثلاجة</td>
+              </tr>
+              <tr>
+                <td><strong>الأرفف</strong></td>
+                <td>10,000 × 4</td>
+                <td>40,000 رف</td>
+              </tr>
+              <tr>
+                <td><strong>الأبواب</strong></td>
+                <td>10,000 × 2</td>
+                <td>20,000 باب</td>
+              </tr>
+              <tr>
+                <td><strong>المحركات</strong></td>
+                <td>10,000 × 1</td>
+                <td>10,000 محرك</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>مثال 2: سيارات تويوتا</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض الحل الكامل
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>البيانات:</strong> مبيعات آخر 3 سنوات = 7,000 سيارة سنوياً | كل سيارة تحتاج 5 إطارات</p>
+        
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>العنصر</th>
+                <th>الحساب</th>
+                <th>النتيجة</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>مبيعات متوقعة</strong></td>
+                <td>نفس السنوات الماضية</td>
+                <td>7,000 سيارة</td>
+              </tr>
+              <tr>
+                <td><strong>الإطارات المطلوبة</strong></td>
+                <td>7,000 × 5</td>
+                <td>35,000 إطار</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- المفهوم 6: المتوسط المتحرك -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: المتوسط المتحرك (Moving Average)</h2>
+  
+  <h3>1. يلا بينا نفهم الفكرة:</h3>
+  <p>المتوسط المتحرك أفضل من الطريقة الساذجة لأنه يأخذ متوسط <mark class="highlight-blue">عدة فترات حديثة</mark> للتنبؤ.</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>نوع المتوسط</th>
+          <th>عدد الفترات</th>
+          <th>المميزات</th>
+          <th>العيوب</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>متوسط فترتين</strong></td>
+          <td>2</td>
+          <td>سريع الاستجابة للتغيرات</td>
+          <td>حساس للتقلبات</td>
+        </tr>
+        <tr>
+          <td><strong>متوسط 3 فترات</strong></td>
+          <td>3</td>
+          <td>متوازن</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td><strong>متوسط 4 فترات</strong></td>
+          <td>4</td>
+          <td>أكثر استقراراً</td>
+          <td>بطيء في الاستجابة</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>المعادلة:</strong></p>
+  <p>المتوسط المتحرك = (مجموع القيم الفعلية لآخر ن فترة) ÷ ن</p>
+
+  <h3>2. سؤال ممكن يجيلك في الامتحان:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      أي من الطرق التالية يستخدم متوسط عدة فترات للتنبؤ؟
+    </div>
+    <div class="question-content">
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) الطريقة الساذجة</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) المتوسط المتحرك</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) أسلوب دلفي</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) استطلاع المستهلكين</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- الحالات العملية 3 و 4 -->
+<div class="glassy-card">
+  <h2>الحالة العملية (3 و 4): تطبيق المتوسط المتحرك</h2>
+  
+  <h3>مثال 3: مبيعات دوريتوس</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض الحل الكامل
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>البيانات التاريخية:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>السنة</th>
+                <th>2018</th>
+                <th>2019</th>
+                <th>2020</th>
+                <th>2021</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>المبيعات</strong></td>
+                <td>7,500</td>
+                <td>7,800</td>
+                <td>8,200</td>
+                <td>8,500</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>التنبؤ لعام 2022:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>نوع المتوسط</th>
+                <th>الحساب</th>
+                <th>النتيجة</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>متوسط 4 سنوات</strong></td>
+                <td>(7500+7800+8200+8500) ÷ 4</td>
+                <td>8,000 وحدة</td>
+              </tr>
+              <tr>
+                <td><strong>متوسط 3 سنوات</strong></td>
+                <td>(7800+8200+8500) ÷ 3</td>
+                <td>8,167 وحدة</td>
+              </tr>
+              <tr>
+                <td><strong>متوسط سنتين</strong></td>
+                <td>(8200+8500) ÷ 2</td>
+                <td>8,350 وحدة</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>مثال 4: الطلب على الكراسي</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض الحل الكامل
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>البيانات:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>الفترة</th>
+                <th>T-4</th>
+                <th>T-3</th>
+                <th>T-2</th>
+                <th>T-1</th>
+                <th>T (فعلي)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>الطلب</strong></td>
+                <td>43</td>
+                <td>54</td>
+                <td>52</td>
+                <td>58</td>
+                <td>60</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>الحسابات:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>التنبؤ</th>
+                <th>الحساب</th>
+                <th>النتيجة</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>تنبؤ T</strong></td>
+                <td>(54+52+58) ÷ 3</td>
+                <td>55 كرسياً</td>
+              </tr>
+              <tr>
+                <td><strong>تنبؤ T+1</strong></td>
+                <td>(52+58+60) ÷ 3</td>
+                <td>57 كرسياً</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- المفهوم 7: المتوسط المتحرك المرجح -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: المتوسط المتحرك المرجح (Weighted Moving Average)</h2>
+  
+  <h3>1. يلا بينا نفهم الفكرة:</h3>
+  <p>المتوسط المتحرك المرجح يعطي <mark class="highlight-blue">أوزاناً (أهمية) مختلفة</mark> لكل فترة.</p>
+
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>الفرق</th>
+          <th>المتوسط العادي</th>
+          <th>المتوسط المرجح</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>الأوزان</strong></td>
+          <td>كل الفترات متساوية</td>
+          <td>أوزان مختلفة حسب الأهمية</td>
+        </tr>
+        <tr>
+          <td><strong>الدقة</strong></td>
+          <td>جيدة</td>
+          <td>أفضل (للبيانات الأحدث)</td>
+        </tr>
+        <tr>
+          <td><strong>التعقيد</strong></td>
+          <td>بسيط</td>
+          <td>أكثر تعقيداً قليلاً</td>
+        </tr>
+        <tr>
+          <td><strong>مجموع الأوزان</strong></td>
+          <td>-</td>
+          <td>يجب أن يساوي 1 (أو 100%)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>المعادلة:</strong></p>
+  <p>التنبؤ = (وزن1 × قيمة1) + (وزن2 × قيمة2) + ...</p>
+</div>
+
+<!-- الحالات العملية 5 و 6 -->
+<div class="glassy-card">
+  <h2>الحالة العملية (5 و 6): تطبيق المتوسط المتحرك المرجح</h2>
+  
+  <h3>مثال 5: الكراسي بأوزان</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض الحل الكامل
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>البيانات والأوزان:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>الفترة</th>
+                <th>T-4</th>
+                <th>T-3</th>
+                <th>T-2</th>
+                <th>T-1</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>الطلب</strong></td>
+                <td>43</td>
+                <td>54</td>
+                <td>52</td>
+                <td>58</td>
+              </tr>
+              <tr>
+                <td><strong>الوزن</strong></td>
+                <td>10%</td>
+                <td>20%</td>
+                <td>30%</td>
+                <td>40%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>الحسابات:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>الخطوة</th>
+                <th>الحساب</th>
+                <th>النتيجة</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>تنبؤ T</strong></td>
+                <td>(58×0.40)+(52×0.30)+(54×0.20)+(43×0.10)</td>
+                <td>54 كرسياً</td>
+              </tr>
+              <tr>
+                <td><strong>عدد الأرجل</strong></td>
+                <td>54 × 4</td>
+                <td>216 رجلاً</td>
+              </tr>
+              <tr>
+                <td><strong>تنبؤ T+1</strong></td>
+                <td>(60×0.40)+(58×0.30)+(52×0.20)+(54×0.10)</td>
+                <td>57 كرسياً</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>مثال 6: دوريتوس بأوزان</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض الحل الكامل
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>البيانات والأوزان:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>السنة</th>
+                <th>2018</th>
+                <th>2019</th>
+                <th>2020</th>
+                <th>2021</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>المبيعات</strong></td>
+                <td>7,500</td>
+                <td>7,800</td>
+                <td>8,200</td>
+                <td>8,500</td>
+              </tr>
+              <tr>
+                <td><strong>الوزن</strong></td>
+                <td>5%</td>
+                <td>10%</td>
+                <td>35%</td>
+                <td>50%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>الحسابات:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>التنبؤ</th>
+                <th>الحساب المفصل</th>
+                <th>النتيجة</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>تنبؤ 2022</strong></td>
+                <td>(8500×0.50) + (8200×0.35) + (7800×0.10) + (7500×0.05)<br/>= 4250 + 2870 + 780 + 375</td>
+                <td>8,275 وحدة</td>
+              </tr>
+              <tr>
+                <td><strong>مبيعات 2022 الفعلية</strong></td>
+                <td>(معطى)</td>
+                <td>9,350 وحدة</td>
+              </tr>
+              <tr>
+                <td><strong>تنبؤ 2023</strong></td>
+                <td>(9350×0.50) + (8500×0.35) + (8200×0.10) + (7800×0.05)<br/>= 4675 + 2975 + 820 + 390</td>
+                <td>8,860 وحدة</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer-info">
+  <div class="footer-brand">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+    </svg>
+    منصة أثر التعليمية
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-disclaimer">
+    هذا المحتوى التعليمي مُصمم خصيصاً لمساعدتك في الفهم العميق للمادة. جميع الحقوق محفوظة © 2025
+  </div>
+</div>
+
+    </div>
+
+    <div id="englishContent" class="hidden">
+<div class="glassy-card">
+  <h1>Production Management - Chapter Two: Forecasting</h1>
+  <p style="text-align: center; font-size: 1.1rem; color: #15803d; margin-top: -10px;">
+    Your Comprehensive Guide to Understanding Forecasting in Production Management
+  </p>
+</div>
+
+<!-- Concept 1: Forecasting -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Forecasting</h2>
+  
+  <h3>1. Let's Understand the Idea:</h3>
+  <p>
+    Forecasting is simply an attempt to foresee the future. In business, it's the process of <mark class="highlight-green">estimating future demand</mark> for a company's products. Based on this estimate, we determine the quantity of resources needed to produce that amount. The marketing department is responsible for predicting demand, then the production department takes these forecasts and translates them into action plans: how much <mark class="highlight-blue">inventory, workers, equipment, and time</mark> do we need.
+  </p>
+
+  <p><strong>Important Points to Know:</strong></p>
+  <ul>
+    <li><mark class="highlight-yellow">Forecasts are rarely perfect:</mark> They are estimates, not confirmed facts.</li>
+    <li><mark class="highlight-pink">Forecasting for groups is better than individuals:</mark> It's easier to predict total soft drink sales in summer than sales of a specific type.</li>
+    <li><mark class="highlight-orange">The longer the period, the lower the accuracy:</mark> Forecasting next week's sales is much more accurate than forecasting next year's.</li>
+  </ul>
+
+  <h3>2. Example:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show example
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>Imagine you own a pizza restaurant. Forecasting means asking yourself: <strong>"How many pizzas will I sell next weekend?"</strong></p>
+        <p>Based on your past experience (historical data) and the fact that there's an important football match (influencing factors), you expect demand to increase by 20%. This forecast makes you buy extra flour and cheese and prepare enough delivery workers.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>3. Possible Exam Question:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ: Which statement is correct regarding forecasting?
+    </div>
+    <div class="question-content">
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Forecasts are 100% accurate</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) Long-term forecasts are more accurate</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) Group forecasting is more accurate than individual product forecasting</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Production department is primarily responsible for market demand estimation</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Essay Question: Why are forecasts the foundation for production planning?
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Suggested Answer:</strong></p>
+        <p>Forecasts help the production department determine the quantity of <mark class="highlight-green">raw materials</mark> needed, plan the number of required <mark class="highlight-blue">workers</mark>, schedule <mark class="highlight-yellow">machine operating time</mark>, and manage <mark class="highlight-pink">inventory</mark> efficiently.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Concept 2: Forecasting Methods and Product Life Cycle -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Forecasting Methods and Product Life Cycle</h2>
+  
+  <h3>1. Let's Understand the Idea:</h3>
+  <p>There are two main forecasting approaches:</p>
+  <ul>
+    <li><mark class="highlight-green">Qualitative Methods:</mark> Based on personal judgment, opinions, and experience. Like asking experts for their opinion.</li>
+    <li><mark class="highlight-blue">Quantitative Methods:</mark> Based on numbers, historical data, and mathematical equations.</li>
+  </ul>
+
+  <p>The choice between them depends heavily on the product's stage in its <mark class="highlight-yellow">"life cycle"</mark>:</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>Appropriate Method</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Introduction</strong></td>
+          <td>Qualitative</td>
+          <td>Product is new, no historical data available</td>
+        </tr>
+        <tr>
+          <td><strong>Growth</strong></td>
+          <td>Quantitative</td>
+          <td>Product is successful, decisions must be precise</td>
+        </tr>
+        <tr>
+          <td><strong>Maturity</strong></td>
+          <td>Qualitative</td>
+          <td>Sales are stable, decisions are routine</td>
+        </tr>
+        <tr>
+          <td><strong>Decline</strong></td>
+          <td>Qualitative</td>
+          <td>Sales are decreasing, resources are limited</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2. Example:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show example
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>When Apple launched the first iPhone, they had no sales data. They relied on <mark class="highlight-green">Steve Jobs' vision and his team</mark> (qualitative method).</p>
+        <p>Now, years later, when forecasting sales for new devices, they use <mark class="highlight-blue">historical sales data from previous models</mark> (quantitative method).</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>3. Possible Exam Question:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      At which product life cycle stage is quantitative forecasting most appropriate?
+    </div>
+    <div class="question-content">
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Introduction</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Growth</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Maturity</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Decline</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Concept 3: Qualitative Forecasting Methods -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Qualitative Forecasting Methods</h2>
+  
+  <h3>1. Let's Understand the Idea:</h3>
+  <p>These methods are more art than science. We use them when we don't have enough time or data.</p>
+
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Description</th>
+          <th>When to Use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Executive Opinions</strong></td>
+          <td>Senior managers estimate sales based on their experience</td>
+          <td>Quick strategic decisions</td>
+        </tr>
+        <tr>
+          <td><strong>Delphi Technique</strong></td>
+          <td>Collecting expert opinions independently and anonymously</td>
+          <td>When avoiding group bias is needed</td>
+        </tr>
+        <tr>
+          <td><strong>Sales Force Opinions</strong></td>
+          <td>Asking sales team about their expectations</td>
+          <td>To get field insights</td>
+        </tr>
+        <tr>
+          <td><strong>Consumer Surveys</strong></td>
+          <td>Directly asking customers about purchase intentions</td>
+          <td>New products or new markets</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2. Example:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show examples
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <ul>
+          <li><strong>Executive Opinions:</strong> TV channel board meeting to estimate new series success</li>
+          <li><strong>Delphi:</strong> Sending anonymous email to 10 economic experts to reach unified estimate</li>
+          <li><strong>Sales Force Opinions:</strong> Car salesperson expecting to sell 20 cars next month</li>
+          <li><strong>Consumer Surveys:</strong> Pepsi conducting survey about new product</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>3. Possible Exam Question:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Compare "Executive Opinions" and "Delphi Technique"
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Comparison Point</th>
+                <th>Executive Opinions</th>
+                <th>Delphi Technique</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Mechanism</strong></td>
+                <td>Face-to-face meeting</td>
+                <td>Independent anonymous consultation</td>
+              </tr>
+              <tr>
+                <td><strong>Social Influence</strong></td>
+                <td>Groupthink may occur</td>
+                <td>No group pressure</td>
+              </tr>
+              <tr>
+                <td><strong>Speed</strong></td>
+                <td>Fast (one meeting)</td>
+                <td>Slower (multiple rounds)</td>
+              </tr>
+              <tr>
+                <td><strong>Objectivity</strong></td>
+                <td>May be influenced by dominance</td>
+                <td>More objective</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Concept 4: Time Series -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Quantitative Methods - Time Series</h2>
+  
+  <h3>1. Let's Understand the Idea:</h3>
+  <p>Quantitative methods rely on data and numbers. The most popular is <mark class="highlight-green">"Time Series Analysis"</mark>, with a simple idea: <strong>"The past is the best predictor of the future"</strong>.</p>
+
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Pattern</th>
+          <th>Definition</th>
+          <th>Example</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Trend</strong></td>
+          <td>Long-term movement (upward or downward)</td>
+          <td>Sales increasing 5% annually</td>
+        </tr>
+        <tr>
+          <td><strong>Seasonality</strong></td>
+          <td>Regular short-term fluctuations</td>
+          <td>Ice cream sales peak in summer</td>
+        </tr>
+        <tr>
+          <td><strong>Cycles</strong></td>
+          <td>Fluctuations lasting more than a year</td>
+          <td>Economic recession every 7 years</td>
+        </tr>
+        <tr>
+          <td><strong>Irregular Variations</strong></td>
+          <td>Sudden unexpected events</td>
+          <td>Sudden power outage</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2. Example:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show example
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Ice cream shop analyzing sales:</strong></p>
+        <ul>
+          <li><mark class="highlight-blue">Trend:</mark> 5% annual increase</li>
+          <li><mark class="highlight-yellow">Seasonality:</mark> Peak in August, decline in January</li>
+          <li><mark class="highlight-orange">Cycles:</mark> Decline two years ago due to recession</li>
+          <li><mark class="highlight-pink">Irregular:</mark> Two-day power outage</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>3. Possible Exam Question:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Increased winter clothing sales in December is an example of which pattern?
+    </div>
+    <div class="question-content">
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Trend</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Seasonality</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Cycles</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Irregular Variations</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Concept 5: Naïve Method -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Naïve Method</h2>
+  
+  <h3>1. Let's Understand the Idea:</h3>
+  <p>This is the simplest quantitative forecasting method. "Naïve" because it assumes what happened last period will happen exactly in the next period.</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Element</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Formula</strong></td>
+          <td>Next period forecast = Current period actual value</td>
+        </tr>
+        <tr>
+          <td><strong>Advantages</strong></td>
+          <td>Easy and quick, no complex calculations needed</td>
+        </tr>
+        <tr>
+          <td><strong>Disadvantages</strong></td>
+          <td>Doesn't account for trends or patterns</td>
+        </tr>
+        <tr>
+          <td><strong>When to Use</strong></td>
+          <td>When there's no time or sufficient data</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2. Example:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show example
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>If asked "How many hours will you use your phone tomorrow?", and you answer: "Same as today, about 5 hours". That's the naïve method!</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>3. Possible Exam Question:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      If January sales = 100 units, what's the February forecast using naïve method?
+    </div>
+    <div class="question-content">
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) 90</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) 110</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) 100</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Cannot be determined</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Case Studies 1 & 2 -->
+<div class="glassy-card">
+  <h2>Case Studies (1 & 2): Applying Naïve Method</h2>
+  
+  <h3>Example 1: LG Refrigerators</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show complete solution
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Data:</strong> Annual demand = 10,000 refrigerators | Each needs: 4 shelves, 2 doors, 1 motor</p>
+        
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Calculation</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Demand Forecast</strong></td>
+                <td>Same as last year</td>
+                <td>10,000 refrigerators</td>
+              </tr>
+              <tr>
+                <td><strong>Shelves</strong></td>
+                <td>10,000 × 4</td>
+                <td>40,000 shelves</td>
+              </tr>
+              <tr>
+                <td><strong>Doors</strong></td>
+                <td>10,000 × 2</td>
+                <td>20,000 doors</td>
+              </tr>
+              <tr>
+                <td><strong>Motors</strong></td>
+                <td>10,000 × 1</td>
+                <td>10,000 motors</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Example 2: Toyota Cars</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show complete solution
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Data:</strong> Last 3 years sales = 7,000 cars annually | Each car needs 5 tires</p>
+        
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Calculation</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Expected Sales</strong></td>
+                <td>Same as previous years</td>
+                <td>7,000 cars</td>
+              </tr>
+              <tr>
+                <td><strong>Required Tires</strong></td>
+                <td>7,000 × 5</td>
+                <td>35,000 tires</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Concept 6: Moving Average -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Moving Average</h2>
+  
+  <h3>1. Let's Understand the Idea:</h3>
+  <p>Moving average is better than naïve method because it takes the average of <mark class="highlight-blue">several recent periods</mark> to forecast.</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Average Type</th>
+          <th>Number of Periods</th>
+          <th>Advantages</th>
+          <th>Disadvantages</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>2-Period Average</strong></td>
+          <td>2</td>
+          <td>Quick response to changes</td>
+          <td>Sensitive to fluctuations</td>
+        </tr>
+        <tr>
+          <td><strong>3-Period Average</strong></td>
+          <td>3</td>
+          <td>Balanced</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td><strong>4-Period Average</strong></td>
+          <td>4</td>
+          <td>More stable</td>
+          <td>Slow to respond</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>Formula:</strong></p>
+  <p>Moving Average = (Sum of actual values for last n periods) ÷ n</p>
+
+  <h3>2. Possible Exam Question:</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Which method uses average of several periods for forecasting?
+    </div>
+    <div class="question-content">
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Naïve Method</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Moving Average</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Delphi Technique</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Consumer Surveys</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Case Studies 3 & 4 -->
+<div class="glassy-card">
+  <h2>Case Studies (3 & 4): Applying Moving Average</h2>
+  
+  <h3>Example 3: Doritos Sales</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show complete solution
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Historical Data:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>2018</th>
+                <th>2019</th>
+                <th>2020</th>
+                <th>2021</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Sales</strong></td>
+                <td>7,500</td>
+                <td>7,800</td>
+                <td>8,200</td>
+                <td>8,500</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>2022 Forecast:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Average Type</th>
+                <th>Calculation</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4-Year Average</strong></td>
+                <td>(7500+7800+8200+8500) ÷ 4</td>
+                <td>8,000 units</td>
+              </tr>
+              <tr>
+                <td><strong>3-Year Average</strong></td>
+                <td>(7800+8200+8500) ÷ 3</td>
+                <td>8,167 units</td>
+              </tr>
+              <tr>
+                <td><strong>2-Year Average</strong></td>
+                <td>(8200+8500) ÷ 2</td>
+                <td>8,350 units</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Example 4: Chair Demand</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show complete solution
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Data:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th>T-4</th>
+                <th>T-3</th>
+                <th>T-2</th>
+                <th>T-1</th>
+                <th>T (Actual)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Demand</strong></td>
+                <td>43</td>
+                <td>54</td>
+                <td>52</td>
+                <td>58</td>
+                <td>60</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Calculations:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Forecast</th>
+                <th>Calculation</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Forecast T</strong></td>
+                <td>(54+52+58) ÷ 3</td>
+                <td>55 chairs</td>
+              </tr>
+              <tr>
+                <td><strong>Forecast T+1</strong></td>
+                <td>(52+58+60) ÷ 3</td>
+                <td>57 chairs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Concept 7: Weighted Moving Average -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Weighted Moving Average</h2>
+  
+  <h3>1. Let's Understand the Idea:</h3>
+  <p>Weighted moving average assigns <mark class="highlight-blue">different weights (importance)</mark> to each period.</p>
+
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Difference</th>
+          <th>Simple Average</th>
+          <th>Weighted Average</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Weights</strong></td>
+          <td>All periods equal</td>
+          <td>Different weights by importance</td>
+        </tr>
+        <tr>
+          <td><strong>Accuracy</strong></td>
+          <td>Good</td>
+          <td>Better (for recent data)</td>
+        </tr>
+        <tr>
+          <td><strong>Complexity</strong></td>
+          <td>Simple</td>
+          <td>Slightly more complex</td>
+        </tr>
+        <tr>
+          <td><strong>Weight Sum</strong></td>
+          <td>-</td>
+          <td>Must equal 1 (or 100%)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>Formula:</strong></p>
+  <p>Forecast = (weight1 × value1) + (weight2 × value2) + ...</p>
+</div>
+
+<!-- Case Studies 5 & 6 -->
+<div class="glassy-card">
+  <h2>Case Studies (5 & 6): Applying Weighted Moving Average</h2>
+  
+  <h3>Example 5: Chairs with Weights</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show complete solution
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Data and Weights:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th>T-4</th>
+                <th>T-3</th>
+                <th>T-2</th>
+                <th>T-1</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Demand</strong></td>
+                <td>43</td>
+                <td>54</td>
+                <td>52</td>
+                <td>58</td>
+              </tr>
+              <tr>
+                <td><strong>Weight</strong></td>
+                <td>10%</td>
+                <td>20%</td>
+                <td>30%</td>
+                <td>40%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Calculations:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>Calculation</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Forecast T</strong></td>
+                <td>(58×0.40)+(52×0.30)+(54×0.20)+(43×0.10)</td>
+                <td>54 chairs</td>
+              </tr>
+              <tr>
+                <td><strong>Number of Legs</strong></td>
+                <td>54 × 4</td>
+                <td>216 legs</td>
+              </tr>
+              <tr>
+                <td><strong>Forecast T+1</strong></td>
+                <td>(60×0.40)+(58×0.30)+(52×0.20)+(54×0.10)</td>
+                <td>57 chairs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Example 6: Doritos with Weights</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to show complete solution
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Data and Weights:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>2018</th>
+                <th>2019</th>
+                <th>2020</th>
+                <th>2021</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Sales</strong></td>
+                <td>7,500</td>
+                <td>7,800</td>
+                <td>8,200</td>
+                <td>8,500</td>
+              </tr>
+              <tr>
+                <td><strong>Weight</strong></td>
+                <td>5%</td>
+                <td>10%</td>
+                <td>35%</td>
+                <td>50%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Calculations:</strong></p>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Forecast</th>
+                <th>Detailed Calculation</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>2022 Forecast</strong></td>
+                <td>(8500×0.50) + (8200×0.35) + (7800×0.10) + (7500×0.05)<br/>= 4250 + 2870 + 780 + 375</td>
+                <td>8,275 units</td>
+              </tr>
+              <tr>
+                <td><strong>2022 Actual Sales</strong></td>
+                <td>(Given)</td>
+                <td>9,350 units</td>
+              </tr>
+              <tr>
+                <td><strong>2023 Forecast</strong></td>
+                <td>(9350×0.50) + (8500×0.35) + (8200×0.10) + (7800×0.05)<br/>= 4675 + 2975 + 820 + 390</td>
+                <td>8,860 units</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer-info">
+  <div class="footer-brand">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+    </svg>
+    Athr Educational Platform
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-disclaimer">
+    This educational content is designed to help you deeply understand the material. All rights reserved © 2025
+  </div>
+</div>
+
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const translationButton = document.getElementById('translationButton');
+      const translationText = translationButton.querySelector('.translation-text');
+      const arabicContent = document.getElementById('arabicContent');
+      const englishContent = document.getElementById('englishContent');
+      const html = document.documentElement;
+      const body = document.body;
+      let isArabic = true;
+      
+      const aiChatButton = document.getElementById('aiChatButton');
+      const aiChatModal = document.getElementById('aiChatModal');
+      const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
+      const aiChatMessages = document.getElementById('aiChatMessages');
+      const aiChatInput = document.getElementById('ai-chat-input');
+      const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
+      const aiChatTitle = document.getElementById('ai-chat-title');
+      const aiChatButtonText = document.getElementById('aiFabText');
+
+      let conversationHistory = [];
+      let isFirstMessage = true;
+
+      function showTypingIndicator(show) {
+        const existingIndicator = aiChatMessages.querySelector('.typing-indicator');
+        if (existingIndicator) existingIndicator.remove();
+        
+        if (show) {
+          const indicatorElement = document.createElement('div');
+          indicatorElement.classList.add('chat-message', 'ai-message', 'typing-indicator');
+          indicatorElement.innerHTML = '<span>أثر AI يكتب الآن</span><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>';
+          aiChatMessages.appendChild(indicatorElement);
+          aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+        }
+      }
+
+      function addMessage(text, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', `${sender}-message`);
+        messageElement.innerHTML = marked.parse(text);
+        aiChatMessages.appendChild(messageElement);
+        aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+      }
+      
+      function applyLanguage(arabic) {
+        isArabic = arabic;
+        const lang = isArabic ? 'ar' : 'en';
+        const dir = isArabic ? 'rtl' : 'ltr';
+        
+        html.setAttribute('lang', lang);
+        html.setAttribute('dir', dir);
+        body.setAttribute('dir', dir);
+        
+        arabicContent.classList.toggle('hidden', !isArabic);
+        englishContent.classList.toggle('hidden', isArabic);
+        
+        translationText.textContent = isArabic ? 'English' : 'العربية';
+        document.title = isArabic ? 'إدارة الإنتاج والعمليات - منصة أثر' : 'Production and Operations Management - Athr Platform';
+        
+        aiChatTitle.textContent = isArabic ? 'اسأل أثر AI' : 'Ask Athr AI';
+        aiChatInput.placeholder = isArabic ? 'اكتب سؤالك هنا...' : 'Type your question here...';
+        aiChatButtonText.textContent = isArabic ? 'أثر AI' : 'Athr AI';
+      }
+      
+      translationButton.addEventListener('click', function() {
+        applyLanguage(!isArabic);
+      });
+
+      aiChatButton.addEventListener('click', function() {
+        aiChatModal.classList.add('visible');
+        
+        if (isFirstMessage) {
+          const welcomeMsg = isArabic 
+            ? "مرحباً! أنا **أثر AI**، مساعدك الدراسي الذكي. سأساعدك في فهم محتوى هذا الدرس بطريقة سهلة وممتعة. اسألني أي شيء عن المحتوى!"
+            : "Hello! I'm **Athr AI**, your intelligent study assistant. I'll help you understand this lesson content in an easy and fun way. Ask me anything about the content!";
+          addMessage(welcomeMsg, 'ai');
+          isFirstMessage = false;
+        }
+        
+        aiChatInput.focus();
+      });
+
+      aiChatCloseBtn.addEventListener('click', function() {
+        aiChatModal.classList.remove('visible');
+      });
+
+      aiChatModal.addEventListener('click', function(e) {
+        if (e.target === aiChatModal) {
+          aiChatModal.classList.remove('visible');
+        }
+      });
+
+      async function sendMessage() {
+        const userMessage = aiChatInput.value.trim();
+        if (!userMessage) return;
+
+        addMessage(userMessage, 'user');
+        conversationHistory.push({ role: 'user', content: userMessage });
+        
+        aiChatInput.value = '';
+        aiChatInput.disabled = true;
+        aiChatSendBtn.disabled = true;
+        
+        showTypingIndicator(true);
+
+        try {
+          const lectureContext = arabicContent.innerText || '';
+          
+          const response = await fetch('/askAI', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              conversationHistory: conversationHistory,
+              context: lectureContext
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          showTypingIndicator(false);
+
+          if (data.reply) {
+            addMessage(data.reply, 'ai');
+            conversationHistory.push({ role: 'assistant', content: data.reply });
+          } else {
+            throw new Error('No reply from AI');
+          }
+
+        } catch (error) {
+          console.error('Error:', error);
+          showTypingIndicator(false);
+          
+          const errorMsg = isArabic
+            ? "عذراً، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى."
+            : "Sorry, a connection error occurred. Please try again.";
+          addMessage(errorMsg, 'ai');
+        } finally {
+          aiChatInput.disabled = false;
+          aiChatSendBtn.disabled = false;
+          aiChatInput.focus();
+        }
+      }
+
+      aiChatSendBtn.addEventListener('click', sendMessage);
+      aiChatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      // Question Toggle Function
+      window.toggleQuestion = function(element) {
+        const content = element.querySelector('.question-content');
+        element.classList.toggle('open');
+        content.classList.toggle('show');
+        
+        if (content.classList.contains('show')) {
+          setTimeout(() => {
+            content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 300);
+        }
+      };
+
+      // MCQ Selection Function
+      window.selectMCQ = function(element, isCorrect) {
+        const options = element.parentNode.querySelectorAll('.mcq-option');
+        
+        options.forEach(option => {
+          option.style.pointerEvents = 'none';
+          option.classList.remove('selected', 'correct', 'incorrect');
+        });
+        
+        element.classList.add('selected');
+        
+        setTimeout(() => {
+          if (isCorrect) {
+            element.classList.add('correct');
+            element.innerHTML += ' ✓';
+          } else {
+            element.classList.add('incorrect');
+            element.innerHTML += ' ✗';
+            
+            options.forEach(option => {
+              const onclick = option.getAttribute('onclick');
+              if (onclick && onclick.includes('true')) {
+                option.classList.add('correct');
+                option.innerHTML += ' ✓';
+              }
+            });
+          }
+        }, 500);
+      };
+    });
+  </script>
+</body>
+</html>
+
