@@ -794,6 +794,53 @@
   <main class="main-content">
     <div id="arabicContent">
       <!-- المحتوى العربي - ضع المحتوى الذي أرسلته سابقاً هنا -->
+    <div class="glassy-card">
+  <h2>شرح بالفيديو</h2>
+  
+  <div class="video-container-custom">
+    <div class="video-wrapper">
+      <iframe id="MLgVNKRkhdw" 
+        src="https://www.youtube.com/embed/DYbb4nSBDSI?enablejsapi=1&controls=0&modestbranding=1&rel=0&showinfo=0" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    </div>
+    
+    <div class="video-controls-custom">
+      <button class="play-pause-btn" id="playPauseBtn" aria-label="Play/Pause">
+        <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <svg class="pause-icon" style="display:none;" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+        </svg>
+      </button>
+      
+      <div class="time-display">
+        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+      </div>
+      
+      <input type="range" class="seek-bar" id="seekBar" value="0" min="0" max="100">
+      
+      <div class="volume-control">
+        <button class="volume-btn" id="volumeBtn" aria-label="Mute/Unmute">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+          </svg>
+        </button>
+        <input type="range" class="volume-bar" id="volumeBar" value="50" min="0" max="100">
+      </div>
+      
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Fullscreen">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
     </div>
 
     <div id="englishContent" class="hidden">
