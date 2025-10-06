@@ -2,18 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>منصة أثر التعليمية - مقدمة في الإحصاء</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>منصة أثر التعليمية</title>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   
   <!-- Marked.js for Markdown -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -32,9 +27,7 @@
       --font-english: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    /* ============================================ */
-    /* ANIMATIONS */
-    /* ============================================ */
+    /* Animations */
     @keyframes gradientShift {
       0%, 100% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -60,14 +53,6 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes spin {
-      to { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-    @keyframes tapFeedback {
-      0% { opacity: 0; transform: translateY(-50%) scale(0.6); }
-      50% { opacity: 1; transform: translateY(-50%) scale(1.15); }
-      100% { opacity: 0; transform: translateY(-50%) scale(1); }
-    }
     @keyframes typing {
       0%, 100% { opacity: 0.3; }
       50% { opacity: 1; }
@@ -83,24 +68,13 @@
       75% { transform: translateX(10px); }
     }
 
-    /* ============================================ */
-    /* BASE STYLES */
-    /* ============================================ */
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html { 
       font-size: clamp(0.9rem, 2.5vw, 1.05rem); 
       scroll-behavior: smooth;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
-    
     body {
       font-family: var(--font-arabic);
       background: #f0fdf4;
@@ -111,15 +85,12 @@
       padding: clamp(10px, 3vw, 20px);
       font-weight: 400;
     }
-    
     body[dir="ltr"] { 
       direction: ltr; 
       font-family: var(--font-english);
     }
 
-    /* ============================================ */
-    /* BACKGROUND */
-    /* ============================================ */
+    /* Background Waves */
     .background-waves {
       position: fixed; inset: 0; z-index: -2;
       background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 25%, #fefce8 50%, #ecfccb 75%, #f0fdf4 100%);
@@ -143,9 +114,7 @@
       border-radius: 80% 20% 0 0;
     }
 
-    /* ============================================ */
-    /* TRANSLATION BUTTON */
-    /* ============================================ */
+    /* Translation Button */
     .translation-button {
       position: fixed; top: clamp(20px, 5vw, 30px); right: clamp(20px, 5vw, 30px);
       background: rgba(255,255,255,0.15); backdrop-filter: blur(30px);
@@ -178,9 +147,7 @@
     body[dir="ltr"] .translation-text { margin-left: 0; margin-right: 10px; }
     .translation-button:hover .translation-text { display: block; }
 
-    /* ============================================ */
-    /* AI FAB BUTTON */
-    /* ============================================ */
+    /* AI FAB Button */
     .ai-fab-button {
       position: fixed; bottom: clamp(20px, 5vw, 30px); right: clamp(20px, 5vw, 30px);
       background: rgba(255,255,255,0.15); backdrop-filter: blur(30px);
@@ -217,9 +184,7 @@
     body[dir="ltr"] .ai-fab-text { margin-left: 0; margin-right: 10px; }
     .ai-fab-button:hover .ai-fab-text { display: block; }
 
-    /* ============================================ */
-    /* AI CHAT MODAL */
-    /* ============================================ */
+    /* AI Chat Modal */
     .ai-chat-modal {
       position: fixed; inset: 0;
       background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
@@ -266,21 +231,38 @@
       justify-content: center;
       cursor: pointer;
       transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-size: 0;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+    .ai-chat-close-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(220, 38, 38, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .ai-chat-close-btn:hover::before {
+      opacity: 1;
     }
     .ai-chat-close-btn:hover {
       border-color: rgba(220, 38, 38, 0.4);
       transform: translateY(-2px) scale(1.05);
-      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25), inset 0 1px 0 rgba(255,255,255,0.8);
     }
     .ai-chat-close-btn svg {
       width: 18px;
       height: 18px;
+      color: #64748b;
       transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
     }
     .ai-chat-close-btn:hover svg {
       color: #dc2626;
-      transform: rotate(90deg);
+      transform: rotate(90deg) scale(1.1);
     }
     
     .ai-chat-messages {
@@ -295,6 +277,12 @@
     .ai-chat-messages::-webkit-scrollbar-thumb {
       background: rgba(22, 163, 74, 0.4);
       border-radius: 10px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    .ai-chat-messages::-webkit-scrollbar-thumb:hover {
+      background: rgba(22, 163, 74, 0.6);
+      background-clip: padding-box;
     }
     
     .chat-message {
@@ -326,6 +314,11 @@
       border-bottom-left-radius: 18px;
       align-self: flex-end;
     }
+    
+    .chat-message strong { color: #1e3a8a; font-weight: 700; }
+    .chat-message ul { margin: 8px 0; padding-right: 20px; }
+    body[dir="ltr"] .chat-message ul { padding-right: 0; padding-left: 20px; }
+    .chat-message li { margin-bottom: 4px; color: inherit; }
     
     .typing-indicator {
       background: rgba(245,158,11,0.15) !important;
@@ -377,19 +370,12 @@
       transform: scale(1.05);
     }
     #ai-chat-send-btn:disabled {
-      opacity: 0.6; cursor: not-allowed;
+      opacity: 0.6; cursor: not-allowed; transform: none;
     }
     #ai-chat-send-btn svg { width: 24px; height: 24px; color: white; }
 
-    /* ============================================ */
-    /* MAIN LAYOUT */
-    /* ============================================ */
-    .main-content { 
-      max-width: 1200px; 
-      margin: 90px auto 0; 
-      padding: clamp(20px, 5vw, 40px); 
-    }
-    
+    /* Main Content */
+    .main-content { max-width: 1200px; margin: 90px auto 0; padding: clamp(20px, 5vw, 40px); }
     .glassy-card {
       background: var(--glass-bg);
       border: 2px solid var(--glass-border);
@@ -400,442 +386,7 @@
       transition: all 0.4s ease;
       box-shadow: 0 20px 50px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.5);
     }
-    
-    .glassy-card:hover { 
-      transform: translateY(-5px) scale(1.01); 
-      border-color: rgba(255,255,255,0.7); 
-    }
-
-    /* ============================================ */
-    /* VIDEO PLAYER SECTION */
-    /* ============================================ */
-    .video-lecture-title {
-      font-size: clamp(1.3rem, 4vw, 1.6rem);
-      color: var(--color-primary);
-      margin-bottom: 12px;
-      font-weight: 700;
-    }
-
-    .video-lecture-desc {
-      color: #475569;
-      line-height: 1.7;
-      margin-bottom: 20px;
-    }
-
-    .video-player-wrapper {
-      position: relative;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #000;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-      margin-bottom: 20px;
-    }
-
-    .video-player {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: #000;
-      user-select: none;
-    }
-
-    .video-player.fullscreen-mode {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      aspect-ratio: auto;
-      height: 100vh;
-      border-radius: 0;
-    }
-
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #000;
-    }
-
-    .video-bars {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 5;
-      transition: opacity 0.8s ease;
-      display: none;
-    }
-
-    .video-player.fullscreen-mode .video-bars {
-      display: block;
-    }
-
-    .video-bars.hidden {
-      opacity: 0;
-    }
-
-    .top-bar-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 120px;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
-    }
-
-    .bottom-bar-bg {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 150px;
-      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
-    }
-
-    .glass-bubble {
-      border-radius: 50%;
-      border: 1.5px solid rgba(255, 255, 255, 0.3);
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.1) 100%);
-      backdrop-filter: blur(12px) brightness(115%);
-      -webkit-backdrop-filter: blur(12px) brightness(115%);
-      box-shadow: inset -3px -3px 8px rgba(255, 255, 255, 0.3), inset 3px 3px 8px rgba(0, 0, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .glass-bubble:hover {
-      transform: scale(1.08);
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.15) 100%);
-    }
-
-    .glass-bubble:active {
-      transform: scale(0.92);
-    }
-
-    /* Simple Controls */
-    .simple-controls {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
-      padding: clamp(10px, 3vw, 20px);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 10;
-    }
-
-    .video-player:not(.fullscreen-mode):hover .simple-controls,
-    .video-player:not(.fullscreen-mode).paused .simple-controls {
-      opacity: 1;
-    }
-
-    .video-player.fullscreen-mode .simple-controls {
-      display: none;
-    }
-
-    .simple-progress {
-      height: 5px;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      direction: ltr;
-      position: relative;
-    }
-
-    .simple-progress-filled {
-      height: 100%;
-      background: #fff;
-      border-radius: 10px;
-      width: 0%;
-    }
-
-    .simple-controls-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #fff;
-    }
-
-    .simple-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: clamp(1.2rem, 4vw, 1.5rem);
-      cursor: pointer;
-      padding: 8px 12px;
-      transition: transform 0.2s ease;
-      min-width: 44px;
-      min-height: 44px;
-    }
-
-    .simple-btn:active {
-      transform: scale(0.9);
-    }
-
-    .simple-time {
-      font-size: clamp(0.75rem, 2.5vw, 0.9rem);
-    }
-
-    /* iOS Controls */
-    .ios-controls {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-      z-index: 10;
-      display: none;
-    }
-
-    .video-player.fullscreen-mode .ios-controls {
-      display: block;
-    }
-
-    .video-player.fullscreen-mode.show-controls .ios-controls {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .top-controls {
-      position: absolute;
-      top: env(safe-area-inset-top, 15px);
-      left: 15px;
-      right: 15px;
-      padding-top: 5px;
-      display: flex;
-      justify-content: space-between;
-      z-index: 11;
-    }
-
-    .top-left-group {
-      display: flex;
-      gap: 12px;
-    }
-
-    .control-bubble {
-      width: clamp(40px, 10vw, 48px);
-      height: clamp(40px, 10vw, 48px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border: none;
-      color: #fff;
-      font-size: clamp(16px, 4vw, 19px);
-    }
-
-    .volume-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .volume-slider-container {
-      opacity: 0;
-      transform: translateX(10px);
-      pointer-events: none;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      display: flex;
-      align-items: center;
-      padding: 6px 12px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
-      backdrop-filter: blur(20px) brightness(110%);
-      border-radius: 50px;
-      border: 1.5px solid rgba(255, 255, 255, 0.25);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    }
-
-    .volume-control:hover .volume-slider-container,
-    .volume-control:active .volume-slider-container {
-      opacity: 1;
-      transform: translateX(0);
-      pointer-events: auto;
-    }
-
-    .volume-slider {
-      -webkit-appearance: none;
-      width: clamp(60px, 15vw, 90px);
-      height: 5px;
-      background: linear-gradient(to right, #fff 50%, rgba(255, 255, 255, 0.3) 50%);
-      border-radius: 50px;
-      outline: none;
-      cursor: pointer;
-      direction: ltr !important;
-      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
-    }
-
-    .volume-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 0;
-      height: 0;
-    }
-
-    .volume-slider::-moz-range-thumb {
-      width: 0;
-      height: 0;
-      border: none;
-      background: transparent;
-    }
-
-    .center-play-controls {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      align-items: center;
-      gap: clamp(30px, 8vw, 55px);
-      z-index: 11;
-    }
-
-    .skip-bubble {
-      width: clamp(56px, 15vw, 72px);
-      height: clamp(56px, 15vw, 72px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border: none;
-      color: #fff;
-      font-size: clamp(20px, 5vw, 24px);
-      position: relative;
-    }
-
-    .skip-number {
-      position: absolute;
-      font-size: clamp(8px, 2.2vw, 10px);
-      font-weight: 900;
-      letter-spacing: 0.3px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -48%);
-      color: #fff;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
-      pointer-events: none;
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-    }
-
-    .play-bubble {
-      width: clamp(70px, 18vw, 94px);
-      height: clamp(70px, 18vw, 94px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border: none;
-      color: #fff;
-      font-size: clamp(28px, 7vw, 34px);
-    }
-
-    .play-bubble i {
-      margin-left: 3px;
-    }
-
-    .bottom-timeline {
-      position: absolute;
-      bottom: env(safe-area-inset-bottom, 15px);
-      left: 15px;
-      right: 15px;
-      padding-bottom: 5px;
-      z-index: 11;
-    }
-
-    .progress-wrapper {
-      width: 100%;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-      cursor: pointer;
-      touch-action: none;
-    }
-
-    .progress-track {
-      position: relative;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.3) 100%);
-      border-radius: 50px;
-      direction: ltr !important;
-      transition: height 0.2s ease;
-      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
-    }
-
-    .progress-wrapper:hover .progress-track,
-    .progress-wrapper:active .progress-track {
-      height: 7px;
-    }
-
-    .video-player.dragging .progress-track {
-      height: 9px;
-    }
-
-    .progress-buffered {
-      position: absolute;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.45);
-      border-radius: 50px;
-      width: 0%;
-    }
-
-    .progress-filled {
-      position: absolute;
-      height: 100%;
-      background: linear-gradient(90deg, #fff, #f0f0f0);
-      border-radius: 50px;
-      width: 0%;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-    }
-
-    .time-row {
-      display: flex;
-      justify-content: space-between;
-      color: #fff;
-    }
-
-    .time-text {
-      font-size: clamp(11px, 3vw, 13px);
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    .loading-spinner {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: clamp(40px, 10vw, 52px);
-      height: clamp(40px, 10vw, 52px);
-      border: 3px solid rgba(255, 255, 255, 0.15);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-      display: none;
-      z-index: 20;
-    }
-
-    .loading-spinner.active {
-      display: block;
-    }
-
-    .tap-indicator {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #fff;
-      font-size: clamp(40px, 10vw, 52px);
-      opacity: 0;
-      pointer-events: none;
-      z-index: 15;
-      filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.7));
-    }
-
-    .tap-indicator.left { left: 15%; }
-    .tap-indicator.right { right: 15%; }
-
-    .tap-indicator.active {
-      animation: tapFeedback 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+    .glassy-card:hover { transform: translateY(-5px) scale(1.01); border-color: rgba(255,255,255,0.7); }
 
     /* Typography */
     h1, h2, h3, h4, h5 { 
@@ -1055,7 +606,6 @@
       line-height: 1.6;
       margin-top: 8px;
     }
-
     .hidden { display: none !important; }
   </style>
 </head>
@@ -1114,132 +664,26 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <!-- Title Card -->
-    <div class="glassy-card">
-      <h1>علم الإحصاء - مبادئ الإحصاء الوصفي</h1>
-      <p style="text-align: center; font-size: 1.1rem; color: #15803d; margin-top: -10px;">
-        دليلك الشامل لفهم الإحصاء من الأساسيات
-      </p>
-    </div>
-
-    <!-- Video Player Card -->
-    <div class="glassy-card">
-      <h2 class="video-lecture-title">
-        <i class="fas fa-play-circle" style="margin-left: 8px;"></i>
-        فيديو المحاضرة - لغة الأعمال: مقدمة للمحاسبة
-      </h2>
-     
-
-      <div class="video-player-wrapper">
-        <div class="video-player" id="videoPlayer">
-          <video id="video" playsinline preload="auto"></video>
-
-          <div class="loading-spinner" id="loadingSpinner"></div>
-
-          <!-- Simple Controls -->
-          <div class="simple-controls">
-            <div class="simple-progress" id="simpleProgress">
-              <div class="simple-progress-filled" id="simpleProgressFilled"></div>
-            </div>
-            <div class="simple-controls-row">
-              <button class="simple-btn" id="simplePlayBtn" aria-label="تشغيل/إيقاف">
-                <i class="fas fa-play"></i>
-              </button>
-              <span class="simple-time">
-                <span id="simpleCurrentTime">0:00</span> / <span id="simpleDuration">0:00</span>
-              </span>
-              <button class="simple-btn" id="simpleFullscreenBtn" aria-label="ملء الشاشة">
-                <i class="fas fa-expand"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- iOS Controls -->
-          <div class="ios-controls">
-            <div class="video-bars" id="videoBars">
-              <div class="top-bar-bg"></div>
-              <div class="bottom-bar-bg"></div>
-            </div>
-
-            <div class="tap-indicator left" id="tapLeft">
-              <i class="fas fa-backward"></i>
-            </div>
-            <div class="tap-indicator right" id="tapRight">
-              <i class="fas fa-forward"></i>
-            </div>
-
-            <div class="top-controls">
-              <div class="top-left-group">
-                <button class="control-bubble glass-bubble" id="closeBtn" aria-label="إغلاق">
-                  <i class="fas fa-times"></i>
-                </button>
-                <button class="control-bubble glass-bubble" id="pipBtn" style="display:none;" aria-label="صورة في صورة">
-                  <i class="fas fa-clone"></i>
-                </button>
-              </div>
-              
-              <div class="volume-control">
-                <div class="volume-slider-container">
-                  <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="1" aria-label="مستوى الصوت" />
-                </div>
-                <button class="control-bubble glass-bubble" id="volumeBtn" aria-label="الصوت">
-                  <i class="fas fa-volume-up"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="center-play-controls">
-              <button class="skip-bubble glass-bubble" id="skipBack" aria-label="رجوع 10 ثواني">
-                <i class="fas fa-rotate-left"></i>
-                <span class="skip-number">10</span>
-              </button>
-
-              <button class="play-bubble glass-bubble" id="playBtn" aria-label="تشغيل/إيقاف">
-                <i class="fas fa-play"></i>
-              </button>
-
-              <button class="skip-bubble glass-bubble" id="skipForward" aria-label="تقديم 10 ثواني">
-                <i class="fas fa-rotate-right"></i>
-                <span class="skip-number">10</span>
-              </button>
-            </div>
-
-            <div class="bottom-timeline">
-              <div class="progress-wrapper" id="progressWrapper">
-                <div class="progress-track">
-                  <div class="progress-buffered" id="progressBuffered"></div>
-                  <div class="progress-filled" id="progressFilled"></div>
-                </div>
-              </div>
-
-              <div class="time-row">
-                <span class="time-text" id="currentTime">0:00</span>
-                <span class="time-text" id="remainingTime">-0:00</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================ -->
-    <!-- المحتوى العربي - ضع محتوى المحاضرة هنا -->
-    <!-- ============================================ -->
     <div id="arabicContent">
-    <!-- ============================================ -->
-<!-- المحتوى العربي الكامل -->
-<!-- ============================================ -->
+    <div id="arabicContent">
+<!-- بطاقة العنوان -->
+<div class="glassy-card">
+  <h1>علم الإحصاء - مبادئ الإحصاء الوصفي</h1>
+  <p style="text-align: center; font-size: 1.1rem; color: #15803d; margin-top: -10px;">
+    دليلك الشامل لفهم الإحصاء من الأساسيات
+  </p>
+</div>
 
 <!-- المفهوم 1: علم الإحصاء -->
 <div class="glassy-card">
   <h2>علم الإحصاء (Statistics)</h2>
   
-  <h3>المفهوم الأساسي:</h3>
+  <h3>1. المفهوم الأساسي:</h3>
   <p>
-    علم الإحصاء هو <mark class="highlight-green">الأداة العلمية التي نستخدمها لتحويل البيانات الخام والفوضوية إلى معرفة مفيدة وقرارات فعالة</mark>. يتضمن ذلك منهجية متكاملة تبدأ بجمع المعلومات، ثم تنظيمها وعرضها بشكل مفهوم (كالجداول والرسوم البيانية)، ولفحصها لاستخلاص الأنماط والاتجاهات، وأخيراً <mark class="highlight-blue">تفسير النتائج لاتخاذ قرارات مبنية على أدلة وبراهين</mark>.
+    علم الإحصاء هو <mark class="highlight-green">الأداة العلمية التي نستخدمها لتحويل البيانات الخام والفوضوية إلى معرفة مفيدة وقرارات فعالة</mark>. يتضمن ذلك منهجية متكاملة تبدأ بجمع المعلومات، ثم تنظيمها وعرضها بشكل مفهوم (كالجداول والرسوم البيانية)، وفحصها لاستخلاص الأنماط والاتجاهات، وأخيراً <mark class="highlight-blue">تفسير النتائج لاتخاذ قرارات مبنية على أدلة وبراهين</mark>.
   </p>
 
-  <h3>مثال تطبيقي:</h3>
+  <h3>2. مثال تطبيقي:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1260,7 +704,7 @@
     </div>
   </div>
 
-  <h3>أسئلة محتملة:</h3>
+  <h3>3. أسئلة محتملة:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1306,14 +750,14 @@
 <div class="glassy-card">
   <h2>أنواع الإحصاء (Types of Statistics)</h2>
   
-  <h3>المفهوم الأساسي:</h3>
+  <h3>1. المفهوم الأساسي:</h3>
   <p>ينقسم علم الإحصاء بشكل أساسي إلى فرعين رئيسيين يكمل كل منهما الآخر:</p>
   <ul>
     <li><mark class="highlight-green">الإحصاء الوصفي (Descriptive Statistics):</mark> يركز هذا الفرع على تنظيم وتلخيص وعرض البيانات بطريقة موجزة ومفيدة. هدفه هو "وصف" مجموعة البيانات كما هي باستخدام مقاييس مثل المتوسط والوسيط، ورسومات مثل المدرج التكراري.</li>
     <li><mark class="highlight-blue">الإحصاء الاستدلالي (Inferential Statistics):</mark> يستخدم هذا الفرع بيانات مأخوذة من عينة صغيرة "للاستدلال" أو "لتعميم" النتائج على مجتمع أكبر بكثير. إنه فن الانتقال من المعلوم (العينة) إلى المجهول (المجتمع).</li>
   </ul>
 
-  <h3>مثال تطبيقي:</h3>
+  <h3>2. مثال تطبيقي:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1333,7 +777,7 @@
     </div>
   </div>
 
-  <h3>أسئلة محتملة:</h3>
+  <h3>3. أسئلة محتملة:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1352,33 +796,13 @@
       </ul>
     </div>
   </div>
-
-  <div class="question-container" onclick="toggleQuestion(this)">
-    <div class="question-header">
-      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      سؤال مقالي (15%): وضح بمثال عملي من مجال إدارة الأعمال
-    </div>
-    <div class="question-content">
-      <div class="solution-content">
-        <p><strong>السؤال:</strong> كيف يمكن استخدام كل من الإحصاء الوصفي والاستدلالي لحل مشكلة معينة (مثل انخفاض المبيعات)؟</p>
-        <p><strong>مثال الإجابة:</strong></p>
-        <ul>
-          <li><mark class="highlight-green">الإحصاء الوصفي:</mark> حساب متوسط المبيعات الشهرية، رسم مخطط للاتجاهات.</li>
-          <li><mark class="highlight-blue">الإحصاء الاستدلالي:</mark> استنتاج أن الانخفاض سيستمر في الأشهر القادمة بناءً على العينة.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- المفهوم 3: أنواع المتغيرات -->
 <div class="glassy-card">
   <h2>أنواع المتغيرات (Types of Variables)</h2>
   
-  <h3>المفهوم الأساسي:</h3>
+  <h3>1. المفهوم الأساسي:</h3>
   <p>المتغير هو <mark class="highlight-green">أي خاصية أو سمة يمكن أن تختلف قيمتها من فرد لآخر</mark>. تنقسم المتغيرات إلى نوعين أساسيين:</p>
 
   <div class="table-container">
@@ -1410,7 +834,7 @@
     </table>
   </div>
 
-  <h3>مثال تطبيقي:</h3>
+  <h3>2. مثال تطبيقي:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1431,7 +855,7 @@
     </div>
   </div>
 
-  <h3>أسئلة محتملة:</h3>
+  <h3>3. أسئلة محتملة:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1449,33 +873,13 @@
       </ul>
     </div>
   </div>
-
-  <div class="question-container" onclick="toggleQuestion(this)">
-    <div class="question-header">
-      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      سؤال مقالي (15%): أعطِ مثالين لكل نوع من أنواع المتغيرات
-    </div>
-    <div class="question-content">
-      <div class="solution-content">
-        <p><strong>مثال الإجابة من بيئة العمل الإداري:</strong></p>
-        <ul>
-          <li><mark class="highlight-green">نوعي:</mark> القسم، المنصب الوظيفي</li>
-          <li><mark class="highlight-blue">كمي متقطع:</mark> عدد الموظفين، عدد الاجتماعات</li>
-          <li><mark class="highlight-yellow">كمي مستمر:</mark> الراتب، ساعات العمل</li>
-        </ul>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- المفهوم 4: مستويات القياس -->
 <div class="glassy-card">
   <h2>مستويات القياس (Levels of Measurement)</h2>
   
-  <h3>المفهوم الأساسي:</h3>
+  <h3>1. المفهوم الأساسي:</h3>
   <p>مستويات القياس هي <mark class="highlight-green">طريقة لتصنيف المتغيرات بناءً على خصائصها الرياضية</mark>. هناك أربعة مستويات بالترتيب من الأضعف إلى الأقوى:</p>
 
   <div class="table-container">
@@ -1512,7 +916,7 @@
     </table>
   </div>
 
-  <h3>مثال تطبيقي:</h3>
+  <h3>2. مثال تطبيقي:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1534,7 +938,7 @@
     </div>
   </div>
 
-  <h3>أسئلة محتملة:</h3>
+  <h3>3. أسئلة محتملة:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1552,28 +956,13 @@
       </ul>
     </div>
   </div>
-
-  <div class="question-container" onclick="toggleQuestion(this)">
-    <div class="question-header">
-      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      سؤال مقالي (15%): لخص في جدول مستويات القياس الأربعة
-    </div>
-    <div class="question-content">
-      <div class="solution-content">
-        <p><strong>مثال الإجابة:</strong> راجع الجدول أعلاه مع إضافة أمثلة شخصية من تجربتك.</p>
-      </div>
-    </div>
-  </div>
 </div>
 
-<!-- الحالة العملية 1: تقييم مستويات القياس للطلاب -->
+<!-- الحالة العملية 1 -->
 <div class="glassy-card">
   <h2>الحالة العملية (1): تقييم مستويات القياس للطلاب</h2>
   
-  <h3>عرض المثال:</h3>
+  <h3>1. عرض المثال:</h3>
   <p><strong>المسألة:</strong> ما هو مستوى القياس لكل من المتغيرات التالية؟</p>
   <ul>
     <li>أ. تقييم ذكاء الطلاب</li>
@@ -1598,43 +987,43 @@
         <ul>
           <li><strong>أ. تقييم ذكاء الطلاب (IQ):</strong> مستوى <mark class="highlight-yellow">فتري</mark>. الفرق بين IQ 100 و 110 يُفترض أنه نفس الفرق بين 120 و 130، لكن درجة صفر IQ لا تعني انعدام الذكاء تماماً.</li>
           <li><strong>ب. المسافة إلى الفصل:</strong> مستوى <mark class="highlight-pink">نسبي</mark>. الصفر هنا حقيقي (يعني لا مسافة)، ويمكن القول إن 10 كم هي ضعف 5 كم.</li>
-          <li><strong>ج. درجات الاختبار:</strong> مستوى <mark class="highlight-pink">نسبي</mark>.</li>
-          <li><strong>د. موطن الولادة:</strong> مستوى <mark class="highlight-green">اسمي</mark>. مجرد تصنيف بلا ترتيب.</li>
-          <li><strong>هـ. ترتيب السنة الدراسية:</strong> مستوى <mark class="highlight-blue">ترتيبي</mark>. يوجد ترتيب طبيعي.</li>
-          <li><strong>و. ساعات الدراسة:</strong> مستوى <mark class="highlight-pink">نسبي</mark>. يمكن عدها والصفر يعني عدم الدراسة.</li>
+          <li><strong>ج. درجات الاختبار:</strong> يمكن اعتبارها مستوى <mark class="highlight-pink">نسبي</mark> في معظم الحالات.</li>
+          <li><strong>د. موطن الولادة:</strong> مستوى <mark class="highlight-green">اسمي</mark>. هي مجرد فئات (الرياض، جدة) لا ترتيب بينها.</li>
+          <li><strong>هـ. ترتيب الطلاب (سنة أولى...):</strong> مستوى <mark class="highlight-blue">ترتيبي</mark>. هناك ترتيب منطقي، لكن الفجوة المعرفية بين السنة الأولى والثانية ليست بالضرورة نفس الفجوة بين الثالثة والرابعة.</li>
+          <li><strong>و. عدد ساعات الدراسة:</strong> مستوى <mark class="highlight-pink">نسبي</mark>. صفر ساعات يعني عدم الدراسة، و 10 ساعات هي ضعف 5 ساعات.</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <h3>تمرين تطبيقي:</h3>
+  <h3>2. تمرين تطبيقي:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      تمرين محاكاة: بيانات المرضى في مستشفى
+      تمرين محاكاة: ما هو مستوى القياس لبيانات المرضى؟
     </div>
     <div class="question-content">
       <div class="solution-content">
-        <p><strong>ما هو مستوى القياس لهذه العناصر؟</strong></p>
+        <p>ما هو مستوى القياس لهذه العناصر المتعلقة ببيانات المرضى في مستشفى؟</p>
         <ul>
-          <li>فصيلة دم المريض (A, B, O, AB): <mark class="highlight-green">اسمي</mark></li>
-          <li>تقييم المريض لمستوى الألم (خفيف، متوسط، شديد): <mark class="highlight-blue">ترتيبي</mark></li>
-          <li>درجة حرارة جسم المريض: <mark class="highlight-yellow">فتري</mark></li>
-          <li>وزن المريض بالكيلوجرام: <mark class="highlight-pink">نسبي</mark></li>
+          <li>فصيلة دم المريض (A, B, O, AB) - <mark class="highlight-green">اسمي</mark></li>
+          <li>تقييم المريض لمستوى الألم (خفيف، متوسط، شديد) - <mark class="highlight-blue">ترتيبي</mark></li>
+          <li>درجة حرارة جسم المريض - <mark class="highlight-yellow">فتري</mark></li>
+          <li>وزن المريض بالكيلوجرام - <mark class="highlight-pink">نسبي</mark></li>
         </ul>
       </div>
     </div>
   </div>
 </div>
 
-<!-- الحالة العملية 2: تمرين بيانات قطاع الصحف -->
+<!-- الحالة العملية 2 -->
 <div class="glassy-card">
-  <h2>الحالة العملية (2): تمرين بيانات قطاع الصحف</h2>
+  <h2>الحالة العملية (2): بيانات قطاع الصحف</h2>
   
-  <h3>عرض المثال:</h3>
+  <h3>1. عرض المثال:</h3>
   <p><strong>المسألة:</strong> ما هو مستوى القياس لهذه العناصر المتعلقة بأعمال الصحف؟</p>
   <ul>
     <li>أ. عدد الصحف التي تم بيعها كل يوم أحد خلال عام 2004</li>
@@ -1655,146 +1044,99 @@
       <div class="solution-content">
         <p><strong>شرح الحل:</strong></p>
         <ul>
-          <li><strong>أ. عدد الصحف المباعة:</strong> مستوى <mark class="highlight-pink">نسبي</mark>. متغير كمي، والصفر يعني عدم بيع أي صحيفة.</li>
-          <li><strong>ب. الأقسام:</strong> مستوى <mark class="highlight-green">اسمي</mark>. مجرد تسميات لفئات مختلفة.</li>
-          <li><strong>ج. ملخص المبيعات حسب المقاطعة:</strong> مستوى <mark class="highlight-green">اسمي</mark>. تصنيف بناءً على أسماء المقاطعات.</li>
-          <li><strong>د. عدد سنوات العمل:</strong> مستوى <mark class="highlight-pink">نسبي</mark>. متغير كمي، والصفر يعني موظف جديد.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <h3>تمرين تطبيقي:</h3>
-  <div class="question-container" onclick="toggleQuestion(this)">
-    <div class="question-header">
-      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      تمرين محاكاة: شركة طيران
-    </div>
-    <div class="question-content">
-      <div class="solution-content">
-        <p><strong>ما هو مستوى القياس لهذه العناصر؟</strong></p>
-        <ul>
-          <li>عدد الرحلات اليومية من الرياض إلى دبي: <mark class="highlight-pink">نسبي</mark></li>
-          <li>تصنيف الركاب (درجة أولى، رجال أعمال، سياحية): <mark class="highlight-blue">ترتيبي</mark></li>
-          <li>أسماء المطارات: <mark class="highlight-green">اسمي</mark></li>
-          <li>حمولة الشحن بالطن: <mark class="highlight-pink">نسبي</mark></li>
+          <li><strong>أ. عدد الصحف المباعة:</strong> مستوى <mark class="highlight-pink">نسبي</mark>. لأنه متغير كمي (عدد)، والصفر يعني عدم بيع أي صحيفة، وبيع 2000 صحيفة هو ضعف بيع 1000.</li>
+          <li><strong>ب. الأقسام:</strong> مستوى <mark class="highlight-green">اسمي</mark>. هي مجرد تسميات لفئات مختلفة (تحرير، إعلانات) لا يوجد ترتيب منطقي بينها.</li>
+          <li><strong>ج. ملخص المبيعات حسب المقاطعة:</strong> مستوى <mark class="highlight-green">اسمي</mark>. يتم تصنيف المبيعات بناءً على أسماء المقاطعات، وهي فئات لا ترتيب بينها.</li>
+          <li><strong>د. عدد سنوات العمل:</strong> مستوى <mark class="highlight-pink">نسبي</mark>. عدد السنوات هو متغير كمي، والصفر يعني أن الموظف جديد تماماً، و10 سنوات خدمة هي ضعف 5 سنوات.</li>
         </ul>
       </div>
     </div>
   </div>
 </div>
 
-<!-- الحالة العملية 3: تمرين شامل -->
+<!-- الحالة العملية 3 -->
 <div class="glassy-card">
-  <h2>الحالة العملية (3): تمرين شامل لتصنيف المتغيرات والقياس</h2>
+  <h2>الحالة العملية (3): تصنيف شامل للمتغيرات</h2>
   
-  <h3>عرض المثال:</h3>
+  <h3>1. عرض المثال:</h3>
   <p><strong>المسألة:</strong> ما هو نوع المتغير ومستوى القياس لكل من المتغيرات التالية؟</p>
-  <ul>
-    <li>أ. الراتب (Salary)</li>
-    <li>ب. الجنس (Gender)</li>
-    <li>ج. حجم مبيعات مشغلات MP3</li>
-    <li>د. تفضيل المشروب الغازي</li>
-    <li>هـ. درجة الحرارة</li>
-    <li>و. درجات SAT</li>
-    <li>ز. ترتيب الطالب في الفصل</li>
-    <li>ح. تقييم أستاذ المالية</li>
-    <li>ط. عدد أجهزة الكمبيوتر في المنزل</li>
-  </ul>
 
-  <div class="question-container" onclick="toggleQuestion(this)">
-    <div class="question-header">
-      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      اضغط لعرض شرح الحل
-    </div>
-    <div class="question-content">
-      <div class="solution-content">
-        <p><strong>شرح الحل:</strong></p>
-        <div class="table-container" style="margin-top: 15px;">
-          <table class="concepts-table">
-            <thead>
-              <tr>
-                <th>المتغير</th>
-                <th>النوع</th>
-                <th>مستوى القياس</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>الراتب</td>
-                <td>كمي مستمر</td>
-                <td>نسبي</td>
-              </tr>
-              <tr>
-                <td>الجنس</td>
-                <td>نوعي</td>
-                <td>اسمي</td>
-              </tr>
-              <tr>
-                <td>حجم مبيعات MP3</td>
-                <td>كمي متقطع</td>
-                <td>نسبي</td>
-              </tr>
-              <tr>
-                <td>تفضيل المشروب الغازي</td>
-                <td>نوعي</td>
-                <td>اسمي</td>
-              </tr>
-              <tr>
-                <td>درجة الحرارة</td>
-                <td>كمي مستمر</td>
-                <td>فتري</td>
-              </tr>
-              <tr>
-                <td>درجات SAT</td>
-                <td>كمي متقطع</td>
-                <td>فتري</td>
-              </tr>
-              <tr>
-                <td>ترتيب الطالب</td>
-                <td>نوعي</td>
-                <td>ترتيبي</td>
-              </tr>
-              <tr>
-                <td>تقييم الأستاذ</td>
-                <td>نوعي</td>
-                <td>ترتيبي</td>
-              </tr>
-              <tr>
-                <td>عدد أجهزة الكمبيوتر</td>
-                <td>كمي متقطع</td>
-                <td>نسبي</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>المتغير</th>
+          <th>نوع المتغير</th>
+          <th>مستوى القياس</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>الراتب (Salary)</td>
+          <td>كمي مستمر</td>
+          <td>نسبي</td>
+        </tr>
+        <tr>
+          <td>الجنس (Gender)</td>
+          <td>نوعي</td>
+          <td>اسمي</td>
+        </tr>
+        <tr>
+          <td>حجم مبيعات مشغلات MP3</td>
+          <td>كمي متقطع</td>
+          <td>نسبي</td>
+        </tr>
+        <tr>
+          <td>تفضيل المشروب الغازي</td>
+          <td>نوعي</td>
+          <td>اسمي</td>
+        </tr>
+        <tr>
+          <td>درجة الحرارة (Temperature)</td>
+          <td>كمي مستمر</td>
+          <td>فتري</td>
+        </tr>
+        <tr>
+          <td>درجات SAT</td>
+          <td>كمي متقطع</td>
+          <td>فتري</td>
+        </tr>
+        <tr>
+          <td>ترتيب الطالب في الفصل</td>
+          <td>نوعي/كمي ترتيبي</td>
+          <td>ترتيبي</td>
+        </tr>
+        <tr>
+          <td>تقييم أستاذ المالية</td>
+          <td>نوعي</td>
+          <td>ترتيبي</td>
+        </tr>
+        <tr>
+          <td>عدد أجهزة الكمبيوتر في المنزل</td>
+          <td>كمي متقطع</td>
+          <td>نسبي</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <h3>تمرين تطبيقي:</h3>
+  <h3>2. تمرين تطبيقي:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      تمرين محاكاة: سوبر ماركت
+      تمرين محاكاة: حدد نوع المتغير ومستوى القياس في سوبر ماركت
     </div>
     <div class="question-content">
       <div class="solution-content">
-        <p><strong>حدد نوع المتغير ومستوى القياس:</strong></p>
+        <p>حدد نوع المتغير ومستوى القياس لكل مما يلي في سياق سوبر ماركت:</p>
         <ul>
-          <li>طرق الدفع (نقدي، شبكة، فيزا): نوعي - اسمي</li>
-          <li>عدد المنتجات في السلة: كمي متقطع - نسبي</li>
-          <li>تقييم الخدمة (1 إلى 5 نجوم): نوعي - ترتيبي</li>
-          <li>قيمة الفاتورة بالريال: كمي مستمر - نسبي</li>
+          <li>طرق الدفع المتاحة (نقدي، شبكة، فيزا) - <mark class="highlight-green">نوعي، اسمي</mark></li>
+          <li>عدد المنتجات في سلة العميل - <mark class="highlight-blue">كمي متقطع، نسبي</mark></li>
+          <li>تقييم العميل للخدمة (1 إلى 5 نجوم) - <mark class="highlight-yellow">نوعي، ترتيبي</mark></li>
+          <li>قيمة الفاتورة النهائية بالريال - <mark class="highlight-pink">كمي مستمر، نسبي</mark></li>
         </ul>
       </div>
     </div>
@@ -1869,36 +1211,42 @@
 <div class="footer-info">
   <div class="footer-brand">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+      <path d="M2 17l10 5 10-5"/>
+      <path d="M2 12l10 5 10-5"/>
     </svg>
     منصة أثر التعليمية
   </div>
   <div class="footer-divider"></div>
   <p class="footer-disclaimer">
-    جميع الحقوق محفوظة © 2025 | تم التطوير بواسطة فريق أثر
+    تم إعداد هذا المحتوى بعناية فائقة لمساعدتك على فهم المفاهيم الإحصائية الأساسية. 
+    نتمنى لك رحلة تعلم موفقة!
   </p>
 </div>
+</div>
 
+      
     </div>
 
-    <!-- ============================================ -->
-    <!-- المحتوى الإنجليزي - ضع محتوى المحاضرة هنا -->
-    <!-- ============================================ -->
-    <div id="englishContent" class="hidden">
-<!-- ============================================ -->
-<!-- ENGLISH CONTENT - COMPLETE -->
-<!-- ============================================ -->
+   <div id="englishContent" class="hidden">
+<!-- Title Card -->
+<div class="glassy-card">
+  <h1>Statistics - Descriptive Statistics Fundamentals</h1>
+  <p style="text-align: center; font-size: 1.1rem; color: #15803d; margin-top: -10px;">
+    Your comprehensive guide to understanding statistics from the basics
+  </p>
+</div>
 
 <!-- Concept 1: Statistics -->
 <div class="glassy-card">
   <h2>Statistics</h2>
   
-  <h3>Core Concept:</h3>
+  <h3>1. Core Concept:</h3>
   <p>
-    Statistics is <mark class="highlight-green">the scientific tool we use to transform raw and chaotic data into useful knowledge and effective decisions</mark>. It involves an integrated methodology that begins with collecting information, then organizing and presenting it in an understandable way (such as tables and graphs), examining it to extract patterns and trends, and finally <mark class="highlight-blue">interpreting the results to make evidence-based decisions</mark>.
+    Statistics is <mark class="highlight-green">the scientific tool we use to transform raw and chaotic data into useful knowledge and effective decisions</mark>. It includes an integrated methodology that begins with collecting information, then organizing and presenting it in an understandable way (such as tables and graphs), examining it to extract patterns and trends, and finally <mark class="highlight-blue">interpreting the results to make evidence-based decisions</mark>.
   </p>
 
-  <h3>Practical Example:</h3>
+  <h3>2. Practical Example:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1909,17 +1257,17 @@
     </div>
     <div class="question-content">
       <div class="solution-content">
-        <p>Suppose the <strong>Ministry of Health</strong> wants to evaluate the effectiveness of a new vaccine. Instead of relying on impressions, the ministry uses statistics.</p>
+        <p>Suppose the <strong>Ministry of Health</strong> wants to evaluate the effectiveness of a new vaccine. Instead of relying on impressions, the Ministry uses statistics.</p>
         <ul>
           <li>It collects data on thousands of people who received the vaccine (such as infection rates after vaccination).</li>
-          <li>After statistically examining this data, the ministry can accurately determine <mark class="highlight-green">the vaccine's effectiveness rate</mark>.</li>
-          <li>This helps in making a strategic decision to implement it or not.</li>
+          <li>After statistically examining this data, the Ministry can accurately determine <mark class="highlight-green">the vaccine's effectiveness rate</mark>.</li>
+          <li>This helps it make a strategic decision about whether to roll it out or not.</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <h3>Potential Questions:</h3>
+  <h3>3. Potential Questions:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1930,10 +1278,10 @@
     </div>
     <div class="question-content">
       <ul class="mcq-options">
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Collecting and storing data only</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) Converting numbers into complex graphs</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) Helping to make more effective decisions based on data analysis</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Finding errors in existing data</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">a) Collecting and storing data only</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">b) Converting numbers into complex graphs</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">c) Helping make more effective decisions based on data examination</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">d) Finding errors in existing data</li>
       </ul>
     </div>
   </div>
@@ -1944,17 +1292,17 @@
         <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
         <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      Essay Question (15%): Explain the five steps of data analysis
+      Essay Question (15%): Explain the five steps of data examination
     </div>
     <div class="question-content">
       <div class="solution-content">
         <p><strong>Suggested Answer:</strong></p>
         <ol>
           <li><mark class="highlight-green">Data Collection:</mark> Identifying sources and appropriate collection methods.</li>
-          <li><mark class="highlight-blue">Data Organization:</mark> Arranging it in tables or databases.</li>
+          <li><mark class="highlight-blue">Data Organization:</mark> Arranging them in tables or databases.</li>
           <li><mark class="highlight-yellow">Data Presentation:</mark> Using graphs and charts.</li>
-          <li><mark class="highlight-orange">Data Analysis:</mark> Applying statistical methods to discover patterns.</li>
-          <li><mark class="highlight-pink">Results Interpretation:</mark> Extracting decisions and recommendations.</li>
+          <li><mark class="highlight-orange">Data Examination:</mark> Applying statistical methods to discover patterns.</li>
+          <li><mark class="highlight-pink">Results Interpretation:</mark> Drawing decisions and recommendations.</li>
         </ol>
       </div>
     </div>
@@ -1965,14 +1313,14 @@
 <div class="glassy-card">
   <h2>Types of Statistics</h2>
   
-  <h3>Core Concept:</h3>
+  <h3>1. Core Concept:</h3>
   <p>Statistics is fundamentally divided into two main branches that complement each other:</p>
   <ul>
-    <li><mark class="highlight-green">Descriptive Statistics:</mark> This branch focuses on organizing, summarizing, and presenting data in a concise and useful way. Its goal is to "describe" a dataset as it is using measures like mean and median, and graphics like histograms.</li>
-    <li><mark class="highlight-blue">Inferential Statistics:</mark> This branch uses data taken from a small sample to "infer" or "generalize" results to a much larger population. It's the art of moving from the known (sample) to the unknown (population).</li>
+    <li><mark class="highlight-green">Descriptive Statistics:</mark> This branch focuses on organizing, summarizing, and presenting data in a concise and useful way. Its goal is to "describe" the dataset as it is using measures such as mean and median, and visualizations like histograms.</li>
+    <li><mark class="highlight-blue">Inferential Statistics:</mark> This branch uses data taken from a small sample to "infer" or "generalize" results to a much larger population. It is the art of moving from the known (the sample) to the unknown (the population).</li>
   </ul>
 
-  <h3>Practical Example:</h3>
+  <h3>2. Practical Example:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1985,50 +1333,30 @@
       <div class="solution-content">
         <p>A researcher studying <strong>spending habits of Saudi youth:</strong></p>
         <ul>
-          <li><mark class="highlight-green">Descriptive Statistics:</mark> The researcher calculates the "average" monthly spending in the sample and draws a chart showing "top" spending categories (food, entertainment, clothing). This all describes the sample.</li>
-          <li><mark class="highlight-blue">Inferential Statistics:</mark> Based on sample results, the researcher concludes that "Saudi youth in general" spend between 2000 and 2500 SAR monthly on entertainment. Here, they're generalizing sample results to the entire population.</li>
+          <li><mark class="highlight-green">Descriptive Statistics:</mark> The researcher calculates the "average" monthly spending of young people in their sample and draws a chart showing the "most common" categories of spending (food, entertainment, clothing). This is all a description of the sample.</li>
+          <li><mark class="highlight-blue">Inferential Statistics:</mark> Based on the sample results, the researcher concludes that "Saudi youth in general" spend between 2000 and 2500 riyals monthly on entertainment. Here, they are generalizing the sample result to the entire population.</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <h3>Potential Questions:</h3>
+  <h3>3. Potential Questions:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      When a market research center conducts a survey...
+      When a market research center conducts a survey of 1000 consumers...
     </div>
     <div class="question-content">
-      <p style="margin-bottom: 10px;">When a market research center surveys 1000 consumers and then announces that "70% of consumers in the Kingdom prefer product A," it is using:</p>
+      <p style="margin-bottom: 10px;">When a market research center conducts a survey of 1000 consumers and then announces that "70% of consumers in the Kingdom prefer Product A," it uses:</p>
       <ul class="mcq-options">
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Descriptive statistics only</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Inferential statistics</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Statistical population</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Quantitative variable</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">a) Descriptive statistics only</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">b) Inferential statistics</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">c) Statistical population</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">d) Quantitative variable</li>
       </ul>
-    </div>
-  </div>
-
-  <div class="question-container" onclick="toggleQuestion(this)">
-    <div class="question-header">
-      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Essay Question (15%): Explain with a practical business example
-    </div>
-    <div class="question-content">
-      <div class="solution-content">
-        <p><strong>Question:</strong> How can both descriptive and inferential statistics be used to solve a specific problem (such as declining sales)?</p>
-        <p><strong>Sample Answer:</strong></p>
-        <ul>
-          <li><mark class="highlight-green">Descriptive Statistics:</mark> Calculate average monthly sales, create trend charts.</li>
-          <li><mark class="highlight-blue">Inferential Statistics:</mark> Infer that the decline will continue in coming months based on the sample.</li>
-        </ul>
-      </div>
     </div>
   </div>
 </div>
@@ -2037,8 +1365,8 @@
 <div class="glassy-card">
   <h2>Types of Variables</h2>
   
-  <h3>Core Concept:</h3>
-  <p>A variable is <mark class="highlight-green">any characteristic or attribute whose value can differ from one individual to another</mark>. Variables are divided into two main types:</p>
+  <h3>1. Core Concept:</h3>
+  <p>A variable is <mark class="highlight-green">any characteristic or attribute whose value can vary from one individual to another</mark>. Variables are divided into two basic types:</p>
 
   <div class="table-container">
     <table class="concepts-table">
@@ -2057,8 +1385,8 @@
         </tr>
         <tr>
           <td><strong>Discrete Quantitative Variables</strong></td>
-          <td>Take specific values that can be counted (usually whole numbers)</td>
-          <td>Number of students in class, number of cars</td>
+          <td>Take specific countable values (usually whole numbers)</td>
+          <td>Number of students in a class, number of cars</td>
         </tr>
         <tr>
           <td><strong>Continuous Quantitative Variables</strong></td>
@@ -2069,7 +1397,7 @@
     </table>
   </div>
 
-  <h3>Practical Example:</h3>
+  <h3>2. Practical Example:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2083,14 +1411,14 @@
         <p>In a <strong>student survey:</strong></p>
         <ul>
           <li>Question "What is your major?" (Management, Accounting) is a <mark class="highlight-green">qualitative variable</mark>.</li>
-          <li>Question "How many courses did you register this semester?" (3, 4, 5) is a <mark class="highlight-blue">discrete quantitative variable</mark>.</li>
+          <li>Question "How many courses did you register for this semester?" (3, 4, 5) is a <mark class="highlight-blue">discrete quantitative variable</mark>.</li>
           <li>Question "What is your GPA?" (4.25, 3.87) is a <mark class="highlight-yellow">continuous quantitative variable</mark>.</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <h3>Potential Questions:</h3>
+  <h3>3. Potential Questions:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2101,31 +1429,11 @@
     </div>
     <div class="question-content">
       <ul class="mcq-options">
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Qualitative variable</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) Continuous quantitative variable</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) Discrete quantitative variable</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Ordinal variable</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">a) Qualitative variable</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">b) Continuous quantitative variable</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">c) Discrete quantitative variable</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">d) Ordinal variable</li>
       </ul>
-    </div>
-  </div>
-
-  <div class="question-container" onclick="toggleQuestion(this)">
-    <div class="question-header">
-      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Essay Question (15%): Give two examples of each variable type
-    </div>
-    <div class="question-content">
-      <div class="solution-content">
-        <p><strong>Sample Answer from business environment:</strong></p>
-        <ul>
-          <li><mark class="highlight-green">Qualitative:</mark> Department, job position</li>
-          <li><mark class="highlight-blue">Discrete Quantitative:</mark> Number of employees, number of meetings</li>
-          <li><mark class="highlight-yellow">Continuous Quantitative:</mark> Salary, working hours</li>
-        </ul>
-      </div>
     </div>
   </div>
 </div>
@@ -2134,44 +1442,44 @@
 <div class="glassy-card">
   <h2>Levels of Measurement</h2>
   
-  <h3>Core Concept:</h3>
-  <p>Levels of measurement are <mark class="highlight-green">a way to classify variables based on their mathematical properties</mark>. There are four levels in order from weakest to strongest:</p>
+  <h3>1. Core Concept:</h3>
+  <p>Levels of measurement are <mark class="highlight-green">a way to classify variables based on their mathematical properties</mark>. There are four levels from weakest to strongest:</p>
 
   <div class="table-container">
     <table class="concepts-table">
       <thead>
         <tr>
           <th>Level</th>
-          <th>Characteristics</th>
+          <th>Properties</th>
           <th>Example</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><strong>Nominal</strong></td>
-          <td>For classification only, no order</td>
+          <td>Classification only, no ordering</td>
           <td>Gender, city of birth</td>
         </tr>
         <tr>
           <td><strong>Ordinal</strong></td>
-          <td>Can be ordered, but distances are unequal</td>
+          <td>Can be ordered, but distances are not equal</td>
           <td>Student grades (Excellent, Very Good)</td>
         </tr>
         <tr>
           <td><strong>Interval</strong></td>
-          <td>Order + equal distances + arbitrary zero</td>
-          <td>Celsius temperature</td>
+          <td>Ordering + equal distances + arbitrary zero</td>
+          <td>Temperature in Celsius</td>
         </tr>
         <tr>
           <td><strong>Ratio</strong></td>
-          <td>All characteristics + true zero</td>
+          <td>All properties + true zero</td>
           <td>Salary, weight, years of experience</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <h3>Practical Example:</h3>
+  <h3>2. Practical Example:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2186,61 +1494,46 @@
         <ul>
           <li>Department (Management, Marketing): <mark class="highlight-green">Nominal</mark>.</li>
           <li>Position (Manager, Supervisor, Employee): <mark class="highlight-blue">Ordinal</mark>.</li>
-          <li>Year of graduation (2015, 2016): <mark class="highlight-yellow">Interval</mark> (zero is not real).</li>
-          <li>Years of experience (5, 10): <mark class="highlight-pink">Ratio</mark> (zero means no experience, 10 years is double 5 years).</li>
+          <li>Graduation year (2015, 2016): <mark class="highlight-yellow">Interval</mark> (zero is not real).</li>
+          <li>Years of experience (5, 10): <mark class="highlight-pink">Ratio</mark> (zero experience means none, and 10 years is double 5 years).</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <h3>Potential Questions:</h3>
+  <h3>3. Potential Questions:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      In a car race, "winner ranking" is considered:
+      In a car race, "winners' ranking" is considered:
     </div>
     <div class="question-content">
       <ul class="mcq-options">
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) Nominal</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) Ordinal</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Interval</li>
-        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Ratio</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">a) Nominal</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">b) Ordinal</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">c) Interval</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">d) Ratio</li>
       </ul>
     </div>
   </div>
-
-  <div class="question-container" onclick="toggleQuestion(this)">
-    <div class="question-header">
-      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Essay Question (15%): Summarize the four measurement levels in a table
-    </div>
-    <div class="question-content">
-      <div class="solution-content">
-        <p><strong>Sample Answer:</strong> Refer to the table above with personal examples from your experience.</p>
-      </div>
-    </div>
-  </div>
 </div>
 
-<!-- Case Study 1: Student Measurement Levels -->
+<!-- Practical Case 1 -->
 <div class="glassy-card">
-  <h2>Case Study (1): Student Measurement Levels Assessment</h2>
+  <h2>Practical Case (1): Student Measurement Levels Assessment</h2>
   
-  <h3>Example Presentation:</h3>
+  <h3>1. Case Presentation:</h3>
   <p><strong>Problem:</strong> What is the measurement level for each of the following variables?</p>
   <ul>
-    <li>A. Student intelligence assessment</li>
-    <li>B. Distance students travel to class</li>
-    <li>C. Student grades on first statistics exam</li>
-    <li>D. Classification of students by birthplace</li>
-    <li>E. Student ranking as freshman, sophomore, junior, senior</li>
-    <li>F. Number of weekly study hours</li>
+    <li>a. Student intelligence assessment</li>
+    <li>b. Distance students travel to class</li>
+    <li>c. Students' scores on the first statistics exam</li>
+    <li>d. Students classified by birthplace</li>
+    <li>e. Students ranked as first-year, second-year, third-year, and fourth-year</li>
+    <li>f. Number of weekly study hours for students</li>
   </ul>
 
   <div class="question-container" onclick="toggleQuestion(this)">
@@ -2249,57 +1542,57 @@
         <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
         <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      Click to view solution explanation
+      Click to view solution
     </div>
     <div class="question-content">
       <div class="solution-content">
         <p><strong>Solution Explanation:</strong></p>
         <ul>
-          <li><strong>A. Intelligence (IQ):</strong> <mark class="highlight-yellow">Interval</mark> level. The difference between IQ 100 and 110 is assumed same as between 120 and 130, but zero IQ doesn't mean total absence of intelligence.</li>
-          <li><strong>B. Distance to class:</strong> <mark class="highlight-pink">Ratio</mark> level. Zero is real (no distance), and 10 km is double 5 km.</li>
-          <li><strong>C. Exam grades:</strong> <mark class="highlight-pink">Ratio</mark> level.</li>
-          <li><strong>D. Birthplace:</strong> <mark class="highlight-green">Nominal</mark> level. Just classification without order.</li>
-          <li><strong>E. Year ranking:</strong> <mark class="highlight-blue">Ordinal</mark> level. Natural order exists.</li>
-          <li><strong>F. Study hours:</strong> <mark class="highlight-pink">Ratio</mark> level. Can be counted and zero means no studying.</li>
+          <li><strong>a. Student intelligence assessment (IQ):</strong> <mark class="highlight-yellow">Interval</mark> level. The difference between IQ 100 and 110 is assumed to be the same as between 120 and 130, but a zero IQ doesn't mean complete absence of intelligence.</li>
+          <li><strong>b. Distance to class:</strong> <mark class="highlight-pink">Ratio</mark> level. Zero here is real (means no distance), and 10 km is double 5 km.</li>
+          <li><strong>c. Exam scores:</strong> Can be considered <mark class="highlight-pink">Ratio</mark> level in most cases.</li>
+          <li><strong>d. Birthplace:</strong> <mark class="highlight-green">Nominal</mark> level. Just categories (Riyadh, Jeddah) with no ordering.</li>
+          <li><strong>e. Student ranking (first year...):</strong> <mark class="highlight-blue">Ordinal</mark> level. There's a logical order, but the knowledge gap between first and second year isn't necessarily the same as between third and fourth.</li>
+          <li><strong>f. Study hours count:</strong> <mark class="highlight-pink">Ratio</mark> level. Zero hours means no studying, and 10 hours is double 5 hours.</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <h3>Practice Exercise:</h3>
+  <h3>2. Practice Exercise:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      Simulation Exercise: Hospital Patient Data
+      Simulation exercise: What is the measurement level for patient data?
     </div>
     <div class="question-content">
       <div class="solution-content">
-        <p><strong>What is the measurement level for these elements?</strong></p>
+        <p>What is the measurement level for these items related to patient data in a hospital?</p>
         <ul>
-          <li>Patient blood type (A, B, O, AB): <mark class="highlight-green">Nominal</mark></li>
-          <li>Patient pain level assessment (mild, moderate, severe): <mark class="highlight-blue">Ordinal</mark></li>
-          <li>Patient body temperature: <mark class="highlight-yellow">Interval</mark></li>
-          <li>Patient weight in kilograms: <mark class="highlight-pink">Ratio</mark></li>
+          <li>Patient blood type (A, B, O, AB) - <mark class="highlight-green">Nominal</mark></li>
+          <li>Patient pain level assessment (mild, moderate, severe) - <mark class="highlight-blue">Ordinal</mark></li>
+          <li>Patient body temperature - <mark class="highlight-yellow">Interval</mark></li>
+          <li>Patient weight in kilograms - <mark class="highlight-pink">Ratio</mark></li>
         </ul>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Case Study 2: Newspaper Industry Data -->
+<!-- Practical Case 2 -->
 <div class="glassy-card">
-  <h2>Case Study (2): Newspaper Industry Data Exercise</h2>
+  <h2>Practical Case (2): Newspaper Sector Data</h2>
   
-  <h3>Example Presentation:</h3>
-  <p><strong>Problem:</strong> What is the measurement level for these newspaper business-related elements?</p>
+  <h3>1. Case Presentation:</h3>
+  <p><strong>Problem:</strong> What is the measurement level for these items related to newspaper business?</p>
   <ul>
-    <li>A. Number of newspapers sold each Sunday during 2004</li>
-    <li>B. Departments such as editorial, advertising, sports, etc.</li>
-    <li>C. Summary of newspapers sold by county</li>
-    <li>D. Number of years of employment for each newspaper employee</li>
+    <li>a. Number of newspapers sold each Sunday during 2004</li>
+    <li>b. Departments, such as editorial, advertising, sports, etc.</li>
+    <li>c. Summary of newspapers sold by district</li>
+    <li>d. Number of years of service for each newspaper employee</li>
   </ul>
 
   <div class="question-container" onclick="toggleQuestion(this)">
@@ -2308,161 +1601,114 @@
         <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
         <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      Click to view solution explanation
+      Click to view solution
     </div>
     <div class="question-content">
       <div class="solution-content">
         <p><strong>Solution Explanation:</strong></p>
         <ul>
-          <li><strong>A. Newspapers sold:</strong> <mark class="highlight-pink">Ratio</mark> level. It's quantitative, zero means no papers sold.</li>
-          <li><strong>B. Departments:</strong> <mark class="highlight-green">Nominal</mark> level. Just labels for different categories (editorial, advertising) with no logical order.</li>
-          <li><strong>C. Sales summary by county:</strong> <mark class="highlight-green">Nominal</mark> level. Classification based on county names with no order.</li>
-          <li><strong>D. Years of employment:</strong> <mark class="highlight-pink">Ratio</mark> level. Number of years is quantitative, zero means brand new employee.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <h3>Practice Exercise:</h3>
-  <div class="question-container" onclick="toggleQuestion(this)">
-    <div class="question-header">
-      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Simulation Exercise: Airline Company
-    </div>
-    <div class="question-content">
-      <div class="solution-content">
-        <p><strong>What is the measurement level for these elements?</strong></p>
-        <ul>
-          <li>Number of daily flights from Riyadh to Dubai: <mark class="highlight-pink">Ratio</mark></li>
-          <li>Passenger classification (First class, Business, Economy): <mark class="highlight-blue">Ordinal</mark></li>
-          <li>Airport names the company deals with: <mark class="highlight-green">Nominal</mark></li>
-          <li>Cargo load in tons per flight: <mark class="highlight-pink">Ratio</mark></li>
+          <li><strong>a. Number of newspapers sold:</strong> <mark class="highlight-pink">Ratio</mark> level. It's a quantitative variable (count), zero means no papers sold, and selling 2000 is double selling 1000.</li>
+          <li><strong>b. Departments:</strong> <mark class="highlight-green">Nominal</mark> level. Just labels for different categories (editorial, advertising) with no logical order.</li>
+          <li><strong>c. Sales summary by district:</strong> Also <mark class="highlight-green">Nominal</mark> level. Sales are classified by district names, which are categories with no order.</li>
+          <li><strong>d. Years of service count:</strong> <mark class="highlight-pink">Ratio</mark> level. Number of years is a quantitative variable, zero means the employee is brand new, and 10 years of service is double 5 years.</li>
         </ul>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Case Study 3: Comprehensive Variables and Measurement Exercise -->
+<!-- Practical Case 3 -->
 <div class="glassy-card">
-  <h2>Case Study (3): Comprehensive Variables and Measurement Classification</h2>
+  <h2>Practical Case (3): Comprehensive Variable Classification</h2>
   
-  <h3>Example Presentation:</h3>
-  <p><strong>Problem:</strong> What is the variable type and measurement level for each of the following?</p>
-  <ul>
-    <li>A. Salary</li>
-    <li>B. Gender</li>
-    <li>C. Sales volume of MP3 players</li>
-    <li>D. Soft drink preference</li>
-    <li>E. Temperature</li>
-    <li>F. SAT scores</li>
-    <li>G. Student rank in class</li>
-    <li>H. Finance professor rating</li>
-    <li>I. Number of home computers</li>
-  </ul>
+  <h3>1. Case Presentation:</h3>
+  <p><strong>Problem:</strong> What is the variable type and measurement level for each of the following variables?</p>
 
-  <div class="question-container" onclick="toggleQuestion(this)">
-    <div class="question-header">
-      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Click to view solution explanation
-    </div>
-    <div class="question-content">
-      <div class="solution-content">
-        <p><strong>Solution Explanation:</strong></p>
-        <div class="table-container" style="margin-top: 15px;">
-          <table class="concepts-table">
-            <thead>
-              <tr>
-                <th>Variable</th>
-                <th>Type</th>
-                <th>Measurement Level</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Salary</td>
-                <td>Continuous Quantitative</td>
-                <td>Ratio</td>
-              </tr>
-              <tr>
-                <td>Gender</td>
-                <td>Qualitative</td>
-                <td>Nominal</td>
-              </tr>
-              <tr>
-                <td>MP3 Sales Volume</td>
-                <td>Discrete Quantitative</td>
-                <td>Ratio</td>
-              </tr>
-              <tr>
-                <td>Soft Drink Preference</td>
-                <td>Qualitative</td>
-                <td>Nominal</td>
-              </tr>
-              <tr>
-                <td>Temperature</td>
-                <td>Continuous Quantitative</td>
-                <td>Interval</td>
-              </tr>
-              <tr>
-                <td>SAT Scores</td>
-                <td>Discrete Quantitative</td>
-                <td>Interval</td>
-              </tr>
-              <tr>
-                <td>Student Rank</td>
-                <td>Qualitative</td>
-                <td>Ordinal</td>
-              </tr>
-              <tr>
-                <td>Professor Rating</td>
-                <td>Qualitative</td>
-                <td>Ordinal</td>
-              </tr>
-              <tr>
-                <td>Number of Computers</td>
-                <td>Discrete Quantitative</td>
-                <td>Ratio</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Variable Type</th>
+          <th>Measurement Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Salary</td>
+          <td>Continuous quantitative</td>
+          <td>Ratio</td>
+        </tr>
+        <tr>
+          <td>Gender</td>
+          <td>Qualitative</td>
+          <td>Nominal</td>
+        </tr>
+        <tr>
+          <td>MP3 player sales volume</td>
+          <td>Discrete quantitative</td>
+          <td>Ratio</td>
+        </tr>
+        <tr>
+          <td>Soft drink preference</td>
+          <td>Qualitative</td>
+          <td>Nominal</td>
+        </tr>
+        <tr>
+          <td>Temperature</td>
+          <td>Continuous quantitative</td>
+          <td>Interval</td>
+        </tr>
+        <tr>
+          <td>SAT scores</td>
+          <td>Discrete quantitative</td>
+          <td>Interval</td>
+        </tr>
+        <tr>
+          <td>Student rank in class</td>
+          <td>Qualitative/Quantitative ordinal</td>
+          <td>Ordinal</td>
+        </tr>
+        <tr>
+          <td>Finance professor rating</td>
+          <td>Qualitative</td>
+          <td>Ordinal</td>
+        </tr>
+        <tr>
+          <td>Number of home computers</td>
+          <td>Discrete quantitative</td>
+          <td>Ratio</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <h3>Practice Exercise:</h3>
+  <h3>2. Practice Exercise:</h3>
   <div class="question-container" onclick="toggleQuestion(this)">
     <div class="question-header">
       <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      Simulation Exercise: Supermarket
+      Simulation exercise: Identify variable type and measurement level in a supermarket
     </div>
     <div class="question-content">
       <div class="solution-content">
-        <p><strong>Determine variable type and measurement level:</strong></p>
+        <p>Identify the variable type and measurement level for each of the following in a supermarket context:</p>
         <ul>
-          <li>Payment methods (cash, debit, credit): Qualitative - Nominal</li>
-          <li>Number of items in cart: Discrete Quantitative - Ratio</li>
-          <li>Service rating (1 to 5 stars): Qualitative - Ordinal</li>
-          <li>Final bill amount in SAR: Continuous Quantitative - Ratio</li>
+          <li>Available payment methods (cash, debit, visa) - <mark class="highlight-green">Qualitative, Nominal</mark></li>
+          <li>Number of products in customer basket - <mark class="highlight-blue">Discrete quantitative, Ratio</mark></li>
+          <li>Customer service rating (1 to 5 stars) - <mark class="highlight-yellow">Qualitative, Ordinal</mark></li>
+          <li>Final invoice value in riyals - <mark class="highlight-pink">Continuous quantitative, Ratio</mark></li>
         </ul>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Key Concepts Summary Table -->
+<!-- Key Concepts Table -->
 <div class="glassy-card">
-  <h2>Key Concepts Summary Table</h2>
+  <h2>Key Concepts Table</h2>
   
   <div class="table-container">
     <table class="concepts-table">
@@ -2470,54 +1716,54 @@
         <tr>
           <th>Concept</th>
           <th>Formal Definition</th>
-          <th>Summary</th>
+          <th>Summary in Two Words</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><strong>Statistics</strong></td>
-          <td>The science of collecting, organizing, presenting, analyzing, and interpreting data to aid effective decision-making</td>
-          <td>Understanding Data</td>
+          <td>The science of collecting, organizing, presenting, examining, and interpreting data to help make effective decisions</td>
+          <td>Understanding data</td>
         </tr>
         <tr>
           <td><strong>Descriptive Statistics</strong></td>
-          <td>Methods of organizing, summarizing, and presenting data in an informative way</td>
-          <td>Summarizing Data</td>
+          <td>Methods of organizing, summarizing, and presenting data in an information-rich way</td>
+          <td>Summarizing data</td>
         </tr>
         <tr>
           <td><strong>Inferential Statistics</strong></td>
           <td>Methods used to determine something about a population based on a sample</td>
-          <td>Generalizing Results</td>
+          <td>Generalizing results</td>
         </tr>
         <tr>
           <td><strong>Qualitative Variables</strong></td>
-          <td>Characteristic under study that is non-numeric (descriptive)</td>
-          <td>Descriptive Data</td>
+          <td>A characteristic under study that is non-numerical (descriptive)</td>
+          <td>Descriptive data</td>
         </tr>
         <tr>
           <td><strong>Quantitative Variables</strong></td>
-          <td>Variable that can be reported numerically (measurable or countable)</td>
-          <td>Numeric Data</td>
+          <td>A variable that can be reported numerically (measurable or countable)</td>
+          <td>Numerical data</td>
         </tr>
         <tr>
           <td><strong>Nominal Level</strong></td>
-          <td>Classifying data into categories with no order</td>
-          <td>Just Labels</td>
+          <td>Classifying data into categories with no ordering</td>
+          <td>Just labels</td>
         </tr>
         <tr>
           <td><strong>Ordinal Level</strong></td>
-          <td>Ordering data by attribute without knowing magnitude of differences</td>
-          <td>Labels + Order</td>
+          <td>Ordering data according to a certain characteristic without knowing the size of differences</td>
+          <td>Labels + ordering</td>
         </tr>
         <tr>
           <td><strong>Interval Level</strong></td>
-          <td>Ordering data with equal differences and arbitrary zero</td>
-          <td>Order + Equal Distances</td>
+          <td>Ordering data with equal differences and an arbitrary zero</td>
+          <td>Ordering + equal differences</td>
         </tr>
         <tr>
           <td><strong>Ratio Level</strong></td>
-          <td>Highest measurement level with all characteristics and true zero</td>
-          <td>Everything + True Zero</td>
+          <td>The highest level of measurement with all properties and a true zero</td>
+          <td>Everything + true zero</td>
         </tr>
       </tbody>
     </table>
@@ -2528,506 +1774,218 @@
 <div class="footer-info">
   <div class="footer-brand">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+      <path d="M2 17l10 5 10-5"/>
+      <path d="M2 12l10 5 10-5"/>
     </svg>
     Athr Educational Platform
   </div>
   <div class="footer-divider"></div>
   <p class="footer-disclaimer">
-    All Rights Reserved © 2025 | Developed by Athr Team
+    This content has been carefully prepared to help you understand fundamental statistical concepts. 
+    We wish you a successful learning journey!
   </p>
 </div>
-
-    </div>
+</div>
 
   </main>
 
   <script>
-  // ============================================
-  // VIDEO PLAYER SCRIPT
-  // ============================================
-  (function() {
-    'use strict';
+    document.addEventListener('DOMContentLoaded', function() {
+      const translationButton = document.getElementById('translationButton');
+      const translationText = document.querySelector('.translation-text');
+      const arabicContent = document.getElementById('arabicContent');
+      const englishContent = document.getElementById('englishContent');
+      const html = document.documentElement;
+      const body = document.body;
+      
+      const aiChatButton = document.getElementById('aiChatButton');
+      const aiChatModal = document.getElementById('aiChatModal');
+      const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
+      const aiChatMessages = document.getElementById('aiChatMessages');
+      const aiChatInput = document.getElementById('ai-chat-input');
+      const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
+      const aiChatTitle = document.getElementById('ai-chat-title');
+      const aiChatButtonText = document.getElementById('aiFabText');
+      
+      let isArabic = true;
+      let isFirstMessage = true;
+      let conversationHistory = [];
 
-    const VIDEO_SOURCES = [
-      'https://archive.org/download/20251006_20251006_0808/%D9%81%D9%87%D9%85_%D8%A7%D9%84%D8%A8%D9%8A%D8%A7%D9%86%D8%A7%D8%AA__%D9%85%D8%B3%D8%AA%D9%88%D9%8A%D8%A7%D8%AA_%D8%A7%D9%84%D9%82%D9%8A%D8%A7%D8%B3_%D8%A7%D9%84%D8%A3%D8%B1%D8%A8%D8%B9%D8%A9.mp4'
-    ];
-
-    const videoPlayer = document.getElementById('videoPlayer');
-    const video = document.getElementById('video');
-    const videoBars = document.getElementById('videoBars');
-    
-    const simplePlayBtn = document.getElementById('simplePlayBtn');
-    const simpleFullscreenBtn = document.getElementById('simpleFullscreenBtn');
-    const simpleProgress = document.getElementById('simpleProgress');
-    const simpleProgressFilled = document.getElementById('simpleProgressFilled');
-    const simpleCurrentTime = document.getElementById('simpleCurrentTime');
-    const simpleDuration = document.getElementById('simpleDuration');
-    
-    const playBtn = document.getElementById('playBtn');
-    const skipBack = document.getElementById('skipBack');
-    const skipForward = document.getElementById('skipForward');
-    const progressWrapper = document.getElementById('progressWrapper');
-    const progressFilled = document.getElementById('progressFilled');
-    const progressBuffered = document.getElementById('progressBuffered');
-    const currentTimeEl = document.getElementById('currentTime');
-    const remainingTimeEl = document.getElementById('remainingTime');
-    const volumeBtn = document.getElementById('volumeBtn');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const closeBtn = document.getElementById('closeBtn');
-    const pipBtn = document.getElementById('pipBtn');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const tapLeft = document.getElementById('tapLeft');
-    const tapRight = document.getElementById('tapRight');
-
-    let controlsTimeout, isDragging = false;
-    let tapTimeout, tapCount = 0, lastTapX = 0;
-    let isFullscreen = false, currentSourceIndex = 0;
-
-    function init() {
-      loadVideo();
-      setupEventListeners();
-      if (document.pictureInPictureEnabled) pipBtn.style.display = 'flex';
-    }
-
-    function loadVideo() {
-      video.src = VIDEO_SOURCES[currentSourceIndex];
-      video.load();
-    }
-
-    function updateVolumeSliderBg() {
-      const percent = video.volume * 100;
-      volumeSlider.style.background = `linear-gradient(to right, #fff ${percent}%, rgba(255, 255, 255, 0.3) ${percent}%)`;
-    }
-
-    function toggleFullscreen() {
-      if (!isFullscreen) {
-        videoPlayer.classList.add('fullscreen-mode');
-        if (videoPlayer.requestFullscreen) {
-          videoPlayer.requestFullscreen();
-        } else if (videoPlayer.webkitRequestFullscreen) {
-          videoPlayer.webkitRequestFullscreen();
+      function showTypingIndicator(show) {
+        const existingIndicator = aiChatMessages.querySelector('.typing-indicator');
+        if (existingIndicator) existingIndicator.remove();
+        
+        if (show) {
+          const indicatorElement = document.createElement('div');
+          indicatorElement.classList.add('chat-message', 'ai-message', 'typing-indicator');
+          indicatorElement.innerHTML = '<span>أثر AI يكتب الآن</span><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>';
+          aiChatMessages.appendChild(indicatorElement);
+          aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
         }
-        isFullscreen = true;
-        showControls();
-        setTimeout(() => videoBars.classList.add('hidden'), 5000);
-      } else {
-        exitFullscreen();
-      }
-    }
-
-    function exitFullscreen() {
-      videoPlayer.classList.remove('fullscreen-mode');
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      }
-      isFullscreen = false;
-      videoBars.classList.remove('hidden');
-    }
-
-    function showControls() {
-      if (!isFullscreen) return;
-      videoPlayer.classList.add('show-controls');
-      clearTimeout(controlsTimeout);
-      controlsTimeout = setTimeout(() => {
-        if (!video.paused && !isDragging) videoPlayer.classList.remove('show-controls');
-      }, 3000);
-    }
-
-    function togglePlay() {
-      if (video.paused) {
-        video.play().catch(err => console.log('Play failed:', err));
-      } else {
-        video.pause();
-      }
-    }
-
-    function skipBackward() {
-      video.currentTime = Math.max(0, video.currentTime - 10);
-      showTapIndicator('left');
-    }
-
-    function skipForwardFunc() {
-      video.currentTime = Math.min(video.duration, video.currentTime + 10);
-      showTapIndicator('right');
-    }
-
-    function showTapIndicator(side) {
-      const indicator = side === 'left' ? tapLeft : tapRight;
-      indicator.classList.add('active');
-      setTimeout(() => indicator.classList.remove('active'), 500);
-    }
-
-    function formatTime(seconds) {
-      if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
-      const hrs = Math.floor(seconds / 3600);
-      const mins = Math.floor((seconds % 3600) / 60);
-      const secs = Math.floor(seconds % 60);
-      return hrs > 0 ? `${hrs}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}` : `${mins}:${secs.toString().padStart(2,'0')}`;
-    }
-
-    function updateProgress() {
-      if (!isDragging) {
-        const progress = (video.currentTime / video.duration) * 100;
-        simpleProgressFilled.style.width = `${progress}%`;
-        progressFilled.style.width = `${progress}%`;
-        const timeStr = formatTime(video.currentTime);
-        simpleCurrentTime.textContent = timeStr;
-        currentTimeEl.textContent = timeStr;
-        remainingTimeEl.textContent = '-' + formatTime(video.duration - video.currentTime);
-      }
-    }
-
-    function handleSeek(e, el) {
-      const rect = el.getBoundingClientRect();
-      const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-      const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-      const time = percent * video.duration;
-      if (!isNaN(time)) {
-        video.currentTime = time;
-        const progress = percent * 100;
-        simpleProgressFilled.style.width = `${progress}%`;
-        progressFilled.style.width = `${progress}%`;
-      }
-    }
-
-    function updateVolumeIcon() {
-      const vol = video.volume;
-      const icon = video.muted || vol === 0 ? 'fa-volume-xmark' : vol < 0.5 ? 'fa-volume-low' : 'fa-volume-up';
-      volumeBtn.innerHTML = `<i class="fas ${icon}"></i>`;
-    }
-
-    function setupEventListeners() {
-      video.addEventListener('loadstart', () => loadingSpinner.classList.add('active'));
-      video.addEventListener('canplay', () => loadingSpinner.classList.remove('active'));
-      video.addEventListener('error', () => loadingSpinner.classList.remove('active'));
-
-      video.addEventListener('loadedmetadata', () => {
-        simpleDuration.textContent = formatTime(video.duration);
-        remainingTimeEl.textContent = '-' + formatTime(video.duration);
-        if (isFullscreen) showControls();
-      });
-
-      video.addEventListener('play', () => {
-        videoPlayer.classList.remove('paused');
-        simplePlayBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-      });
-
-      video.addEventListener('pause', () => {
-        videoPlayer.classList.add('paused');
-        simplePlayBtn.innerHTML = '<i class="fas fa-play"></i>';
-        playBtn.innerHTML = '<i class="fas fa-play"></i>';
-        showControls();
-      });
-
-      video.addEventListener('timeupdate', updateProgress);
-      video.addEventListener('progress', () => {
-        if (video.buffered.length > 0) {
-          progressBuffered.style.width = `${(video.buffered.end(0) / video.duration) * 100}%`;
-        }
-      });
-
-      simplePlayBtn.addEventListener('click', togglePlay);
-      simpleFullscreenBtn.addEventListener('click', toggleFullscreen);
-      simpleProgress.addEventListener('click', (e) => handleSeek(e, simpleProgress));
-
-      playBtn.addEventListener('click', togglePlay);
-      skipBack.addEventListener('click', skipBackward);
-      skipForward.addEventListener('click', skipForwardFunc);
-      closeBtn.addEventListener('click', exitFullscreen);
-      
-      volumeBtn.addEventListener('click', () => {
-        video.muted = !video.muted;
-        updateVolumeIcon();
-      });
-
-      volumeSlider.addEventListener('input', () => {
-        video.volume = volumeSlider.value;
-        video.muted = false;
-        updateVolumeIcon();
-        updateVolumeSliderBg();
-      });
-
-      progressWrapper.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        videoPlayer.classList.add('dragging');
-        handleSeek(e, progressWrapper);
-      });
-
-      progressWrapper.addEventListener('touchstart', (e) => {
-        isDragging = true;
-        videoPlayer.classList.add('dragging');
-        handleSeek(e, progressWrapper);
-      }, { passive: true });
-
-      document.addEventListener('mousemove', (e) => {
-        if (isDragging) handleSeek(e, progressWrapper);
-      });
-
-      document.addEventListener('touchmove', (e) => {
-        if (isDragging) handleSeek(e, progressWrapper);
-      }, { passive: true });
-
-      document.addEventListener('mouseup', () => {
-        if (isDragging) {
-          isDragging = false;
-          videoPlayer.classList.remove('dragging');
-        }
-      });
-
-      document.addEventListener('touchend', () => {
-        if (isDragging) {
-          isDragging = false;
-          videoPlayer.classList.remove('dragging');
-        }
-      });
-
-      progressWrapper.addEventListener('click', (e) => handleSeek(e, progressWrapper));
-
-      video.addEventListener('click', (e) => {
-        if (!isFullscreen) {
-          togglePlay();
-          return;
-        }
-
-        tapCount++;
-        lastTapX = e.clientX || (e.touches && e.touches[0].clientX);
-        clearTimeout(tapTimeout);
-
-        if (tapCount === 1) {
-          tapTimeout = setTimeout(() => {
-            togglePlay();
-            tapCount = 0;
-          }, 300);
-        } else if (tapCount === 2) {
-          const rect = video.getBoundingClientRect();
-          (lastTapX - rect.left > rect.width / 2 ? skipForwardFunc : skipBackward)();
-          tapCount = 0;
-        }
-      });
-
-      videoPlayer.addEventListener('mousemove', showControls);
-      videoPlayer.addEventListener('touchstart', showControls);
-
-      if (pipBtn) {
-        pipBtn.addEventListener('click', async () => {
-          try {
-            document.pictureInPictureElement ? await document.exitPictureInPicture() : await video.requestPictureInPicture();
-          } catch {}
-        });
       }
 
-      document.addEventListener('fullscreenchange', () => {
-        if (!document.fullscreenElement) exitFullscreen();
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.target.tagName === 'INPUT') return;
-        switch(e.key) {
-          case ' ':
-          case 'k':
-            e.preventDefault();
-            togglePlay();
-            break;
-          case 'ArrowLeft':
-            e.preventDefault();
-            skipBackward();
-            break;
-          case 'ArrowRight':
-            e.preventDefault();
-            skipForwardFunc();
-            break;
-          case 'm':
-            e.preventDefault();
-            video.muted = !video.muted;
-            updateVolumeIcon();
-            break;
-          case 'f':
-            e.preventDefault();
-            toggleFullscreen();
-            break;
-        }
-      });
-
-      updateVolumeSliderBg();
-    }
-
-    init();
-  })();
-
-  // ============================================
-  // TRANSLATION & INTERACTIVITY SCRIPT
-  // ============================================
-  document.addEventListener('DOMContentLoaded', function() {
-    const translationButton = document.getElementById('translationButton');
-    const translationText = document.querySelector('.translation-text');
-    const arabicContent = document.getElementById('arabicContent');
-    const englishContent = document.getElementById('englishContent');
-    const html = document.documentElement;
-    const body = document.body;
-    
-    const aiChatButton = document.getElementById('aiChatButton');
-    const aiChatModal = document.getElementById('aiChatModal');
-    const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
-    const aiChatMessages = document.getElementById('aiChatMessages');
-    const aiChatInput = document.getElementById('ai-chat-input');
-    const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
-    const aiChatTitle = document.getElementById('ai-chat-title');
-    const aiChatButtonText = document.getElementById('aiFabText');
-    
-    let isArabic = true;
-    let isFirstMessage = true;
-    let conversationHistory = [];
-
-    function applyLanguage(arabic) {
-      isArabic = arabic;
-      const lang = isArabic ? 'ar' : 'en';
-      const dir = isArabic ? 'rtl' : 'ltr';
-      
-      html.setAttribute('lang', lang);
-      html.setAttribute('dir', dir);
-      body.setAttribute('dir', dir);
-      
-      arabicContent.classList.toggle('hidden', !isArabic);
-      englishContent.classList.toggle('hidden', isArabic);
-      
-      translationText.textContent = isArabic ? 'English' : 'العربية';
-      document.title = isArabic ? 'منصة أثر التعليمية' : 'Athr Educational Platform';
-      
-      aiChatTitle.textContent = isArabic ? 'اسأل أثر AI' : 'Ask Athr AI';
-      aiChatInput.placeholder = isArabic ? 'اكتب سؤالك هنا...' : 'Type your question here...';
-      aiChatButtonText.textContent = isArabic ? 'أثر AI' : 'Athr AI';
-    }
-    
-    translationButton.addEventListener('click', function() {
-      applyLanguage(!isArabic);
-    });
-
-    aiChatButton.addEventListener('click', function() {
-      aiChatModal.classList.add('visible');
-      
-      if (isFirstMessage) {
-        const welcomeMsg = isArabic 
-          ? "مرحباً! أنا **أثر AI**، مساعدك الدراسي الذكي. سأساعدك في فهم محتوى هذا الدرس بطريقة سهلة وممتعة. اسألني أي شيء عن المحتوى!"
-          : "Hello! I'm **Athr AI**, your intelligent study assistant. I'll help you understand this lesson content in an easy and fun way. Ask me anything about the content!";
-        addMessage(welcomeMsg, 'ai');
-        isFirstMessage = false;
-      }
-      
-      aiChatInput.focus();
-    });
-
-    aiChatCloseBtn.addEventListener('click', function() {
-      aiChatModal.classList.remove('visible');
-    });
-
-    aiChatModal.addEventListener('click', function(e) {
-      if (e.target === aiChatModal) {
-        aiChatModal.classList.remove('visible');
-      }
-    });
-
-    function addMessage(text, sender) {
-      const messageElement = document.createElement('div');
-      messageElement.classList.add('chat-message', `${sender}-message`);
-      messageElement.innerHTML = marked.parse(text);
-      aiChatMessages.appendChild(messageElement);
-      aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-    }
-
-    function showTypingIndicator(show) {
-      const existingIndicator = aiChatMessages.querySelector('.typing-indicator');
-      if (existingIndicator) existingIndicator.remove();
-      
-      if (show) {
-        const indicatorElement = document.createElement('div');
-        indicatorElement.classList.add('chat-message', 'ai-message', 'typing-indicator');
-        indicatorElement.innerHTML = '<span>أثر AI يكتب الآن</span><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>';
-        aiChatMessages.appendChild(indicatorElement);
+      function addMessage(text, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', `${sender}-message`);
+        messageElement.innerHTML = marked.parse(text);
+        aiChatMessages.appendChild(messageElement);
         aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
       }
-    }
-
-    async function sendMessage() {
-      const userMessage = aiChatInput.value.trim();
-      if (!userMessage) return;
-
-      addMessage(userMessage, 'user');
-      conversationHistory.push({ role: 'user', content: userMessage });
       
-      aiChatInput.value = '';
-      aiChatInput.disabled = true;
-      aiChatSendBtn.disabled = true;
-      
-      showTypingIndicator(true);
-
-      // Simulated AI response (replace with actual API call)
-      setTimeout(() => {
-        showTypingIndicator(false);
-        const aiResponse = "هذا رد تجريبي من AI. يجب ربطه بـ API حقيقي.";
-        addMessage(aiResponse, 'ai');
-        conversationHistory.push({ role: 'assistant', content: aiResponse });
+      function applyLanguage(arabic) {
+        isArabic = arabic;
+        const lang = isArabic ? 'ar' : 'en';
+        const dir = isArabic ? 'rtl' : 'ltr';
         
-        aiChatInput.disabled = false;
-        aiChatSendBtn.disabled = false;
-        aiChatInput.focus();
-      }, 1500);
-    }
-
-    aiChatSendBtn.addEventListener('click', sendMessage);
-    aiChatInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
+        html.setAttribute('lang', lang);
+        html.setAttribute('dir', dir);
+        body.setAttribute('dir', dir);
+        
+        arabicContent.classList.toggle('hidden', !isArabic);
+        englishContent.classList.toggle('hidden', isArabic);
+        
+        translationText.textContent = isArabic ? 'English' : 'العربية';
+        document.title = isArabic ? 'منصة أثر التعليمية' : 'Athr Educational Platform';
+        
+        aiChatTitle.textContent = isArabic ? 'اسأل أثر AI' : 'Ask Athr AI';
+        aiChatInput.placeholder = isArabic ? 'اكتب سؤالك هنا...' : 'Type your question here...';
+        aiChatButtonText.textContent = isArabic ? 'أثر AI' : 'Athr AI';
       }
-    });
-
-    // Question Toggle Function
-    window.toggleQuestion = function(element) {
-      const content = element.querySelector('.question-content');
-      element.classList.toggle('open');
-      content.classList.toggle('show');
       
-      if (content.classList.contains('show')) {
-        setTimeout(() => {
-          content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 300);
-      }
-    };
-
-    // MCQ Selection Function
-    window.selectMCQ = function(element, isCorrect) {
-      const options = element.parentNode.querySelectorAll('.mcq-option');
-      
-      options.forEach(option => {
-        option.style.pointerEvents = 'none';
-        option.classList.remove('selected', 'correct', 'incorrect');
+      translationButton.addEventListener('click', function() {
+        applyLanguage(!isArabic);
       });
-      
-      element.classList.add('selected');
-      
-      setTimeout(() => {
-        if (isCorrect) {
-          element.classList.add('correct');
-          element.innerHTML += ' ✓';
-        } else {
-          element.classList.add('incorrect');
-          element.innerHTML += ' ✗';
-          
-          options.forEach(option => {
-            const onclick = option.getAttribute('onclick');
-            if (onclick && onclick.includes('true')) {
-              option.classList.add('correct');
-              option.innerHTML += ' ✓';
-            }
-          });
+
+      aiChatButton.addEventListener('click', function() {
+        aiChatModal.classList.add('visible');
+        
+        if (isFirstMessage) {
+          const welcomeMsg = isArabic 
+            ? "مرحباً! أنا **أثر AI**، مساعدك الدراسي الذكي. سأساعدك في فهم محتوى هذا الدرس بطريقة سهلة وممتعة. اسألني أي شيء عن المحتوى!"
+            : "Hello! I'm **Athr AI**, your intelligent study assistant. I'll help you understand this lesson content in an easy and fun way. Ask me anything about the content!";
+          addMessage(welcomeMsg, 'ai');
+          isFirstMessage = false;
         }
-      }, 500);
-    };
-  });
+        
+        aiChatInput.focus();
+      });
+
+      aiChatCloseBtn.addEventListener('click', function() {
+        aiChatModal.classList.remove('visible');
+      });
+
+      aiChatModal.addEventListener('click', function(e) {
+        if (e.target === aiChatModal) {
+          aiChatModal.classList.remove('visible');
+        }
+      });
+
+      async function sendMessage() {
+        const userMessage = aiChatInput.value.trim();
+        if (!userMessage) return;
+
+        addMessage(userMessage, 'user');
+        conversationHistory.push({ role: 'user', content: userMessage });
+        
+        aiChatInput.value = '';
+        aiChatInput.disabled = true;
+        aiChatSendBtn.disabled = true;
+        
+        showTypingIndicator(true);
+
+        try {
+          const lectureContext = arabicContent.innerText || '';
+          
+          const response = await fetch('/askAI', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              conversationHistory: conversationHistory,
+              context: lectureContext
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          showTypingIndicator(false);
+
+          if (data.reply) {
+            addMessage(data.reply, 'ai');
+            conversationHistory.push({ role: 'assistant', content: data.reply });
+          } else {
+            throw new Error('No reply from AI');
+          }
+
+        } catch (error) {
+          console.error('Error:', error);
+          showTypingIndicator(false);
+          
+          const errorMsg = isArabic
+            ? "عذراً، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى."
+            : "Sorry, a connection error occurred. Please try again.";
+          addMessage(errorMsg, 'ai');
+        } finally {
+          aiChatInput.disabled = false;
+          aiChatSendBtn.disabled = false;
+          aiChatInput.focus();
+        }
+      }
+
+      aiChatSendBtn.addEventListener('click', sendMessage);
+      aiChatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      // Question Toggle Function
+      window.toggleQuestion = function(element) {
+        const content = element.querySelector('.question-content');
+        element.classList.toggle('open');
+        content.classList.toggle('show');
+        
+        if (content.classList.contains('show')) {
+          setTimeout(() => {
+            content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 300);
+        }
+      };
+
+      // MCQ Selection Function
+      window.selectMCQ = function(element, isCorrect) {
+        const options = element.parentNode.querySelectorAll('.mcq-option');
+        
+        options.forEach(option => {
+          option.style.pointerEvents = 'none';
+          option.classList.remove('selected', 'correct', 'incorrect');
+        });
+        
+        element.classList.add('selected');
+        
+        setTimeout(() => {
+          if (isCorrect) {
+            element.classList.add('correct');
+            element.innerHTML += ' ✓';
+          } else {
+            element.classList.add('incorrect');
+            element.innerHTML += ' ✗';
+            
+            options.forEach(option => {
+              const onclick = option.getAttribute('onclick');
+              if (onclick && onclick.includes('true')) {
+                option.classList.add('correct');
+                option.innerHTML += ' ✓';
+              }
+            });
+          }
+        }, 500);
+      };
+    });
   </script>
 </body>
 </html>
