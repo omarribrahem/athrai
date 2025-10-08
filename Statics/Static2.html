@@ -1,0 +1,3093 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>منصة أثر التعليمية</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Marked.js for Markdown -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <style>
+    :root {
+      --color-primary: #16a34a;
+      --color-primary-dark: #4d7c0f;
+      --color-primary-medium: #22c55e;
+      --color-ai: #f59e0b;
+      --glass-bg: rgba(240, 253, 244, 0.25);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --text-color: #0f172a;
+      --border-radius: 24px;
+      --font-arabic: 'IBM Plex Sans Arabic', 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-english: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* Animations */
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes waveFlow {
+      0%, 100% { transform: translateX(-25%) scaleY(1) scaleX(1); }
+      33% { transform: translateX(-10%) scaleY(1.1) scaleX(0.9); }
+      66% { transform: translateX(10%) scaleY(0.9) scaleX(1.1); }
+    }
+    @keyframes translate-glow {
+      0%, 100% { box-shadow: 0 0 15px -5px rgba(77, 124, 15, 0.4), inset 0 2px 0 rgba(255,255,255,0.4); }
+      50% { box-shadow: 0 0 25px 0px rgba(77, 124, 15, 0.6), inset 0 2px 0 rgba(255,255,255,0.6); }
+    }
+    @keyframes ai-glow {
+      0%, 100% { box-shadow: 0 0 15px -5px rgba(245, 158, 11, 0.4), inset 0 2px 0 rgba(255,255,255,0.4); }
+      50% { box-shadow: 0 0 25px 0px rgba(245, 158, 11, 0.6), inset 0 2px 0 rgba(255,255,255,0.6); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes typing {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    @keyframes typingDots {
+      0%, 20% { opacity: 0; }
+      40% { opacity: 1; }
+      60%, 100% { opacity: 0; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { 
+      font-size: clamp(0.9rem, 2.5vw, 1.05rem); 
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      font-family: var(--font-arabic);
+      background: #f0fdf4;
+      color: var(--text-color);
+      line-height: 1.8;
+      overflow-x: hidden;
+      direction: rtl;
+      padding: clamp(10px, 3vw, 20px);
+      font-weight: 400;
+    }
+    body[dir="ltr"] { 
+      direction: ltr; 
+      font-family: var(--font-english);
+    }
+
+    /* Background Waves */
+    .background-waves {
+      position: fixed; inset: 0; z-index: -2;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 25%, #fefce8 50%, #ecfccb 75%, #f0fdf4 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+    }
+    .wave-layer {
+      position: absolute; bottom: -10%; left: -10%; width: 120%; height: 300px;
+      background: linear-gradient(90deg, rgba(22,163,74,0.08), rgba(77,124,15,0.08), rgba(34,197,94,0.08));
+      border-radius: 60% 40% 0 0;
+      animation: waveFlow 15s ease-in-out infinite;
+    }
+    .wave-layer:nth-child(2) {
+      bottom: -5%; height: 250px; animation-delay: -5s;
+      background: linear-gradient(90deg, rgba(77,124,15,0.06), rgba(34,197,94,0.06));
+      border-radius: 40% 60% 0 0;
+    }
+    .wave-layer:nth-child(3) {
+      bottom: 0%; height: 200px; animation-delay: -10s;
+      background: linear-gradient(90deg, rgba(34,197,94,0.04), rgba(22,163,74,0.04));
+      border-radius: 80% 20% 0 0;
+    }
+
+    /* Translation Button */
+    .translation-button {
+      position: fixed; top: clamp(20px, 5vw, 30px); right: clamp(20px, 5vw, 30px);
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(30px);
+      border: 2px solid var(--glass-border); border-radius: 50px;
+      padding: clamp(8px, 2vw, 12px); cursor: pointer; z-index: 1000;
+      width: clamp(50px, 12vw, 60px); height: clamp(50px, 12vw, 60px);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 8px 25px -10px rgba(0,0,0,0.2), inset 0 2px 0 rgba(255,255,255,0.6);
+    }
+    .translation-button svg { width: 28px; height: 28px; flex-shrink: 0; transition: transform 0.3s ease; }
+    .translation-button svg path, .translation-button svg circle { stroke: var(--color-primary-dark); }
+    body[dir="ltr"] .translation-button { right: auto; left: clamp(20px, 5vw, 30px); }
+    .translation-button:hover {
+      width: auto; padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 22px);
+      border-color: var(--color-primary-dark);
+      background: rgba(77, 124, 15, 0.15);
+      transform: translateY(-3px);
+      animation: translate-glow 2.5s infinite alternate;
+    }
+    .translation-button:hover svg { transform: scale(0.9); }
+    .translation-text {
+      font-size: clamp(0.85rem, 2.2vw, 1rem); 
+      font-weight: 600;
+      color: var(--color-primary-dark); 
+      white-space: nowrap;
+      display: none; 
+      margin-left: 10px;
+    }
+    body[dir="ltr"] .translation-text { margin-left: 0; margin-right: 10px; }
+    .translation-button:hover .translation-text { display: block; }
+
+    /* AI FAB Button */
+    .ai-fab-button {
+      position: fixed; bottom: clamp(20px, 5vw, 30px); right: clamp(20px, 5vw, 30px);
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(30px);
+      border: 2px solid var(--glass-border); border-radius: 50px;
+      padding: clamp(10px, 2.5vw, 14px); cursor: pointer; z-index: 1000;
+      width: clamp(56px, 14vw, 70px); height: clamp(56px, 14vw, 70px);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 8px 25px -10px rgba(245, 158, 11, 0.3), inset 0 2px 0 rgba(255,255,255,0.6);
+    }
+    body[dir="ltr"] .ai-fab-button { right: auto; left: clamp(20px, 5vw, 30px); }
+    .ai-fab-button:hover {
+      width: auto; padding: clamp(10px, 2.5vw, 14px) clamp(18px, 4.5vw, 24px);
+      border-color: var(--color-ai);
+      background: rgba(245, 158, 11, 0.15);
+      transform: translateY(-3px);
+      animation: ai-glow 2.5s infinite alternate;
+    }
+    .ai-fab-button svg { 
+      width: clamp(28px, 7vw, 36px); 
+      height: clamp(28px, 7vw, 36px); 
+      flex-shrink: 0; 
+      transition: transform 0.3s ease; 
+    }
+    .ai-fab-button:hover svg { transform: scale(0.9) rotate(5deg); }
+    .ai-fab-text {
+      font-size: clamp(0.85rem, 2.2vw, 1rem); 
+      font-weight: 600;
+      color: var(--color-ai); 
+      white-space: nowrap;
+      display: none; 
+      margin-left: 10px;
+    }
+    body[dir="ltr"] .ai-fab-text { margin-left: 0; margin-right: 10px; }
+    .ai-fab-button:hover .ai-fab-text { display: block; }
+
+    /* AI Chat Modal */
+    .ai-chat-modal {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 2000; padding: 20px;
+    }
+    .ai-chat-modal.visible { display: flex; animation: fadeIn 0.3s ease; }
+    
+    .ai-chat-container {
+      background: var(--glass-bg); 
+      border: 2px solid var(--glass-border); 
+      border-radius: var(--border-radius);
+      width: 90%; max-width: 600px; height: 80%; max-height: 700px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      display: flex; flex-direction: column;
+      transform: scale(0.95); transition: transform 0.3s ease;
+      backdrop-filter: blur(25px);
+      overflow: hidden;
+    }
+    .ai-chat-modal.visible .ai-chat-container { transform: scale(1); }
+    
+    .ai-chat-header {
+      padding: 15px 20px;
+      border-bottom: 2px solid var(--glass-border);
+      display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent);
+    }
+    .ai-chat-header h3 {
+      color: var(--color-primary);
+      margin: 0;
+      font-size: clamp(1.1rem, 4vw, 1.3rem);
+      font-weight: 700;
+    }
+    .ai-chat-close-btn {
+      background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+      border: 1.5px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      color: #64748b;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-size: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+    .ai-chat-close-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(220, 38, 38, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .ai-chat-close-btn:hover::before {
+      opacity: 1;
+    }
+    .ai-chat-close-btn:hover {
+      border-color: rgba(220, 38, 38, 0.4);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .ai-chat-close-btn svg {
+      width: 18px;
+      height: 18px;
+      color: #64748b;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .ai-chat-close-btn:hover svg {
+      color: #dc2626;
+      transform: rotate(90deg) scale(1.1);
+    }
+    
+    .ai-chat-messages {
+      flex: 1; overflow-y: auto; padding: 20px;
+      display: flex; flex-direction: column; gap: 15px;
+    }
+    .ai-chat-messages::-webkit-scrollbar { width: 10px; }
+    .ai-chat-messages::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+    }
+    .ai-chat-messages::-webkit-scrollbar-thumb {
+      background: rgba(22, 163, 74, 0.4);
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    .ai-chat-messages::-webkit-scrollbar-thumb:hover {
+      background: rgba(22, 163, 74, 0.6);
+      background-clip: padding-box;
+    }
+    
+    .chat-message {
+      max-width: 85%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      line-height: 1.6;
+      animation: slideUp 0.3s ease;
+    }
+    .user-message {
+      background: rgba(22,163,74,0.2);
+      color: #14532d;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+    body[dir="ltr"] .user-message {
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 18px;
+      align-self: flex-start;
+    }
+    .ai-message {
+      background: rgba(245,158,11,0.15);
+      color: #78350f;
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+    body[dir="ltr"] .ai-message {
+      border-bottom-right-radius: 4px;
+      border-bottom-left-radius: 18px;
+      align-self: flex-end;
+    }
+    
+    .chat-message strong { color: #1e3a8a; font-weight: 700; }
+    .chat-message ul { margin: 8px 0; padding-right: 20px; }
+    body[dir="ltr"] .chat-message ul { padding-right: 0; padding-left: 20px; }
+    .chat-message li { margin-bottom: 4px; color: inherit; }
+    
+    .typing-indicator {
+      background: rgba(245,158,11,0.15) !important;
+      color: #9ca3af !important;
+      font-style: italic;
+    }
+    .dot {
+      animation: typingDots 1.5s infinite;
+      font-size: 1.2em;
+      color: var(--color-ai) !important;
+    }
+    .dot:nth-child(2) { animation-delay: 0.3s; }
+    .dot:nth-child(3) { animation-delay: 0.6s; }
+    
+    .ai-chat-input-area {
+      padding: 15px 20px;
+      border-top: 2px solid var(--glass-border);
+      display: flex; gap: 10px;
+      background: linear-gradient(0deg, rgba(255,255,255,0.4), transparent);
+    }
+    #ai-chat-input {
+      flex-grow: 1;
+      border: 2px solid var(--glass-border);
+      background: rgba(255,255,255,0.3);
+      border-radius: 50px;
+      padding: 10px 18px;
+      font-size: 1rem;
+      color: var(--text-color);
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      font-family: inherit;
+    }
+    #ai-chat-input:focus {
+      border-color: var(--color-ai);
+      box-shadow: 0 0 10px rgba(245,158,11,0.3);
+    }
+    #ai-chat-input:disabled { opacity: 0.6; cursor: not-allowed; }
+    
+    #ai-chat-send-btn {
+      background-color: var(--color-ai);
+      border: none; border-radius: 50%;
+      width: 48px; height: 48px; flex-shrink: 0;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.3s, transform 0.2s, opacity 0.3s;
+    }
+    #ai-chat-send-btn:hover:not(:disabled) {
+      background-color: #fbbf24;
+      transform: scale(1.05);
+    }
+    #ai-chat-send-btn:disabled {
+      opacity: 0.6; cursor: not-allowed; transform: none;
+    }
+    #ai-chat-send-btn svg { width: 24px; height: 24px; color: white; }
+
+    /* Main Content */
+    .main-content { max-width: 1200px; margin: 90px auto 0; padding: clamp(20px, 5vw, 40px); }
+    .glassy-card {
+      background: var(--glass-bg);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--border-radius);
+      padding: clamp(20px, 5vw, 30px);
+      margin-bottom: clamp(25px, 5vw, 35px);
+      backdrop-filter: blur(25px);
+      transition: all 0.4s ease;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.5);
+    }
+    .glassy-card:hover { transform: translateY(-5px) scale(1.01); border-color: rgba(255,255,255,0.7); }
+
+    /* Typography */
+    h1, h2, h3, h4, h5 { 
+      font-weight: 700; 
+      text-shadow: 0 2px 8px rgba(255,255,255,0.8);
+      letter-spacing: -0.02em;
+    }
+    h1 {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      text-align: center;
+      margin-bottom: clamp(20px, 4vw, 30px);
+      color: #14532d;
+      font-weight: 800;
+    }
+    h2 {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      border-bottom: 3px solid rgba(22,163,74,0.3);
+      padding-bottom: clamp(10px, 2vw, 15px);
+      margin-bottom: clamp(20px, 4vw, 30px);
+      color: #166534;
+      font-weight: 700;
+    }
+    h3 {
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      margin-bottom: clamp(15px, 3vw, 20px);
+      color: #15803d;
+      font-weight: 600;
+    }
+    h4 {
+      font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+      color: var(--color-primary);
+      margin-bottom: clamp(12px, 2vw, 15px);
+      font-weight: 600;
+    }
+    p, li { 
+      color: #475569; 
+      margin-bottom: clamp(10px, 2vw, 12px);
+      line-height: 1.85;
+    }
+    strong { color: #14532d; font-weight: 600; }
+    ul, ol { padding-right: clamp(20px, 4vw, 25px); margin-bottom: 20px; }
+    body[dir="ltr"] ul, body[dir="ltr"] ol { padding-right: 0; padding-left: clamp(20px, 4vw, 25px); }
+
+    /* Highlighters */
+    mark {
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-weight: 500;
+      border: none;
+    }
+    .highlight-green { background: rgba(22,163,74,0.2); color: #14532d; }
+    .highlight-blue { background: rgba(59,130,246,0.2); color: #1e3a8a; }
+    .highlight-yellow { background: rgba(234,179,8,0.2); color: #713f12; }
+    .highlight-orange { background: rgba(249,115,22,0.2); color: #7c2d12; }
+    .highlight-pink { background: rgba(236,72,153,0.2); color: #831843; }
+
+    /* Interactive Questions */
+    .question-container {
+      background: rgba(22,163,74,0.08);
+      border: 2px solid rgba(22,163,74,0.2);
+      border-radius: 18px;
+      padding: 25px;
+      margin: 20px 0;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.4s ease;
+    }
+    .question-container:hover {
+      transform: translateY(-3px);
+      border-color: var(--color-primary-medium);
+      background: rgba(22,163,74,0.12);
+    }
+    .question-container.open {
+      border-color: var(--color-primary-medium);
+      background: rgba(22,163,74,0.15);
+    }
+    .question-container::after {
+      content: "";
+      position: absolute;
+      top: 28px;
+      left: 28px;
+      width: 20px;
+      height: 20px;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2316a34a" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>') center/contain no-repeat;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body[dir="ltr"] .question-container::after { left: auto; right: 28px; }
+    .question-container.open::after { transform: rotate(180deg); }
+
+    .question-header {
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-bottom: 0;
+      font-size: 1.05rem;
+      padding-left: 45px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    body[dir="ltr"] .question-header { padding-left: 0; padding-right: 45px; }
+
+    .question-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .question-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 1.2s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.5s ease;
+    }
+    .question-content.show { max-height: 3000px; margin-top: 20px; }
+
+    .mcq-options { list-style: none; padding: 0; margin-top: 15px; }
+    .mcq-option {
+      background: rgba(255,255,255,0.3);
+      border: 2px solid rgba(255,255,255,0.4);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+    }
+    .mcq-option:hover {
+      background: rgba(22,163,74,0.15);
+      transform: translateX(-5px);
+      border-color: var(--color-primary);
+    }
+    body[dir="ltr"] .mcq-option:hover { transform: translateX(5px); }
+    .mcq-option.selected {
+      background: rgba(22,163,74,0.2);
+      border-color: var(--color-primary);
+      transform: scale(1.02);
+    }
+    .mcq-option.correct {
+      background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(22,163,74,0.2));
+      border-color: var(--color-primary-medium);
+      color: #14532d;
+      font-weight: 600;
+    }
+    .mcq-option.incorrect {
+      background: linear-gradient(135deg, rgba(239,68,68,0.3), rgba(220,38,38,0.2));
+      border-color: #dc2626;
+      color: #7f1d1d;
+      animation: shake 0.5s ease;
+    }
+
+    .solution-content {
+      background: rgba(255,255,255,0.3);
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 20px;
+      border-radius: 14px;
+      animation: slideUp 0.6s ease;
+    }
+    .solution-content strong { color: #15803d; }
+
+    /* Tables */
+    .table-container { overflow-x: auto; margin: 20px 0; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .concepts-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      backdrop-filter: blur(15px);
+    }
+    .concepts-table th, .concepts-table td {
+      padding: clamp(8px, 2vw, 12px);
+      border: 1px solid rgba(255,255,255,0.3);
+      text-align: right;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      vertical-align: top;
+    }
+    body[dir="ltr"] .concepts-table th,
+    body[dir="ltr"] .concepts-table td { text-align: left; }
+    .concepts-table th {
+      background: rgba(22,163,74,0.2);
+      font-weight: 700;
+      color: var(--color-primary);
+      text-align: center;
+    }
+    .concepts-table tr:hover { background: rgba(255,255,255,0.1); }
+
+    /* Footer */
+    .footer-info {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-top: 40px;
+      text-align: center;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    .footer-brand {
+      font-size: 0.95rem;
+      color: var(--color-primary-dark);
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .footer-brand svg { width: 20px; height: 20px; }
+    .footer-divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+      margin: 12px auto;
+    }
+    .footer-disclaimer {
+      font-size: 0.85rem;
+      color: #64748b;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <!-- Background -->
+  <div class="background-waves">
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+  </div>
+
+  <!-- Translation Button -->
+  <button class="translation-button" id="translationButton" aria-label="تبديل اللغة">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2.25 12C2.25 17.3848 6.61522 21.75 12 21.75C17.3848 21.75 21.75 17.3848 21.75 12C21.75 6.61522 17.3848 2.25 12 2.25C9.36657 2.25 6.94277 3.22321 5.16629 4.83371M12.75 2.25V7.5M12.75 7.5H18M12.75 7.5L5.16629 4.83371M11.25 21.75V16.5M11.25 16.5H6M11.25 16.5L18.8337 19.1663M5.16629 4.83371C3.22321 6.94277 2.25 9.36657 2.25 12M2.25 12C2.25 14.6334 3.22321 17.0572 4.83371 18.8337M18.8337 19.1663C20.7768 17.0572 21.75 14.6334 21.75 12M18.8337 4.83371C17.0572 3.22321 14.6334 2.25 12 2.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="translation-text">English</span>
+  </button>
+
+  <!-- AI FAB Button -->
+  <button class="ai-fab-button" id="aiChatButton" aria-label="مساعد أثر الذكي">
+    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+      <path d="M12 8V4H8"></path>
+      <rect x="4" y="12" width="16" height="8" rx="2"></rect>
+      <path d="M2 14h2"></path>
+      <path d="M20 14h2"></path>
+      <path d="M15 13v-2a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v2"></path>
+    </svg>
+    <span class="ai-fab-text" id="aiFabText">أثر AI</span>
+  </button>
+
+  <!-- AI Chat Modal -->
+  <div class="ai-chat-modal" id="aiChatModal">
+    <div class="ai-chat-container">
+      <div class="ai-chat-header">
+        <h3 id="ai-chat-title">اسأل أثر AI</h3>
+        <button class="ai-chat-close-btn" id="aiChatCloseBtn" aria-label="إغلاق">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="ai-chat-messages" id="aiChatMessages"></div>
+      <div class="ai-chat-input-area">
+        <input type="text" id="ai-chat-input" placeholder="اكتب سؤالك هنا...">
+        <button id="ai-chat-send-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="header">
+        <h1 class="main-title" id="mainTitle">منصة أثر التعليمية</h1>
+
+      </div>
+
+      <!-- Arabic Content -->
+      <div id="arabicContent">
+<!-- بطاقة العنوان -->
+<div class="glassy-card">
+  <h1>جداول التوزيع التكراري وعرض الساق والورقة</h1>
+
+</div>
+
+<!-- المفهوم 1: جدول التوزيع التكراري -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: جدول التوزيع التكراري (Frequency Distribution Table)</h2>
+  
+  <h3>المفهوم الأساسي</h3>
+  <p>
+    جدول التوزيع التكراري هو <mark class="highlight-green">الأداة الإحصائية الأساسية اللي بتحول مجموعة البيانات الضخمة العشوائية إلى جدول منظم ومرتب</mark>، حيث بنقسم القيم إلى فئات أو مجموعات (classes) بناءً على نطاقات محددة، وبعدين بنحسب عدد الملاحظات (frequency) اللي بتقع في كل فئة.
+  </p>
+  <p>
+    الفكرة كلها زي ما تكون عندك <mark class="highlight-blue">كومة كبيرة من الأوراق المتناثرة، والجدول ده زي دولاب مرتب بأرفف</mark>، كل رف بيحتوي على مجموعة من الأوراق المتشابهة، فتقدر بسهولة تشوف الأنماط: إيه الأكثر تكراراً، إيه الأقل، وفين التركيز الأساسي للبيانات.
+  </p>
+  <p>
+    الجدول ده مش بس بيساعدنا نفهم البيانات، لكن كمان بيمهد الطريق لحسابات إحصائية أعقد زي المتوسط والانحراف المعياري والرسوم البيانية. لكن عشان نبنيه صح، لازم نلتزم بمجموعة من القوانين والقواعد الأساسية اللي بتضمن الدقة والشمولية.
+  </p>
+
+  <h3>القوانين الأساسية لبناء جدول التوزيع التكراري</h3>
+  
+  <h4>1. قاعدة حد الفئة الفردي (Individual Class Limit Rule)</h4>
+  <p>
+    الحد الأدنى للفئة الأولى لازم يكون <mark class="highlight-green">أقل من أو يساوي أصغر ملاحظة في البيانات</mark>، عشان نضمن إننا مش بنضيّع أي قيمة منخفضة.
+  </p>
+  <p style="background: rgba(22,163,74,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid var(--color-primary); margin: 15px 0;">
+    <strong>الصيغة:</strong> الحد الأدنى للفئة الأولى ≤ أصغر ملاحظة
+  </p>
+
+  <h4>2. قاعدة عدد الفئات (Number of Classes Rule)</h4>
+  <p>
+    عدد الفئات بيعتمد على حجم البيانات، والقاعدة العامة هي: <mark class="highlight-yellow">كلما زاد حجم البيانات، زاد عدد الفئات</mark>، لكن بشكل متوازن (مش بالضرورة خطي). عموماً، لمجموعات بيانات متوسطة (20-100 ملاحظة)، بنستخدم 5-10 فئات. لو أكثر من 100، ممكن نوصل لـ15-20 فئة.
+  </p>
+
+  <h4>3. صيغة عرض الفئة (Class Width Formula)</h4>
+  <p style="background: rgba(59,130,246,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid #3b82f6; margin: 15px 0;">
+    <strong>عرض الفئة = المدى ÷ عدد الفئات</strong><br>
+    = (الأكبر - الأصغر) ÷ عدد الفئات
+  </p>
+  <p>وبعد ما نحسبها، بنقربها لرقم صحيح مناسب (زي 5، 10، 15) عشان البساطة في التعامل.</p>
+
+  <h4>4. قاعدة التتابع بدون فجوات أو تداخلات</h4>
+  <p>
+    الفئات لازم تكون <mark class="highlight-orange">متتالية بدون فجوات (gaps) بينها، وبدون تداخلات (overlaps)</mark>. مثلاً: 20-30، 30-40، 40-50 (الفئة الثانية تبدأ من نهاية الأولى بالضبط).
+  </p>
+
+  <h4>5. قاعدة التغطية الشاملة</h4>
+  <p>الفئات لازم تغطي كل البيانات من أصغر قيمة لأكبر قيمة بدون استثناء.</p>
+
+  <h3>مثال واقعي</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض المثال
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>تخيل إنك <strong>مدير مصنع</strong> عندك بيانات الإنتاج اليومي لـ100 يوم، والأرقام بتتراوح بين 200 وحدة و800 وحدة. لو حاولت تتعامل مع الـ100 رقم واحد واحد، هتتوه.</p>
+        <p>لكن لو قسّمتهم لفئات (200-300، 300-400، إلخ)، وحسبت كام يوم في كل فئة، هتلاقي مثلاً إن <mark class="highlight-green">35 يوم الإنتاج كان بين 400-500</mark>، يعني ده النطاق الأكثر استقراراً، فتقدر تخطط للمواد الخام والعمالة بناءً على كده.</p>
+        <p>القوانين هنا بتضمن إنك مش بتضيّع أيام قليلة الإنتاج (أقل من 200) لو بدأت من 250 مثلاً، ولا بتسيب فجوات بين الفئات.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>أسئلة محتملة</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال MCQ محتمل: عدد الفئات
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>السؤال:</strong> عدد الفئات في جدول التوزيع التكراري يعتمد على حجم البيانات، فما الخيار الصحيح عموماً؟</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">أ) كلما زاد حجم البيانات، زاد عدد الفئات</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) كلما زاد حجم البيانات، قل عدد الفئات</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) يساوي عدد الفئات دائماً عدد القيم مقسوماً على 5</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) كلما قل حجم البيانات، زاد عدد الفئات</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>الإجابة الصحيحة:</strong> أ</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال MCQ محتمل: الحد الأدنى
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>السؤال:</strong> إذا كانت أصغر ملاحظة في البيانات 20.6، فما هو الحد الأدنى المناسب للفئة الأولى حسب القاعدة؟</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) 21</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) 20 أو أقل</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) يساوي النطاق الكلي</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) يعتمد فقط على عرض الفئة</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>الإجابة الصحيحة:</strong> ب</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال مقالي محتمل (15%)
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>السؤال:</strong> شرح بالتفصيل قوانين بناء جدول التوزيع التكراري الخمسة، مع ذكر صيغة عرض الفئة الرياضية، وشرح أهمية كل قاعدة في تجنب الأخطاء الشائعة مثل الفجوات أو فقدان البيانات، مع تطبيق عملي على مجموعة بيانات افتراضية لدرجات 50 طالباً تتراوح بين 45 و95، واقتراح عدد فئات مناسب وحساب عرض الفئة وتنظيم الجدول كاملاً.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الحالة العملية 1 -->
+<div class="glassy-card">
+  <h2>الحالة العملية (1): تنظيم البيانات في جدول التوزيع التكراري</h2>
+  
+  <h3>عرض المثال</h3>
+  <p><strong>المسألة الأصلية:</strong> الآتي عينة من 30 ملاحظة:</p>
+  <p style="background: rgba(255,255,255,0.3); padding: 15px; border-radius: 10px; font-family: monospace; font-size: 0.92rem; line-height: 1.8;">
+    30.0، 47.4، 39.4، 30.8، 36.6، 46.0، 28.4، 41.6، 27.0، 41.4، 34.8، 37.2، 25.8، 40.6، 27.4، 42.8، 36.6، 59.6، 34.2، 37.8، 20.6، 52.2، 31.4، 28.0، 35.6، 67.6، 46.4، 25.8، 54.2، 33.2
+  </p>
+  <p><strong>(أ) المطلوب:</strong> نظّم البيانات في جدول توزيع تكراري، مع مراعاة القاعدة: حد الفئة الفردي ≤ أصغر ملاحظة.</p>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض شرح الحل خطوة بخطوة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <h4>الخطوة 1: تحديد أصغر وأكبر قيمة</h4>
+        <p>بالنظر للبيانات:</p>
+        <ul>
+          <li>أصغر قيمة = 20.6</li>
+          <li>أكبر قيمة = 67.6</li>
+        </ul>
+
+        <h4>الخطوة 2: حساب النطاق (Range)</h4>
+        <p style="background: rgba(22,163,74,0.1); padding: 10px; border-radius: 8px; margin: 10px 0;">
+          <strong>المدى = 67.6 - 20.6 = 47</strong>
+        </p>
+
+        <h4>الخطوة 3: اختيار عدد الفئات</h4>
+        <p>لـ30 ملاحظة (حجم متوسط)، نختار <mark class="highlight-green">5 فئات</mark> (توازن بين الدقة والوضوح حسب القاعدة)</p>
+
+        <h4>الخطوة 4: حساب عرض الفئة</h4>
+        <p style="background: rgba(22,163,74,0.1); padding: 10px; border-radius: 8px; margin: 10px 0;">
+          <strong>عرض الفئة = 47 ÷ 5 = 9.4 ≈ 10</strong> (نقرّبها لـ10 للبساطة)
+        </p>
+
+        <h4>الخطوة 5: تحديد حدود الفئات</h4>
+        <p>بما أن أصغر ملاحظة 20.6، نبدأ الفئة الأولى بـ20 (حد أدنى ≤20.6)، ثم نضيف 10 لكل فئة:</p>
+        <ul>
+          <li>الفئة 1: 20 - 30</li>
+          <li>الفئة 2: 30 - 40</li>
+          <li>الفئة 3: 40 - 50</li>
+          <li>الفئة 4: 50 - 60</li>
+          <li>الفئة 5: 60 - 70</li>
+        </ul>
+        <p><mark class="highlight-blue">(ملاحظة: الفئات متتالية بدون فجوات أو تداخلات حسب القاعدة)</mark></p>
+
+        <h4>الخطوة 6: عدّ التكرار لكل فئة</h4>
+        <p>نمر على كل ملاحظة ونضعها في الفئة المناسبة:</p>
+        <ul>
+          <li>20-30: 20.6، 25.8، 25.8، 27.0، 27.4، 28.0، 28.4 → <strong>تكرار = 7</strong></li>
+          <li>30-40: 30.0، 30.8، 31.4، 33.2، 34.2، 34.8، 35.6، 36.6، 36.6، 37.2، 37.8، 39.4 → <strong>تكرار = 12</strong></li>
+          <li>40-50: 40.6، 41.4، 41.6، 42.8، 46.0، 46.4، 47.4 → <strong>تكرار = 7</strong></li>
+          <li>50-60: 52.2، 54.2، 59.6 → <strong>تكرار = 3</strong></li>
+          <li>60-70: 67.6 → <strong>تكرار = 1</strong></li>
+        </ul>
+        <p>الإجمالي = 7 + 12 + 7 + 3 + 1 = <mark class="highlight-green">30 ✓</mark> (يطابق عدد الملاحظات)</p>
+
+        <h4>جدول التوزيع التكراري النهائي</h4>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>الفئة (Class)</th>
+                <th>التكرار (f)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>20 - 30</td><td>7</td></tr>
+              <tr><td>30 - 40</td><td>12</td></tr>
+              <tr><td>40 - 50</td><td>7</td></tr>
+              <tr><td>50 - 60</td><td>3</td></tr>
+              <tr><td>60 - 70</td><td>1</td></tr>
+              <tr><td><strong>الإجمالي</strong></td><td><strong>30</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>التحليل:</strong> الفئة 30-40 هي الأكثر تكراراً (40% من البيانات)، مما يشير إلى تركيز القيم حول منتصف النطاق، وهذا يساعد في فهم التوزيع العام للبيانات.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>ساحة التدريب</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      تمرين محاكاة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>لديك عينة من 25 قيمة لأعمار موظفين في شركة:</strong></p>
+        <p style="background: rgba(255,255,255,0.3); padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
+          22، 35، 28، 41، 29، 48، 25، 37، 31، 45، 26، 39، 30، 43، 27، 50، 24، 36، 32، 47، 23، 38، 33، 44، 21
+        </p>
+        <p><strong>المطلوب:</strong></p>
+        <ul>
+          <li>(أ) حدد أصغر وأكبر قيمة، واحسب النطاق</li>
+          <li>(ب) اقترح عدد فئات مناسب (5 فئات)، واحسب عرض الفئة باستخدام الصيغة</li>
+          <li>(ج) حدد الحد الأدنى للفئة الأولى (≤21)</li>
+          <li>(د) نظّم الجدول التكراري كاملاً، عدّ التكرار لكل فئة، وتحقق من أن الإجمالي = 25</li>
+          <li>(هـ) حدد الفئة الأكثر تكراراً وفسّر معناها</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- المفهوم 2: التكرار النسبي ونقطة الوسط -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: التكرار النسبي (Relative Frequency) ونقطة الوسط (Class Midpoint)</h2>
+  
+  <h3>المفهوم الأساسي</h3>
+  
+  <h4>1. التكرار النسبي (Relative Frequency)</h4>
+  <p>
+    التكرار النسبي هو <mark class="highlight-green">نسبة تكرار كل فئة من الإجمالي الكلي</mark>، وبيُعبر عنه كنقطة عشرية أو نسبة مئوية. الفائدة الأساسية هي إنه بيخليك تقارن بين توزيعات مختلفة الحجم، لأنه بيحول الأرقام المطلقة لنسب موحدة.
+  </p>
+  
+  <p style="background: rgba(59,130,246,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid #3b82f6; margin: 15px 0;">
+    <strong>صيغة التكرار النسبي:</strong><br>
+    التكرار النسبي (RF) = التكرار (f) ÷ الإجمالي (n)
+  </p>
+  
+  <p><strong>قانون أساسي:</strong> مجموع التكرارات النسبية لجميع الفئات لازم يساوي <mark class="highlight-yellow">1.0 (أو 100%)</mark></p>
+
+  <h4>2. نقطة الوسط (Class Midpoint)</h4>
+  <p>
+    نقطة الوسط هي <mark class="highlight-blue">القيمة اللي بتمثل مركز الفئة</mark>، وبتُستخدم كقيمة تقريبية تمثل كل القيم داخل الفئة في الحسابات الإحصائية زي المتوسط.
+  </p>
+  
+  <p style="background: rgba(234,179,8,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid #eab308; margin: 15px 0;">
+    <strong>صيغة نقطة الوسط:</strong><br>
+    نقطة الوسط = (الحد الأدنى + الحد الأدنى للفئة التالية) ÷ 2<br>
+    أو بصيغة أبسط: نقطة الوسط = (الحد الأدنى + الحد الأعلى) ÷ 2
+  </p>
+  
+  <p><strong>قاعدة:</strong> نقطة الوسط لازم تكون داخل نطاق الفئة، ومش مناسبة للفئات المفتوحة (مثل "أكثر من 100").</p>
+
+  <h3>مثال واقعي</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض المثال
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>في <strong>استطلاع رأي لـ500 موظف</strong> عن ساعات العمل الأسبوعية:</p>
+        <ul>
+          <li>لو كان 100 موظف يعملون 40-50 ساعة</li>
+          <li><mark class="highlight-green">فالتكرار النسبي = 100/500 = 0.2 أو 20%</mark></li>
+          <li><mark class="highlight-blue">ونقطة الوسط = (40+50)/2 = 45 ساعة</mark></li>
+        </ul>
+        <p>لو عايز تحسب متوسط ساعات العمل التقريبي، هتستخدم 45 كقيمة تمثل كل الـ100 موظف في الفئة دي، مما يوفر وقت كبير مقارنة بجمع كل الساعات الفردية.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>أسئلة محتملة</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال MCQ محتمل: عرض الفئة
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>السؤال:</strong> عرض الفئة في جدول توزيع تكراري هو 10، فما عرض كل فئة؟</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) 9</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) 10</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) 5</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) 4.5</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>الإجابة الصحيحة:</strong> ب</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال MCQ محتمل: التكرار النسبي
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>السؤال:</strong> التكرار النسبي للفئة الثانية إذا كان تكرارها 9 من إجمالي 30 هو؟</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) 9</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) 30</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ج) 0.3 (أو 30%)</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) 333</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>الإجابة الصحيحة:</strong> ج (9/30 = 0.3)</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال مقالي محتمل (15%)
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>السؤال:</strong> شرح صيغتي التكرار النسبي ونقطة الوسط بالتفصيل، مع ذكر قوانينهما الأساسية (مجموع RF = 1، نقطة الوسط داخل الفئة)، وتطبيق عملي على جدول تكراري لدرجات 40 طالباً موزعة على 4 فئات، مع حساب كل من RF ونقطة الوسط لكل فئة، واستخدام نقطة الوسط لتقدير المتوسط التقريبي للدرجات، مع مناقشة أهمية RF في المقارنات بين صفوف دراسية مختلفة العدد.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الحالة العملية 2 -->
+<div class="glassy-card">
+  <h2>الحالة العملية (2): حساب التكرار النسبي والنقاط الوسطى</h2>
+  
+  <h3>عرض المثال</h3>
+  <p><strong>المسألة الأصلية:</strong> لنفس العينة السابقة من 30 ملاحظة (والجدول التكراري المُعد):</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>الفئة</th>
+          <th>التكرار (f)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>20 - 30</td><td>7</td></tr>
+        <tr><td>30 - 40</td><td>12</td></tr>
+        <tr><td>40 - 50</td><td>7</td></tr>
+        <tr><td>50 - 60</td><td>3</td></tr>
+        <tr><td>60 - 70</td><td>1</td></tr>
+        <tr><td><strong>الإجمالي</strong></td><td><strong>30</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>(ب) المطلوب:</strong> احسب نقطة الوسط لكل فئة والتكرار النسبي لكل فئة.</p>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض شرح الحل خطوة بخطوة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <h4>الخطوة 1: حساب نقطة الوسط لكل فئة</h4>
+        <p>نستخدم الصيغة: نقطة الوسط = (الحد الأدنى + الحد الأدنى للفئة التالية) ÷ 2</p>
+        <ul>
+          <li><strong>الفئة 20-30:</strong> (20 + 30) ÷ 2 = 50 ÷ 2 = <mark class="highlight-green">25</mark></li>
+          <li><strong>الفئة 30-40:</strong> (30 + 40) ÷ 2 = 70 ÷ 2 = <mark class="highlight-green">35</mark></li>
+          <li><strong>الفئة 40-50:</strong> (40 + 50) ÷ 2 = 90 ÷ 2 = <mark class="highlight-green">45</mark></li>
+          <li><strong>الفئة 50-60:</strong> (50 + 60) ÷ 2 = 110 ÷ 2 = <mark class="highlight-green">55</mark></li>
+          <li><strong>الفئة 60-70:</strong> (60 + 70) ÷ 2 = 130 ÷ 2 = <mark class="highlight-green">65</mark></li>
+        </ul>
+
+        <h4>الخطوة 2: حساب التكرار النسبي لكل فئة</h4>
+        <p>نستخدم الصيغة: RF = f ÷ n حيث n = 30</p>
+        <ul>
+          <li><strong>الفئة 20-30:</strong> 7 ÷ 30 ≈ <mark class="highlight-blue">0.233 أو 23.3%</mark></li>
+          <li><strong>الفئة 30-40:</strong> 12 ÷ 30 = <mark class="highlight-blue">0.400 أو 40.0%</mark></li>
+          <li><strong>الفئة 40-50:</strong> 7 ÷ 30 ≈ <mark class="highlight-blue">0.233 أو 23.3%</mark></li>
+          <li><strong>الفئة 50-60:</strong> 3 ÷ 30 = <mark class="highlight-blue">0.100 أو 10.0%</mark></li>
+          <li><strong>الفئة 60-70:</strong> 1 ÷ 30 ≈ <mark class="highlight-blue">0.033 أو 3.3%</mark></li>
+        </ul>
+
+        <h4>الخطوة 3: التحقق من القانون</h4>
+        <p>مجموع التكرارات النسبية:</p>
+        <p style="background: rgba(22,163,74,0.1); padding: 10px; border-radius: 8px;">
+          0.233 + 0.400 + 0.233 + 0.100 + 0.033 = <mark class="highlight-green">0.999 ≈ 1.0 ✓</mark><br>
+          (التقريب بسبب الكسور العشرية)
+        </p>
+
+        <h4>الجدول النهائي الموسّع</h4>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>الفئة</th>
+                <th>التكرار (f)</th>
+                <th>نقطة الوسط</th>
+                <th>التكرار النسبي (RF)</th>
+                <th>النسبة المئوية</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>20 - 30</td><td>7</td><td>25</td><td>0.233</td><td>23.3%</td></tr>
+              <tr><td>30 - 40</td><td>12</td><td>35</td><td>0.400</td><td>40.0%</td></tr>
+              <tr><td>40 - 50</td><td>7</td><td>45</td><td>0.233</td><td>23.3%</td></tr>
+              <tr><td>50 - 60</td><td>3</td><td>55</td><td>0.100</td><td>10.0%</td></tr>
+              <tr><td>60 - 70</td><td>1</td><td>65</td><td>0.033</td><td>3.3%</td></tr>
+              <tr><td><strong>الإجمالي</strong></td><td><strong>30</strong></td><td>-</td><td><strong>1.000</strong></td><td><strong>100.0%</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>التحليل:</strong> الفئة 30-40 تمثل 40% من البيانات (الأكثر تكراراً)، ونقطة الوسط 35 تُستخدم كقيمة تمثيلية لهذه الفئة في أي حسابات لاحقة. المجموع 100% يؤكد دقة الحسابات.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>ساحة التدريب</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      تمرين محاكاة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>لجدول تكراري بفئات:</strong></p>
+        <p>50-60 (تكرار 4)، 60-70 (6)، 70-80 (7)، 80-90 (3)، إجمالي = 20</p>
+        <p><strong>المطلوب:</strong></p>
+        <ul>
+          <li>(أ) احسب نقطة الوسط لكل فئة باستخدام الصيغة (الأدنى + الأعلى) ÷ 2</li>
+          <li>(ب) احسب التكرار النسبي لكل فئة كنقطة عشرية وكنسبة مئوية</li>
+          <li>(ج) تحقق من أن مجموع التكرارات النسبية = 1.0</li>
+          <li>(د) حدد الفئة ذات النسبة المئوية الأعلى وفسّر معناها في سياق بيانات درجات الطلاب</li>
+          <li>(هـ) استخدم نقاط الوسط لتقدير المتوسط التقريبي بالصيغة: المتوسط ≈ مجموع (نقطة الوسط × RF)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- المفهوم 3: التكرار التراكمي -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: التكرار التراكمي (Cumulative Frequency)</h2>
+  
+  <h3>المفهوم الأساسي</h3>
+  <p>
+    التكرار التراكمي هو <mark class="highlight-green">الجمع المتتالي للتكرارات من البداية حتى فئة معينة</mark>، بحيث كل صف بيضيف تكراره على المجموع السابق، والناتج بيوضح العدد الكلي للملاحظات حتى نهاية هذه الفئة. وبنحوله لنسبة مئوية تراكمية عشان نعرف النسبة من الإجمالي.
+  </p>
+
+  <p style="background: rgba(236,72,153,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid #ec4899; margin: 15px 0;">
+    <strong>صيغة التكرار التراكمي:</strong><br>
+    CF(k) = CF(k-1) + f(k)<br><br>
+    حيث:<br>
+    • CF(k) = التكرار التراكمي للفئة k<br>
+    • CF(k-1) = التكرار التراكمي للفئة السابقة<br>
+    • f(k) = التكرار المطلق للفئة k<br>
+    • CF(1) = f(1) (نبدأ بتكرار الفئة الأولى)
+  </p>
+
+  <p style="background: rgba(249,115,22,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid #f97316; margin: 15px 0;">
+    <strong>صيغة النسبة المئوية التراكمية:</strong><br>
+    النسبة المئوية التراكمية = (CF ÷ n) × 100%
+  </p>
+
+  <h4>قوانين أساسية:</h4>
+  <ul>
+    <li><mark class="highlight-blue">التكرار التراكمي دائماً صاعد</mark> (يزيد أو يظل ثابت، لكن لا ينقص أبداً)</li>
+    <li>التكرار التراكمي للفئة الأخيرة لازم يساوي n (إجمالي الملاحظات)</li>
+    <li>النسبة المئوية التراكمية للفئة الأخيرة = 100%</li>
+  </ul>
+
+  <h4>استخدامات:</h4>
+  <ul>
+    <li>معرفة عدد الملاحظات أقل من حد معين</li>
+    <li>حساب الوسيط (Median) والربعيات (Quartiles)</li>
+    <li>رسم منحنى التراكمي (Ogive)</li>
+  </ul>
+
+  <h3>مثال واقعي</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض المثال
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>في <strong>شركة</strong>، لو عندك بيانات رواتب 100 موظف موزعة على فئات، والتكرارات 15، 30، 35، 20:</p>
+        <p><mark class="highlight-green">فالتكرار التراكمي: 15، 45، 80، 100</mark></p>
+        <p>معنى 45 إن <mark class="highlight-blue">45 موظفاً رواتبهم تحت نهاية الفئة الثانية</mark> (مثلاً أقل من 5000 جنيه)، أو 45%.</p>
+        <p>ده بيساعد الإدارة تعرف النسب المئوية للموظفين تحت خطوط الفقر أو المستهدفات.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>أسئلة محتملة</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال MCQ محتمل: حجم العينة
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>السؤال:</strong> حجم العينة في جدول تكراري بتكرار تراكمي أخير = 30 هو؟</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) 35</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) 30</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) 40</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) غير محدد</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>الإجابة الصحيحة:</strong> ب</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال MCQ محتمل: النسبة المئوية
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>السؤال:</strong> النسبة المئوية للطلاب الذين حصلوا على درجة 80 أو أقل، إذا كان التكرار التراكمي حتى فئة 80 هو 12 من إجمالي 30، هي؟</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) 12</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) 40%</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) 30%</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) 10%</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>الإجابة الصحيحة:</strong> ب (12 ÷ 30 × 100 = 40%)</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال مقالي محتمل (15%)
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>السؤال:</strong> شرح بالتفصيل مفهوم التكرار التراكمي مع صيغته الرياضية CF(k) = CF(k-1) + f(k)، وذكر القوانين الثلاثة الأساسية (صاعد، الأخير = n، النسبة الأخيرة = 100%)، وتطبيق عملي كامل على بيانات دخل لـ200 عائلة لحساب التكرار التراكمي والنسب المئوية لكل فئة، مع استخدام الجدول لتحديد النسبة المئوية للعائلات تحت 55 ألف دولار، وشرح كيفية استخدام التكرار التراكمي في حساب الوسيط بطريقة الموقع.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+   <!-- الحالة العملية 3 -->
+<div class="glassy-card">
+  <h2>الحالة العملية (3): بناء الجدول التراكمي</h2>
+  
+  <h3>عرض المثال</h3>
+  <p><strong>المسألة الأصلية:</strong> لنفس العينة السابقة من 30 ملاحظة (والجدول التكراري):</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>الفئة</th>
+          <th>التكرار (f)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>20 - 30</td><td>7</td></tr>
+        <tr><td>30 - 40</td><td>12</td></tr>
+        <tr><td>40 - 50</td><td>7</td></tr>
+        <tr><td>50 - 60</td><td>3</td></tr>
+        <tr><td>60 - 70</td><td>1</td></tr>
+        <tr><td><strong>الإجمالي</strong></td><td><strong>30</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>(ج) المطلوب:</strong> احسب جدول التكرار التراكمي مع النسب المئوية التراكمية.</p>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض شرح الحل خطوة بخطوة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <h4>الخطوة 1: حساب التكرار التراكمي</h4>
+        <p>نستخدم الصيغة: CF(k) = CF(k-1) + f(k)</p>
+        <ul>
+          <li><strong>الفئة 20-30:</strong> CF(1) = 7 (نبدأ بالتكرار الأول)</li>
+          <li><strong>الفئة 30-40:</strong> CF(2) = 7 + 12 = <mark class="highlight-green">19</mark></li>
+          <li><strong>الفئة 40-50:</strong> CF(3) = 19 + 7 = <mark class="highlight-green">26</mark></li>
+          <li><strong>الفئة 50-60:</strong> CF(4) = 26 + 3 = <mark class="highlight-green">29</mark></li>
+          <li><strong>الفئة 60-70:</strong> CF(5) = 29 + 1 = <mark class="highlight-green">30 ✓</mark> (يساوي الإجمالي)</li>
+        </ul>
+
+        <h4>الخطوة 2: حساب النسب المئوية التراكمية</h4>
+        <p>نستخدم الصيغة: النسبة المئوية التراكمية = (CF ÷ 30) × 100%</p>
+        <ul>
+          <li><strong>الفئة 20-30:</strong> (7 ÷ 30) × 100 ≈ <mark class="highlight-blue">23.3%</mark></li>
+          <li><strong>الفئة 30-40:</strong> (19 ÷ 30) × 100 ≈ <mark class="highlight-blue">63.3%</mark></li>
+          <li><strong>الفئة 40-50:</strong> (26 ÷ 30) × 100 ≈ <mark class="highlight-blue">86.7%</mark></li>
+          <li><strong>الفئة 50-60:</strong> (29 ÷ 30) × 100 ≈ <mark class="highlight-blue">96.7%</mark></li>
+          <li><strong>الفئة 60-70:</strong> (30 ÷ 30) × 100 = <mark class="highlight-blue">100.0% ✓</mark></li>
+        </ul>
+
+        <h4>الجدول النهائي الموسّع</h4>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>الفئة</th>
+                <th>التكرار (f)</th>
+                <th>التكرار التراكمي (CF)</th>
+                <th>النسبة المئوية التراكمية</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>20 - 30</td><td>7</td><td>7</td><td>23.3%</td></tr>
+              <tr><td>30 - 40</td><td>12</td><td>19</td><td>63.3%</td></tr>
+              <tr><td>40 - 50</td><td>7</td><td>26</td><td>86.7%</td></tr>
+              <tr><td>50 - 60</td><td>3</td><td>29</td><td>96.7%</td></tr>
+              <tr><td>60 - 70</td><td>1</td><td>30</td><td>100.0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>التحليل:</strong> الجدول يوضح إن 63.3% من البيانات أقل من 40، و86.7% أقل من 50. الوسيط (القيمة الوسطى) يقع في الفئة الثانية (30-40) لأن الـ50% تقع بين CF=7 و CF=19.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>ساحة التدريب</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      تمرين محاكاة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>لجدول تكرار:</strong></p>
+        <p>فئة 10-20 (تكرار 3)، 20-30 (9)، 30-40 (12)، 40-50 (6)، إجمالي = 30</p>
+        <p><strong>المطلوب:</strong></p>
+        <ul>
+          <li>(أ) احسب التكرار التراكمي لكل فئة خطوة بخطوة باستخدام الصيغة</li>
+          <li>(ب) احسب النسبة المئوية التراكمية لكل فئة</li>
+          <li>(ج) تحقق من أن CF الأخير = 30 والنسبة الأخيرة = 100%</li>
+          <li>(د) حدد النسبة المئوية للقيم أقل من 30 وفسّر معناها</li>
+          <li>(هـ) استخدم الجدول التراكمي لتحديد الفئة التي يقع فيها الوسيط (عند 50%)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الحالة العملية 4 -->
+<div class="glassy-card">
+  <h2>الحالة العملية (4): تحليل جدول درجات الطلاب</h2>
+  
+  <h3>عرض المثال</h3>
+  <p><strong>المسألة الأصلية:</strong> الجدول التالي يوضح توزيع درجات الطلاب في اختبار:</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>الدرجة (Score)</th>
+          <th>التكرار (f)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>61 - 70</td><td>3</td></tr>
+        <tr><td>71 - 80</td><td>9</td></tr>
+        <tr><td>81 - 90</td><td>12</td></tr>
+        <tr><td>91 - 100</td><td>6</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>السؤال:</strong> احسب النسبة المئوية للطلاب الذين حصلوا على درجة 80 أو أقل.</p>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض شرح الحل خطوة بخطوة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <h4>الخطوة 1: حساب الإجمالي</h4>
+        <p>n = 3 + 9 + 12 + 6 = <mark class="highlight-green">30 طالباً</mark></p>
+
+        <h4>الخطوة 2: تحديد الفئات المطلوبة</h4>
+        <p>"80 أو أقل" يشمل الفئات:</p>
+        <ul>
+          <li>61-70 (تكرار 3)</li>
+          <li>71-80 (تكرار 9)</li>
+        </ul>
+
+        <h4>الخطوة 3: حساب التكرار التراكمي حتى 80</h4>
+        <p style="background: rgba(22,163,74,0.1); padding: 10px; border-radius: 8px;">
+          CF حتى 80 = 3 + 9 = <mark class="highlight-blue">12</mark>
+        </p>
+
+        <h4>الخطوة 4: حساب النسبة المئوية</h4>
+        <p style="background: rgba(59,130,246,0.1); padding: 10px; border-radius: 8px;">
+          النسبة = (12 ÷ 30) × 100% = <mark class="highlight-green">40%</mark>
+        </p>
+
+        <p><strong>الإجابة:</strong> 40% من الطلاب حصلوا على 80 أو أقل.</p>
+
+        <p><strong>التحليل:</strong> هذا يعني أن 60% من الطلاب حصلوا على أكثر من 80، مما قد يشير إلى أداء جيد للصف، أو حاجة للتركيز على الـ40% الأدنى للتحسين.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>أسئلة MCQ من المثال</h3>
+  
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ 1: عدد الفئات
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>السؤال:</strong> عدد الفئات في هذا الجدول التكراري هو:</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) 30</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) 4</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) 1</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) 40</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>الإجابة الصحيحة:</strong> ب</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ 2: عرض الفئة
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>السؤال:</strong> عرض كل فئة في هذا الجدول هو:</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) 9</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ب) 10</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) 5</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) 4.5</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>الإجابة الصحيحة:</strong> ب (70-61+1=10، أو الفرق بين حدي الفئة)</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ 3: التكرار النسبي
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>السؤال:</strong> التكرار النسبي للفئة الثانية (71-80) هو:</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">أ) 9</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) 30</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">ج) 0.3 (أو 30%)</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) 333</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>الإجابة الصحيحة:</strong> ج (9/30 = 0.3)</p>
+    </div>
+  </div>
+
+  <h3>ساحة التدريب</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      تمرين محاكاة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>جدول درجات:</strong> 50-60: 2، 60-70: 5، 70-80: 8، 80-90: 10، إجمالي = 25</p>
+        <p><strong>المطلوب:</strong></p>
+        <ul>
+          <li>(أ) احسب النسبة المئوية للدرجات 70 أو أقل</li>
+          <li>(ب) بنِ جدولاً تراكمياً كاملاً</li>
+          <li>(ج) احسب التكرار النسبي لكل فئة</li>
+          <li>(د) ناقش ما إذا كان هذا التوزيع يشير إلى مستوى جيد أم يحتاج تحسيناً</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- المفهوم 4: عرض الساق والورقة -->
+<div class="glassy-card">
+  <h2>شرح مفهوم: عرض الساق والورقة (Stem-and-Leaf Display)</h2>
+  
+  <h3>المفهوم الأساسي</h3>
+  <p>
+    عرض الساق والورقة هو <mark class="highlight-green">تقنية إحصائية بصرية بديلة للجدول التكراري</mark>، تُستخدم لعرض مجموعة بيانات صغيرة إلى متوسطة بطريقة منظمة مع الاحتفاظ بالقيم الأصلية بالكامل. الفكرة هي تقسيم كل قيمة إلى جزئين:
+  </p>
+
+  <h4>التقسيم:</h4>
+  <ul>
+    <li><mark class="highlight-blue">الساق (Stem):</mark> الأرقام الرئيسية (مثل العشرات أو المئات)، تُوضع عمودياً على المحور الرأسي</li>
+    <li><mark class="highlight-yellow">الورقة (Leaf):</mark> الرقم الأخير (أو الآخران)، تُرتب أفقياً تحت الساق المناسبة</li>
+  </ul>
+
+  <h4>مزايا عرض الساق والورقة:</h4>
+  <ul>
+    <li>يحتفظ بالقيم الأصلية (بخلاف الجدول التكراري الذي يفقدها)</li>
+    <li>يُظهر التوزيع بصرياً (التركيز، الانتشار، التماثل)</li>
+    <li>سهل الإعداد يدوياً للبيانات الصغيرة (&lt;100 ملاحظة)</li>
+    <li>يُستخدم لاستخراج الإحصائيات سريعاً (الوسيط، النطاق، القيم المتطرفة)</li>
+  </ul>
+
+  <h4>خطوات البناء:</h4>
+  <ul>
+    <li><strong>1. حساب النطاق:</strong> المدى = الأكبر - الأصغر</li>
+    <li><strong>2. تحديد السيقان:</strong> اختر السيقان بحيث تغطي كل النطاق بدون فجوات. مثلاً، لو النطاق 88-156، السيقان من 8 إلى 15</li>
+    <li><strong>3. تقسيم القيم:</strong> كل قيمة تُقسم: مثل 88 → ساق 8، ورقة 8؛ 156 → ساق 15، ورقة 6</li>
+    <li><strong>4. ترتيب الأوراق:</strong> تحت كل ساق، رتب الأوراق صاعدة من اليسار لليمين</li>
+  </ul>
+
+  <h4>قوانين:</h4>
+  <ul>
+    <li>لا فجوات بين السيقان (لو مفيش ورقة لساق معين، اتركه فارغاً)</li>
+    <li>الأوراق دائماً مرتبة صاعدة</li>
+    <li>السيقان عمودية، الأوراق أفقية</li>
+  </ul>
+
+  <h3>مثال توضيحي</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض المثال
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>قيم:</strong> 23، 25، 27، 32، 35، 38</p>
+        <pre style="background: rgba(15, 23, 42, 0.95); color: #10b981; padding: 15px; border-radius: 10px; font-size: 0.95rem;">
+ساق | ورقة
+-----|-------
+2    | 3 5 7
+3    | 2 5 8
+        </pre>
+        <p><strong>التفسير:</strong></p>
+        <ul>
+          <li>23 → ساق 2، ورقة 3</li>
+          <li>25 → ساق 2، ورقة 5</li>
+          <li>27 → ساق 2، ورقة 7</li>
+          <li>32 → ساق 3، ورقة 2</li>
+          <li>35 → ساق 3، ورقة 5</li>
+          <li>38 → ساق 3، ورقة 8</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>أسئلة محتملة</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال MCQ محتمل: النطاق
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>السؤال:</strong> في عرض ساق-ورقة، النطاق إذا كان الأكبر 156 والأصغر 88 هو؟</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">أ) 68</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ب) 6</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">ج) 8</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">د) 156</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>الإجابة الصحيحة:</strong> أ (156 - 88 = 68)</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      سؤال مقالي محتمل (15%)
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>السؤال:</strong> شرح تقنية عرض الساق والورقة بالتفصيل، بما في ذلك خطوات البناء الأربع (حساب النطاق، تحديد السيقان، تقسيم القيم، ترتيب الأوراق)، مع قوانين عدم الفجوات والترتيب الصاعد، وتطبيق عملي على بيانات يومية (مثل عدد الزوار في متحف على مدار 20 يوماً)، مع مناقشة مزايا العرض مقارنة بالهيستوغرام أو الجدول التكراري في الحفاظ على الدقة الأصلية واستخراج الوسيط بسرعة.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- الحالة العملية 5 -->
+<div class="glassy-card">
+  <h2>الحالة العملية (5): تحليل إيجار الأفلام</h2>
+  
+  <h3>عرض المثال</h3>
+  <p><strong>المسألة الأصلية:</strong> العرض التالي لساق-ورقة يُبلّغ عن عدد الأفلام المؤجرة يومياً في فيديو كونكشن (Video Connection):</p>
+
+  <pre style="background: rgba(15, 23, 42, 0.95); color: #10b981; padding: 20px; border-radius: 12px; font-size: 0.95rem; line-height: 1.8;">
+ساق | ورقة
+-----|----------------
+12   | 3 5 7 9
+13   | 1 4 6 8
+14   | 0 2 5 7 9
+15   | 2 4 6
+16   | 1 3
+  </pre>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      اضغط لعرض شرح الحل لجميع الأسئلة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <h4>أ. كم يوماً تم دراسته؟</h4>
+        <p>عدّ جميع الأوراق:</p>
+        <ul>
+          <li>ساق 12: 4 أوراق</li>
+          <li>ساق 13: 4 أوراق</li>
+          <li>ساق 14: 5 أوراق</li>
+          <li>ساق 15: 3 أوراق</li>
+          <li>ساق 16: 2 أوراق</li>
+        </ul>
+        <p>الإجمالي = 4 + 4 + 5 + 3 + 2 = <mark class="highlight-green">18 يوماً</mark></p>
+
+        <h4>ب. كم ملاحظة في آخر فئة؟</h4>
+        <p>آخر ساق (16): <mark class="highlight-blue">2 ملاحظة</mark> (الأوراق 1، 3)</p>
+
+        <h4>ج. ما أكبر وأصغر قيمة؟</h4>
+        <ul>
+          <li><strong>أصغر:</strong> أول ورقة في أول ساق = ساق 12، ورقة 3 → <mark class="highlight-yellow">123</mark></li>
+          <li><strong>أكبر:</strong> آخر ورقة في آخر ساق = ساق 16، ورقة 3 → <mark class="highlight-orange">163</mark></li>
+        </ul>
+
+        <h4>د. القيم الفعلية في الصف الرابع (الساق 15)</h4>
+        <p>ساق 15، أوراق 2، 4، 6 → <mark class="highlight-pink">152، 154، 156</mark></p>
+
+        <h4>و. كم يوماً أُجر فيها أقل من 160 فيلماً؟</h4>
+        <p>السيقان من 12 إلى 15 (كلها أقل من 160): 4 + 4 + 5 + 3 = <mark class="highlight-green">16 يوماً</mark></p>
+
+        <h4>ز. كم يوماً 220 أو أكثر؟</h4>
+        <p>لا توجد سيقان 22 أو أعلى في العرض → <mark class="highlight-blue">0 يوم</mark></p>
+
+        <h4>ح. ما القيمة الوسطى (الوسيط)؟</h4>
+        <p>18 ملاحظة، الوسيط بين الـ9 والـ10:</p>
+        <p>عدّ الأوراق بالترتيب حتى الـ9 والـ10: القيمة الـ9 = 145، القيمة الـ10 = 147</p>
+        <p>الوسيط = (145 + 147) ÷ 2 = <mark class="highlight-green">146</mark></p>
+      </div>
+    </div>
+  </div>
+
+  <h3>ساحة التدريب</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      تمرين محاكاة
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>بيانات:</strong> 123، 145، 112، 156، 134، 128، 139، 150، 117، 142</p>
+        <p><strong>المطلوب:</strong></p>
+        <ul>
+          <li>(أ) حدد أصغر وأكبر قيمة، احسب النطاق</li>
+          <li>(ب) حدد السيقان المناسبة (بالعشرات: 11، 12، 13، 14، 15)</li>
+          <li>(ج) قسّم كل قيمة إلى ساق وورقة</li>
+          <li>(د) ابنِ عرض الساق والورقة، رتب الأوراق صاعدة</li>
+          <li>(هـ) احسب عدد الملاحظات في الساق 13</li>
+          <li>(و) حدد أكبر وأصغر قيمة من العرض مباشرة</li>
+          <li>(ز) احسب الوسيط (القيمة الخامسة أو السادسة في الترتيب)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- جدول المفاهيم الأساسية -->
+<div class="glassy-card">
+  <h2>جدول المفاهيم الأساسية (Key Concepts Glossary)</h2>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>المفهوم</th>
+          <th>التعريف الرسمي</th>
+          <th>الصيغة الرياضية</th>
+          <th>الخلاصة بكلمتين</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>جدول التوزيع التكراري</strong></td>
+          <td>تنظيم البيانات في فئات متجانسة مع حساب التكرار، بالالتزام بقوانين الحدود والعرض والتتابع</td>
+          <td>عرض الفئة = المدى ÷ عدد الفئات</td>
+          <td>تنظيم تكراري شامل</td>
+        </tr>
+        <tr>
+          <td><strong>التكرار النسبي</strong></td>
+          <td>تكرار الفئة مقسوماً على الإجمالي، مجموعه =1</td>
+          <td>RF = f ÷ n</td>
+          <td>نسبة موحدة للفئات</td>
+        </tr>
+        <tr>
+          <td><strong>نقطة الوسط</strong></td>
+          <td>متوسط الحدين الأدنى والتالي، تمثل الفئة في الحسابات</td>
+          <td>(الأدنى + الأعلى) ÷ 2</td>
+          <td>مركز تمثيلي للفئة</td>
+        </tr>
+        <tr>
+          <td><strong>التكرار التراكمي</strong></td>
+          <td>مجموع التكرارات من البداية حتى فئة معينة، صاعد دائماً، الأخير=n</td>
+          <td>CF(k) = CF(k-1) + f(k)</td>
+          <td>تراكم تدريجي إجمالي</td>
+        </tr>
+        <tr>
+          <td><strong>النسبة المئوية التراكمية</strong></td>
+          <td>التكرار التراكمي كنسبة من الإجمالي، الأخيرة=100%</td>
+          <td>(CF ÷ n) × 100%</td>
+          <td>نسبة تراكمية مئوية</td>
+        </tr>
+        <tr>
+          <td><strong>عرض الساق والورقة</strong></td>
+          <td>تقسيم الأرقام إلى ساق رئيسية وورقة أخيرة، مرتبة بصرياً بدون فجوات، يحتفظ بالدقة الأصلية</td>
+          <td>لا توجد</td>
+          <td>عرض بيانات دقيق بصري</td>
+        </tr>
+        <tr>
+          <td><strong>النطاق (Range)</strong></td>
+          <td>الفرق بين أكبر وأصغر قيمة في البيانات</td>
+          <td>الأكبر - الأصغر</td>
+          <td>المدى الكلي للبيانات</td>
+        </tr>
+        <tr>
+          <td><strong>عدد الفئات</strong></td>
+          <td>عدد المجموعات في الجدول، يزيد مع حجم البيانات بتوازن</td>
+          <td>5-20 فئة للبيانات المتوسطة</td>
+          <td>عدد المجموعات المناسب</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer-info">
+  <div class="footer-brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+      <path d="M2 17l10 5 10-5"/>
+      <path d="M2 12l10 5 10-5"/>
+    </svg>
+    منصة أثر التعليمية
+  </div>
+  <div class="footer-divider"></div>
+  <p class="footer-disclaimer">
+    تم إعداد هذا المحتوى بعناية فائقة بالتفصيل الممل مع كل القوانين والصيغ والأمثلة. 
+    نتمنى لك رحلة تعلم موفقة!
+  </p>
+</div>
+     
+      </div>
+
+      <!-- English Content -->
+      <div id="englishContent" class="hidden">
+<!-- Title Card -->
+<div class="glassy-card">
+  <h1>Frequency Distribution Tables and Stem-and-Leaf Display</h1>
+  <p style="text-align: center; font-size: 1.1rem; color: #15803d; margin-top: -10px;">
+    Complete lecture with detailed explanations, formulas, and examples
+  </p>
+</div>
+
+<!-- Concept 1: Frequency Distribution Table -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Frequency Distribution Table</h2>
+  
+  <h3>Basic Concept</h3>
+  <p>
+    A frequency distribution table is <mark class="highlight-green">the fundamental statistical tool that transforms large, scattered datasets into an organized, structured table</mark>. We divide values into classes or groups based on defined ranges, then count the number of observations (frequency) that fall within each class.
+  </p>
+  <p>
+    The idea is like having <mark class="highlight-blue">a large pile of scattered papers, and this table is like an organized cabinet with shelves</mark>, where each shelf contains a group of similar papers. This allows you to easily see patterns: what's most frequent, what's least, and where the main concentration of data lies.
+  </p>
+  <p>
+    This table not only helps us understand data but also paves the way for more complex statistical calculations like mean, standard deviation, and graphs. But to build it correctly, we must follow a set of fundamental rules and guidelines that ensure accuracy and comprehensiveness.
+  </p>
+
+  <h3>Fundamental Rules for Building Frequency Distribution Tables</h3>
+  
+  <h4>1. Individual Class Limit Rule</h4>
+  <p>
+    The lower limit of the first class must be <mark class="highlight-green">less than or equal to the smallest observation in the data</mark>, to ensure we don't lose any low values.
+  </p>
+  <p style="background: rgba(22,163,74,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid var(--color-primary); margin: 15px 0;">
+    <strong>Formula:</strong> Lower limit of first class ≤ Minimum observation
+  </p>
+
+  <h4>2. Number of Classes Rule</h4>
+  <p>
+    The number of classes depends on data size, and the general rule is: <mark class="highlight-yellow">as data size increases, the number of classes increases</mark>, but in a balanced manner (not necessarily linear). Generally, for medium-sized datasets (20-100 observations), we use 5-10 classes. For more than 100, we can reach 15-20 classes.
+  </p>
+
+  <h4>3. Class Width Formula</h4>
+  <p style="background: rgba(59,130,246,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid #3b82f6; margin: 15px 0;">
+    <strong>Class Width = Range ÷ Number of Classes</strong><br>
+    = (Maximum - Minimum) ÷ Number of Classes
+  </p>
+  <p>After calculating, we round to a suitable whole number (like 5, 10, 15) for simplicity.</p>
+
+  <h4>4. Sequential Rule Without Gaps or Overlaps</h4>
+  <p>
+    Classes must be <mark class="highlight-orange">consecutive without gaps between them, and without overlaps</mark>. For example: 20-30, 30-40, 40-50 (the second class starts exactly where the first ends).
+  </p>
+
+  <h4>5. Comprehensive Coverage Rule</h4>
+  <p>Classes must cover all data from the smallest to the largest value without exception.</p>
+
+  <h3>Real-World Example</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to view example
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>Imagine you're a <strong>factory manager</strong> with daily production data for 100 days, ranging between 200 and 800 units. If you try to deal with 100 numbers one by one, you'll get lost.</p>
+        <p>But if you divide them into classes (200-300, 300-400, etc.), and count how many days fall in each class, you might find, for example, that <mark class="highlight-green">35 days had production between 400-500</mark>, meaning this is the most stable range.</p>
+        <p>The rules ensure you don't lose low-production days (less than 200) if you started at 250, and don't leave gaps between classes.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Potential Questions</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ Question: Number of Classes
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>Question:</strong> The number of classes in a frequency distribution table depends on data size. Which option is generally correct?</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">A) As data size increases, the number of classes increases</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) As data size increases, the number of classes decreases</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Number of classes always equals number of values divided by 5</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) As data size decreases, the number of classes increases</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>Correct Answer:</strong> A</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ Question: Lower Limit
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>Question:</strong> If the smallest observation in the data is 20.6, what is the appropriate lower limit for the first class?</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) 21</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) 20 or less</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) Equal to the total range</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Depends only on class width</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>Correct Answer:</strong> B</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Essay Question (15%)
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Question:</strong> Explain in detail the five rules for building a frequency distribution table, mentioning the mathematical formula for class width, and explain the importance of each rule in avoiding common errors such as gaps or data loss, with a practical application on a hypothetical dataset of 50 student grades ranging between 45 and 95.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Practical Case 1 -->
+<div class="glassy-card">
+  <h2>Practical Case (1): Organizing Data in a Frequency Distribution Table</h2>
+  
+  <h3>Example Presentation</h3>
+  <p><strong>Original Problem:</strong> The following is a sample of 30 observations:</p>
+  <p style="background: rgba(255,255,255,0.3); padding: 15px; border-radius: 10px; font-family: monospace; font-size: 0.92rem; line-height: 1.8;">
+    30.0, 47.4, 39.4, 30.8, 36.6, 46.0, 28.4, 41.6, 27.0, 41.4, 34.8, 37.2, 25.8, 40.6, 27.4, 42.8, 36.6, 59.6, 34.2, 37.8, 20.6, 52.2, 31.4, 28.0, 35.6, 67.6, 46.4, 25.8, 54.2, 33.2
+  </p>
+  <p><strong>(a) Required:</strong> Organize the data in a frequency distribution table, following the rule: individual class limit ≤ smallest observation.</p>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to view step-by-step solution
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <h4>Step 1: Identify smallest and largest values</h4>
+        <p>Looking at the data:</p>
+        <ul>
+          <li>Smallest value = 20.6</li>
+          <li>Largest value = 67.6</li>
+        </ul>
+
+        <h4>Step 2: Calculate the Range</h4>
+        <p style="background: rgba(22,163,74,0.1); padding: 10px; border-radius: 8px; margin: 10px 0;">
+          <strong>Range = 67.6 - 20.6 = 47</strong>
+        </p>
+
+        <h4>Step 3: Choose number of classes</h4>
+        <p>For 30 observations (medium size), we choose <mark class="highlight-green">5 classes</mark> (balance between accuracy and clarity)</p>
+
+        <h4>Step 4: Calculate class width</h4>
+        <p style="background: rgba(22,163,74,0.1); padding: 10px; border-radius: 8px; margin: 10px 0;">
+          <strong>Class Width = 47 ÷ 5 = 9.4 ≈ 10</strong> (round to 10 for simplicity)
+        </p>
+
+        <h4>Step 5: Determine class boundaries</h4>
+        <p>Since smallest observation is 20.6, we start the first class at 20 (lower limit ≤20.6), then add 10 for each class:</p>
+        <ul>
+          <li>Class 1: 20 - 30</li>
+          <li>Class 2: 30 - 40</li>
+          <li>Class 3: 40 - 50</li>
+          <li>Class 4: 50 - 60</li>
+          <li>Class 5: 60 - 70</li>
+        </ul>
+        <p><mark class="highlight-blue">(Note: Classes are consecutive without gaps or overlaps according to the rule)</mark></p>
+
+        <h4>Step 6: Count frequency for each class</h4>
+        <p>Go through each observation and place it in the appropriate class:</p>
+        <ul>
+          <li>20-30: 20.6, 25.8, 25.8, 27.0, 27.4, 28.0, 28.4 → <strong>frequency = 7</strong></li>
+          <li>30-40: 30.0, 30.8, 31.4, 33.2, 34.2, 34.8, 35.6, 36.6, 36.6, 37.2, 37.8, 39.4 → <strong>frequency = 12</strong></li>
+          <li>40-50: 40.6, 41.4, 41.6, 42.8, 46.0, 46.4, 47.4 → <strong>frequency = 7</strong></li>
+          <li>50-60: 52.2, 54.2, 59.6 → <strong>frequency = 3</strong></li>
+          <li>60-70: 67.6 → <strong>frequency = 1</strong></li>
+        </ul>
+        <p>Total = 7 + 12 + 7 + 3 + 1 = <mark class="highlight-green">30 ✓</mark> (matches number of observations)</p>
+
+        <h4>Final Frequency Distribution Table</h4>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Frequency (f)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>20 - 30</td><td>7</td></tr>
+              <tr><td>30 - 40</td><td>12</td></tr>
+              <tr><td>40 - 50</td><td>7</td></tr>
+              <tr><td>50 - 60</td><td>3</td></tr>
+              <tr><td>60 - 70</td><td>1</td></tr>
+              <tr><td><strong>Total</strong></td><td><strong>30</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Analysis:</strong> Class 30-40 is the most frequent (40% of data), indicating value concentration around the mid-range, helping understand the overall data distribution.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Training Ground</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Practice Exercise
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>You have a sample of 25 employee ages in a company:</strong></p>
+        <p style="background: rgba(255,255,255,0.3); padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
+          22, 35, 28, 41, 29, 48, 25, 37, 31, 45, 26, 39, 30, 43, 27, 50, 24, 36, 32, 47, 23, 38, 33, 44, 21
+        </p>
+        <p><strong>Required:</strong></p>
+        <ul>
+          <li>(a) Identify smallest and largest values, calculate the range</li>
+          <li>(b) Suggest appropriate number of classes (5 classes), calculate class width using the formula</li>
+          <li>(c) Determine lower limit of first class (≤21)</li>
+          <li>(d) Organize complete frequency table, count frequency for each class, verify total = 25</li>
+          <li>(e) Identify the most frequent class and interpret its meaning</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Concept 2: Relative Frequency and Class Midpoint -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Relative Frequency and Class Midpoint</h2>
+  
+  <h3>Basic Concept</h3>
+  
+  <h4>1. Relative Frequency</h4>
+  <p>
+    Relative frequency is <mark class="highlight-green">the ratio of each class frequency to the total</mark>, expressed as a decimal point or percentage. The main benefit is that it allows comparison between distributions of different sizes by converting absolute numbers to standardized ratios.
+  </p>
+  
+  <p style="background: rgba(59,130,246,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid #3b82f6; margin: 15px 0;">
+    <strong>Relative Frequency Formula:</strong><br>
+    Relative Frequency (RF) = frequency (f) ÷ total (n)
+  </p>
+  
+  <p><strong>Fundamental Law:</strong> The sum of all relative frequencies must equal <mark class="highlight-yellow">1.0 (or 100%)</mark></p>
+
+  <h4>2. Class Midpoint</h4>
+  <p>
+    The class midpoint is <mark class="highlight-blue">the value representing the center of the class</mark>, used as an approximate value representing all values within the class in statistical calculations like the mean.
+  </p>
+  
+  <p style="background: rgba(234,179,8,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid #eab308; margin: 15px 0;">
+    <strong>Midpoint Formula:</strong><br>
+    Midpoint = (Lower limit + Lower limit of next class) ÷ 2<br>
+    Or simply: Midpoint = (Lower limit + Upper limit) ÷ 2
+  </p>
+  
+  <p><strong>Rule:</strong> The midpoint must be within the class range and is not suitable for open-ended classes (such as "more than 100").</p>
+
+  <h3>Real-World Example</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to view example
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>In a <strong>survey of 500 employees</strong> about weekly working hours:</p>
+        <ul>
+          <li>If 100 employees work 40-50 hours</li>
+          <li><mark class="highlight-green">Relative frequency = 100/500 = 0.2 or 20%</mark></li>
+          <li><mark class="highlight-blue">Midpoint = (40+50)/2 = 45 hours</mark></li>
+        </ul>
+        <p>If you want to calculate approximate average working hours, you'll use 45 as a value representing all 100 employees in this class, saving significant time compared to summing individual hours.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Potential Questions</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ Question: Class Width
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>Question:</strong> If the class width in a frequency distribution table is 10, what is the width of each class?</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) 9</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) 10</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) 5</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) 4.5</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>Correct Answer:</strong> B</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ Question: Relative Frequency
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>Question:</strong> The relative frequency of the second class if its frequency is 9 out of total 30 is?</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) 9</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) 30</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) 0.3 (or 30%)</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) 333</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>Correct Answer:</strong> C (9/30 = 0.3)</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Essay Question (15%)
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Question:</strong> Explain in detail the formulas for relative frequency and class midpoint, mentioning their fundamental laws (sum of RF = 1, midpoint within class), with practical application on a frequency table for 40 students distributed across 4 classes, calculating both RF and midpoint for each class, using midpoint to estimate approximate mean grades, and discussing the importance of RF in comparing different-sized study groups.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Practical Case 2 -->
+<div class="glassy-card">
+  <h2>Practical Case (2): Calculating Relative Frequency and Midpoints</h2>
+  
+  <h3>Example Presentation</h3>
+  <p><strong>Original Problem:</strong> For the same sample of 30 observations (and the prepared frequency table):</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Class</th>
+          <th>Frequency (f)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>20 - 30</td><td>7</td></tr>
+        <tr><td>30 - 40</td><td>12</td></tr>
+        <tr><td>40 - 50</td><td>7</td></tr>
+        <tr><td>50 - 60</td><td>3</td></tr>
+        <tr><td>60 - 70</td><td>1</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>30</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>(b) Required:</strong> Calculate the midpoint for each class and the relative frequency for each class.</p>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to view step-by-step solution
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <h4>Step 1: Calculate midpoint for each class</h4>
+        <p>Using the formula: Midpoint = (Lower limit + Lower limit of next class) ÷ 2</p>
+        <ul>
+          <li><strong>Class 20-30:</strong> (20 + 30) ÷ 2 = 50 ÷ 2 = <mark class="highlight-green">25</mark></li>
+          <li><strong>Class 30-40:</strong> (30 + 40) ÷ 2 = 70 ÷ 2 = <mark class="highlight-green">35</mark></li>
+          <li><strong>Class 40-50:</strong> (40 + 50) ÷ 2 = 90 ÷ 2 = <mark class="highlight-green">45</mark></li>
+          <li><strong>Class 50-60:</strong> (50 + 60) ÷ 2 = 110 ÷ 2 = <mark class="highlight-green">55</mark></li>
+          <li><strong>Class 60-70:</strong> (60 + 70) ÷ 2 = 130 ÷ 2 = <mark class="highlight-green">65</mark></li>
+        </ul>
+
+        <h4>Step 2: Calculate relative frequency for each class</h4>
+        <p>Using the formula: RF = f ÷ n where n = 30</p>
+        <ul>
+          <li><strong>Class 20-30:</strong> 7 ÷ 30 ≈ <mark class="highlight-blue">0.233 or 23.3%</mark></li>
+          <li><strong>Class 30-40:</strong> 12 ÷ 30 = <mark class="highlight-blue">0.400 or 40.0%</mark></li>
+          <li><strong>Class 40-50:</strong> 7 ÷ 30 ≈ <mark class="highlight-blue">0.233 or 23.3%</mark></li>
+          <li><strong>Class 50-60:</strong> 3 ÷ 30 = <mark class="highlight-blue">0.100 or 10.0%</mark></li>
+          <li><strong>Class 60-70:</strong> 1 ÷ 30 ≈ <mark class="highlight-blue">0.033 or 3.3%</mark></li>
+        </ul>
+
+        <h4>Step 3: Verify the law</h4>
+        <p>Sum of relative frequencies:</p>
+        <p style="background: rgba(22,163,74,0.1); padding: 10px; border-radius: 8px;">
+          0.233 + 0.400 + 0.233 + 0.100 + 0.033 = <mark class="highlight-green">0.999 ≈ 1.0 ✓</mark><br>
+          (Rounding due to decimals)
+        </p>
+
+        <h4>Final Expanded Table</h4>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Frequency (f)</th>
+                <th>Midpoint</th>
+                <th>Relative Frequency (RF)</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>20 - 30</td><td>7</td><td>25</td><td>0.233</td><td>23.3%</td></tr>
+              <tr><td>30 - 40</td><td>12</td><td>35</td><td>0.400</td><td>40.0%</td></tr>
+              <tr><td>40 - 50</td><td>7</td><td>45</td><td>0.233</td><td>23.3%</td></tr>
+              <tr><td>50 - 60</td><td>3</td><td>55</td><td>0.100</td><td>10.0%</td></tr>
+              <tr><td>60 - 70</td><td>1</td><td>65</td><td>0.033</td><td>3.3%</td></tr>
+              <tr><td><strong>Total</strong></td><td><strong>30</strong></td><td>-</td><td><strong>1.000</strong></td><td><strong>100.0%</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Analysis:</strong> Class 30-40 represents 40% of the data (most frequent), and midpoint 35 is used as a representative value for this class in any subsequent calculations. The 100% total confirms calculation accuracy.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Training Ground</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Practice Exercise
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>For a frequency table with classes:</strong></p>
+        <p>50-60 (frequency 4), 60-70 (6), 70-80 (7), 80-90 (3), total = 20</p>
+        <p><strong>Required:</strong></p>
+        <ul>
+          <li>(a) Calculate midpoint for each class using formula (Lower + Upper) ÷ 2</li>
+          <li>(b) Calculate relative frequency for each class as decimal and percentage</li>
+          <li>(c) Verify that sum of relative frequencies = 1.0</li>
+          <li>(d) Identify the class with highest percentage and interpret its meaning in student grades context</li>
+          <li>(e) Use midpoints to estimate approximate mean using formula: Mean ≈ Σ(Midpoint × RF)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Concept 3: Cumulative Frequency -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Cumulative Frequency</h2>
+  
+  <h3>Basic Concept</h3>
+  <p>
+    Cumulative frequency is <mark class="highlight-green">the sequential sum of frequencies from the beginning up to a specific class</mark>, where each row adds its frequency to the previous sum, showing the total number of observations up to the end of that class. We convert it to cumulative percentage to know the proportion of the total.
+  </p>
+
+  <p style="background: rgba(236,72,153,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid #ec4899; margin: 15px 0;">
+    <strong>Cumulative Frequency Formula:</strong><br>
+    CF(k) = CF(k-1) + f(k)<br><br>
+    Where:<br>
+    • CF(k) = Cumulative frequency for class k<br>
+    • CF(k-1) = Cumulative frequency for previous class<br>
+    • f(k) = Absolute frequency for class k<br>
+    • CF(1) = f(1) (start with first class frequency)
+  </p>
+
+  <p style="background: rgba(249,115,22,0.15); padding: 15px; border-radius: 10px; border-right: 4px solid #f97316; margin: 15px 0;">
+    <strong>Cumulative Percentage Formula:</strong><br>
+    Cumulative % = (CF ÷ n) × 100%
+  </p>
+
+  <h4>Fundamental Laws:</h4>
+  <ul>
+    <li><mark class="highlight-blue">Cumulative frequency is always ascending</mark> (increases or stays constant, never decreases)</li>
+    <li>Cumulative frequency of last class must equal n (total observations)</li>
+    <li>Cumulative percentage of last class = 100%</li>
+  </ul>
+
+  <h4>Uses:</h4>
+  <ul>
+    <li>Knowing number of observations below a certain limit</li>
+    <li>Calculating median and quartiles</li>
+    <li>Drawing cumulative curve (Ogive)</li>
+  </ul>
+
+  <h3>Real-World Example</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to view example
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p>In a <strong>company</strong>, if you have salary data for 100 employees distributed across classes, with frequencies 15, 30, 35, 20:</p>
+        <p><mark class="highlight-green">Cumulative frequency: 15, 45, 80, 100</mark></p>
+        <p>Meaning of 45: <mark class="highlight-blue">45 employees have salaries below the end of the second class</mark> (e.g., less than 5000), or 45%.</p>
+        <p>This helps management know the percentages of employees below poverty lines or targets.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Potential Questions</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ Question: Sample Size
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>Question:</strong> Sample size in a frequency table with last cumulative frequency = 30 is?</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) 35</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) 30</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) 40</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) Undefined</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>Correct Answer:</strong> B</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ Question: Percentage
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>Question:</strong> Percentage of students who scored 80 or less, if cumulative frequency up to class 80 is 12 out of total 30, is?</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) 12</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) 40%</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) 30%</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) 10%</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>Correct Answer:</strong> B (12 ÷ 30 × 100 = 40%)</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Essay Question (15%)
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Question:</strong> Explain in detail the concept of cumulative frequency with its mathematical formula CF(k) = CF(k-1) + f(k), mentioning the three fundamental laws (ascending, last = n, last percentage = 100%), with complete practical application on income data for 200 families to calculate cumulative frequency and percentages for each class, using the table to determine percentage of families below 55 thousand dollars, and explaining how to use cumulative frequency in calculating median by position method.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Practical Case 3 -->
+<div class="glassy-card">
+  <h2>Practical Case (3): Building the Cumulative Table</h2>
+  
+  <h3>Example Presentation</h3>
+  <p><strong>Original Problem:</strong> For the same sample of 30 observations (and the frequency table):</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Class</th>
+          <th>Frequency (f)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>20 - 30</td><td>7</td></tr>
+        <tr><td>30 - 40</td><td>12</td></tr>
+        <tr><td>40 - 50</td><td>7</td></tr>
+        <tr><td>50 - 60</td><td>3</td></tr>
+        <tr><td>60 - 70</td><td>1</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>30</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>(c) Required:</strong> Calculate the cumulative frequency table with cumulative percentages.</p>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to view step-by-step solution
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <h4>Step 1: Calculate cumulative frequency</h4>
+        <p>Using the formula: CF(k) = CF(k-1) + f(k)</p>
+        <ul>
+          <li><strong>Class 20-30:</strong> CF(1) = 7 (start with first frequency)</li>
+          <li><strong>Class 30-40:</strong> CF(2) = 7 + 12 = <mark class="highlight-green">19</mark></li>
+          <li><strong>Class 40-50:</strong> CF(3) = 19 + 7 = <mark class="highlight-green">26</mark></li>
+          <li><strong>Class 50-60:</strong> CF(4) = 26 + 3 = <mark class="highlight-green">29</mark></li>
+          <li><strong>Class 60-70:</strong> CF(5) = 29 + 1 = <mark class="highlight-green">30 ✓</mark> (equals total)</li>
+        </ul>
+
+        <h4>Step 2: Calculate cumulative percentages</h4>
+        <p>Using the formula: Cumulative % = (CF ÷ 30) × 100%</p>
+        <ul>
+          <li><strong>Class 20-30:</strong> (7 ÷ 30) × 100 ≈ <mark class="highlight-blue">23.3%</mark></li>
+          <li><strong>Class 30-40:</strong> (19 ÷ 30) × 100 ≈ <mark class="highlight-blue">63.3%</mark></li>
+          <li><strong>Class 40-50:</strong> (26 ÷ 30) × 100 ≈ <mark class="highlight-blue">86.7%</mark></li>
+          <li><strong>Class 50-60:</strong> (29 ÷ 30) × 100 ≈ <mark class="highlight-blue">96.7%</mark></li>
+          <li><strong>Class 60-70:</strong> (30 ÷ 30) × 100 = <mark class="highlight-blue">100.0% ✓</mark></li>
+        </ul>
+
+        <h4>Final Expanded Table</h4>
+        <div class="table-container">
+          <table class="concepts-table">
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Frequency (f)</th>
+                <th>Cumulative Frequency (CF)</th>
+                <th>Cumulative Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>20 - 30</td><td>7</td><td>7</td><td>23.3%</td></tr>
+              <tr><td>30 - 40</td><td>12</td><td>19</td><td>63.3%</td></tr>
+              <tr><td>40 - 50</td><td>7</td><td>26</td><td>86.7%</td></tr>
+              <tr><td>50 - 60</td><td>3</td><td>29</td><td>96.7%</td></tr>
+              <tr><td>60 - 70</td><td>1</td><td>30</td><td>100.0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Analysis:</strong> The table shows that 63.3% of data is less than 40, and 86.7% is less than 50. The median (middle value) falls in the second class (30-40) because 50% falls between CF=7 and CF=19.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Training Ground</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Practice Exercise
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>For a frequency table:</strong></p>
+        <p>Class 10-20 (frequency 3), 20-30 (9), 30-40 (12), 40-50 (6), total = 30</p>
+        <p><strong>Required:</strong></p>
+        <ul>
+          <li>(a) Calculate cumulative frequency for each class step
+<!-- Practical Case 3 - Continued -->
+        <ul>
+          <li>(a) Calculate cumulative frequency for each class step-by-step using the formula</li>
+          <li>(b) Calculate cumulative percentage for each class</li>
+          <li>(c) Verify that last CF = 30 and last percentage = 100%</li>
+          <li>(d) Determine percentage of values less than 30 and interpret its meaning</li>
+          <li>(e) Use the cumulative table to identify the class containing the median (at 50%)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Practical Case 4 -->
+<div class="glassy-card">
+  <h2>Practical Case (4): Analyzing Student Grades Table</h2>
+  
+  <h3>Example Presentation</h3>
+  <p><strong>Original Problem:</strong> The following table shows the distribution of student scores on a test:</p>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Score</th>
+          <th>Frequency (f)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>61 - 70</td><td>3</td></tr>
+        <tr><td>71 - 80</td><td>9</td></tr>
+        <tr><td>81 - 90</td><td>12</td></tr>
+        <tr><td>91 - 100</td><td>6</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>Question:</strong> Calculate the percentage of students who scored 80 or less.</p>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to view step-by-step solution
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <h4>Step 1: Calculate total</h4>
+        <p>n = 3 + 9 + 12 + 6 = <mark class="highlight-green">30 students</mark></p>
+
+        <h4>Step 2: Identify required classes</h4>
+        <p>"80 or less" includes classes:</p>
+        <ul>
+          <li>61-70 (frequency 3)</li>
+          <li>71-80 (frequency 9)</li>
+        </ul>
+
+        <h4>Step 3: Calculate cumulative frequency up to 80</h4>
+        <p style="background: rgba(22,163,74,0.1); padding: 10px; border-radius: 8px;">
+          CF up to 80 = 3 + 9 = <mark class="highlight-blue">12</mark>
+        </p>
+
+        <h4>Step 4: Calculate percentage</h4>
+        <p style="background: rgba(59,130,246,0.1); padding: 10px; border-radius: 8px;">
+          Percentage = (12 ÷ 30) × 100% = <mark class="highlight-green">40%</mark>
+        </p>
+
+        <p><strong>Answer:</strong> 40% of students scored 80 or less.</p>
+
+        <p><strong>Analysis:</strong> This means 60% of students scored more than 80, which may indicate good class performance, or need to focus on the lower 40% for improvement.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>MCQ Questions from Example</h3>
+  
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ 1: Number of Classes
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>Question:</strong> The number of classes in this frequency table is:</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) 30</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) 4</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) 1</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) 40</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>Correct Answer:</strong> B</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ 2: Class Width
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>Question:</strong> The width of each class in this table is:</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) 9</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">B) 10</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) 5</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) 4.5</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>Correct Answer:</strong> B (70-61+1=10, or difference between class limits)</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ 3: Relative Frequency
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>Question:</strong> The relative frequency of the second class (71-80) is:</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">A) 9</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) 30</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">C) 0.3 (or 30%)</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) 333</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>Correct Answer:</strong> C (9/30 = 0.3)</p>
+    </div>
+  </div>
+
+  <h3>Training Ground</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Practice Exercise
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Grade table:</strong> 50-60: 2, 60-70: 5, 70-80: 8, 80-90: 10, total = 25</p>
+        <p><strong>Required:</strong></p>
+        <ul>
+          <li>(a) Calculate percentage of grades 70 or less</li>
+          <li>(b) Build complete cumulative table</li>
+          <li>(c) Calculate relative frequency for each class</li>
+          <li>(d) Discuss whether this distribution indicates good performance or needs improvement</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Concept 4: Stem-and-Leaf Display -->
+<div class="glassy-card">
+  <h2>Concept Explanation: Stem-and-Leaf Display</h2>
+  
+  <h3>Basic Concept</h3>
+  <p>
+    The stem-and-leaf display is <mark class="highlight-green">an alternative visual statistical technique to the frequency table</mark>, used to display small to medium-sized datasets in an organized manner while retaining all original values. The idea is to divide each value into two parts:
+  </p>
+
+  <h4>Division:</h4>
+  <ul>
+    <li><mark class="highlight-blue">Stem:</mark> Main digits (like tens or hundreds), placed vertically</li>
+    <li><mark class="highlight-yellow">Leaf:</mark> Last digit (or last two), arranged horizontally under the appropriate stem</li>
+  </ul>
+
+  <h4>Advantages of Stem-and-Leaf Display:</h4>
+  <ul>
+    <li>Retains original values (unlike frequency table which loses them)</li>
+    <li>Shows distribution visually (concentration, spread, symmetry)</li>
+    <li>Easy to prepare manually for small data (&lt;100 observations)</li>
+    <li>Used to extract statistics quickly (median, range, outliers)</li>
+  </ul>
+
+  <h4>Construction Steps:</h4>
+  <ul>
+    <li><strong>1. Calculate range:</strong> Range = Maximum - Minimum</li>
+    <li><strong>2. Determine stems:</strong> Choose stems to cover entire range without gaps. For example, if range is 88-156, stems from 8 to 15</li>
+    <li><strong>3. Divide values:</strong> Each value is divided: e.g., 88 → stem 8, leaf 8; 156 → stem 15, leaf 6</li>
+    <li><strong>4. Order leaves:</strong> Under each stem, arrange leaves in ascending order from left to right</li>
+  </ul>
+
+  <h4>Rules:</h4>
+  <ul>
+    <li>No gaps between stems (if no leaf for a stem, leave it empty)</li>
+    <li>Leaves always in ascending order</li>
+    <li>Stems vertical, leaves horizontal</li>
+  </ul>
+
+  <h3>Illustrative Example</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to view example
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Values:</strong> 23, 25, 27, 32, 35, 38</p>
+        <pre style="background: rgba(15, 23, 42, 0.95); color: #10b981; padding: 15px; border-radius: 10px; font-size: 0.95rem;">
+Stem | Leaf
+-----|-------
+2    | 3 5 7
+3    | 2 5 8
+        </pre>
+        <p><strong>Interpretation:</strong></p>
+        <ul>
+          <li>23 → stem 2, leaf 3</li>
+          <li>25 → stem 2, leaf 5</li>
+          <li>27 → stem 2, leaf 7</li>
+          <li>32 → stem 3, leaf 2</li>
+          <li>35 → stem 3, leaf 5</li>
+          <li>38 → stem 3, leaf 8</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>Potential Questions</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      MCQ Question: Range
+    </div>
+    <div class="question-content">
+      <p style="margin-bottom: 10px;"><strong>Question:</strong> In a stem-and-leaf display, the range if maximum is 156 and minimum is 88 is?</p>
+      <ul class="mcq-options">
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, true)">A) 68</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">B) 6</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">C) 8</li>
+        <li class="mcq-option" onclick="event.stopPropagation(); selectMCQ(this, false)">D) 156</li>
+      </ul>
+      <p style="margin-top: 10px;"><strong>Correct Answer:</strong> A (156 - 88 = 68)</p>
+    </div>
+  </div>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Essay Question (15%)
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Question:</strong> Explain the stem-and-leaf display technique in detail, including the four construction steps (calculate range, determine stems, divide values, order leaves), with rules for no gaps and ascending order, and practical application on daily data (such as museum visitor numbers over 20 days), with discussion of advantages compared to histogram or frequency table in maintaining original accuracy and quickly extracting the median.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Practical Case 5 -->
+<div class="glassy-card">
+  <h2>Practical Case (5): Analyzing Movie Rental Data</h2>
+  
+  <h3>Example Presentation</h3>
+  <p><strong>Original Problem:</strong> The following stem-and-leaf display reports the number of movies rented daily at Video Connection:</p>
+
+  <pre style="background: rgba(15, 23, 42, 0.95); color: #10b981; padding: 20px; border-radius: 12px; font-size: 0.95rem; line-height: 1.8;">
+Stem | Leaf
+-----|----------------
+12   | 3 5 7 9
+13   | 1 4 6 8
+14   | 0 2 5 7 9
+15   | 2 4 6
+16   | 1 3
+  </pre>
+
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Click to view solution for all questions
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <h4>a. How many days were studied?</h4>
+        <p>Count all leaves:</p>
+        <ul>
+          <li>Stem 12: 4 leaves</li>
+          <li>Stem 13: 4 leaves</li>
+          <li>Stem 14: 5 leaves</li>
+          <li>Stem 15: 3 leaves</li>
+          <li>Stem 16: 2 leaves</li>
+        </ul>
+        <p>Total = 4 + 4 + 5 + 3 + 2 = <mark class="highlight-green">18 days</mark></p>
+
+        <h4>b. How many observations in the last class?</h4>
+        <p>Last stem (16): <mark class="highlight-blue">2 observations</mark> (leaves 1, 3)</p>
+
+        <h4>c. What are the maximum and minimum values?</h4>
+        <ul>
+          <li><strong>Minimum:</strong> First leaf in first stem = stem 12, leaf 3 → <mark class="highlight-yellow">123</mark></li>
+          <li><strong>Maximum:</strong> Last leaf in last stem = stem 16, leaf 3 → <mark class="highlight-orange">163</mark></li>
+        </ul>
+
+        <h4>d. Actual values in the fourth row (stem 15)</h4>
+        <p>Stem 15, leaves 2, 4, 6 → <mark class="highlight-pink">152, 154, 156</mark></p>
+
+        <h4>e. How many days with fewer than 160 movies rented?</h4>
+        <p>Stems from 12 to 15 (all less than 160): 4 + 4 + 5 + 3 = <mark class="highlight-green">16 days</mark></p>
+
+        <h4>f. How many days with 220 or more?</h4>
+        <p>No stems 22 or higher in the display → <mark class="highlight-blue">0 days</mark></p>
+
+        <h4>g. What is the median value?</h4>
+        <p>18 observations, median between 9th and 10th:</p>
+        <p>Count leaves in order to 9th and 10th: 9th value = 145, 10th value = 147</p>
+        <p>Median = (145 + 147) ÷ 2 = <mark class="highlight-green">146</mark></p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Training Ground</h3>
+  <div class="question-container" onclick="toggleQuestion(this)">
+    <div class="question-header">
+      <svg class="question-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Practice Exercise
+    </div>
+    <div class="question-content">
+      <div class="solution-content">
+        <p><strong>Data:</strong> 123, 145, 112, 156, 134, 128, 139, 150, 117, 142</p>
+        <p><strong>Required:</strong></p>
+        <ul>
+          <li>(a) Identify smallest and largest values, calculate range</li>
+          <li>(b) Determine appropriate stems (by tens: 11, 12, 13, 14, 15)</li>
+          <li>(c) Divide each value into stem and leaf</li>
+          <li>(d) Build stem-and-leaf display, order leaves ascending</li>
+          <li>(e) Calculate number of observations in stem 13</li>
+          <li>(f) Identify maximum and minimum values directly from display</li>
+          <li>(g) Calculate median (5th or 6th value in order)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Key Concepts Table -->
+<div class="glassy-card">
+  <h2>Key Concepts Glossary</h2>
+  
+  <div class="table-container">
+    <table class="concepts-table">
+      <thead>
+        <tr>
+          <th>Concept</th>
+          <th>Formal Definition</th>
+          <th>Mathematical Formula</th>
+          <th>Summary</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Frequency Distribution Table</strong></td>
+          <td>Organizing data into homogeneous classes with frequency counting, following rules for limits, width, and sequence</td>
+          <td>Width = Range ÷ Number of classes</td>
+          <td>Comprehensive frequency organization</td>
+        </tr>
+        <tr>
+          <td><strong>Relative Frequency</strong></td>
+          <td>Class frequency divided by total, sum equals 1</td>
+          <td>RF = f ÷ n</td>
+          <td>Standardized class ratio</td>
+        </tr>
+        <tr>
+          <td><strong>Class Midpoint</strong></td>
+          <td>Average of lower and next lower limits, represents class in calculations</td>
+          <td>(Lower + Upper) ÷ 2</td>
+          <td>Representative class center</td>
+        </tr>
+        <tr>
+          <td><strong>Cumulative Frequency</strong></td>
+          <td>Sum of frequencies from beginning to specific class, always ascending, last = n</td>
+          <td>CF(k) = CF(k-1) + f(k)</td>
+          <td>Progressive cumulative total</td>
+        </tr>
+        <tr>
+          <td><strong>Cumulative Percentage</strong></td>
+          <td>Cumulative frequency as percentage of total, last = 100%</td>
+          <td>(CF ÷ n) × 100%</td>
+          <td>Cumulative percentage ratio</td>
+        </tr>
+        <tr>
+          <td><strong>Stem-and-Leaf Display</strong></td>
+          <td>Dividing numbers into main stem and last leaf, visually arranged without gaps, retains original accuracy</td>
+          <td>None</td>
+          <td>Precise visual data display</td>
+        </tr>
+        <tr>
+          <td><strong>Range</strong></td>
+          <td>Difference between maximum and minimum value in data</td>
+          <td>Max - Min</td>
+          <td>Total data span</td>
+        </tr>
+        <tr>
+          <td><strong>Number of Classes</strong></td>
+          <td>Number of groups in table, increases with data size in balance</td>
+          <td>5-20 classes for medium data</td>
+          <td>Appropriate group count</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer-info">
+  <div class="footer-brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+      <path d="M2 17l10 5 10-5"/>
+      <path d="M2 12l10 5 10-5"/>
+    </svg>
+    Athar Educational Platform
+  </div>
+  <div class="footer-divider"></div>
+  <p class="footer-disclaimer">
+    This content has been carefully prepared with detailed explanations, formulas, and examples. 
+    We wish you a successful learning journey!
+  </p>
+</div>
+
+        
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const translationButton = document.getElementById('translationButton');
+      const translationText = document.querySelector('.translation-text');
+      const arabicContent = document.getElementById('arabicContent');
+      const englishContent = document.getElementById('englishContent');
+      const html = document.documentElement;
+      const body = document.body;
+      const mainTitle = document.getElementById('mainTitle');
+      const subtitle = document.getElementById('subtitle');
+      
+      const aiChatButton = document.getElementById('aiChatButton');
+      const aiChatModal = document.getElementById('aiChatModal');
+      const aiChatCloseBtn = document.getElementById('aiChatCloseBtn');
+      const aiChatMessages = document.getElementById('aiChatMessages');
+      const aiChatInput = document.getElementById('ai-chat-input');
+      const aiChatSendBtn = document.getElementById('ai-chat-send-btn');
+      const aiChatTitle = document.getElementById('ai-chat-title');
+      const aiChatButtonText = document.getElementById('aiFabText');
+      
+      let isArabic = true;
+      let isFirstMessage = true;
+
+      function applyLanguage(arabic) {
+        isArabic = arabic;
+        const lang = isArabic ? 'ar' : 'en';
+        const dir = isArabic ? 'rtl' : 'ltr';
+        
+        html.setAttribute('lang', lang);
+        html.setAttribute('dir', dir);
+        body.setAttribute('dir', dir);
+        
+        arabicContent.classList.toggle('hidden', !isArabic);
+        englishContent.classList.toggle('hidden', isArabic);
+        
+        translationText.textContent = isArabic ? 'English' : 'العربية';
+        document.title = isArabic ? 'منصة أثر التعليمية' : 'Athar Educational Platform';
+        mainTitle.textContent = isArabic ? 'منصة أثر التعليمية' : 'Athar Educational Platform';
+        subtitle.textContent = isArabic ? 'التعلم التفاعلي بتقنية Glassmorphism' : 'Interactive Learning with Glassmorphism';
+        
+        aiChatTitle.textContent = isArabic ? 'اسأل أثر AI' : 'Ask Athar AI';
+        aiChatInput.placeholder = isArabic ? 'اكتب سؤالك هنا...' : 'Type your question here...';
+        aiChatButtonText.textContent = isArabic ? 'أثر AI' : 'Athar AI';
+      }
+      
+      translationButton.addEventListener('click', function() {
+        applyLanguage(!isArabic);
+      });
+
+      aiChatButton.addEventListener('click', function() {
+        aiChatModal.classList.add('visible');
+        
+        if (isFirstMessage) {
+          const welcomeMsg = isArabic 
+            ? "مرحباً! أنا **أثر AI**، مساعدك الدراسي الذكي. كيف يمكنني مساعدتك اليوم؟"
+            : "Hello! I'm **Athar AI**, your intelligent study assistant. How can I help you today?";
+          addMessage(welcomeMsg, 'ai');
+          isFirstMessage = false;
+        }
+        
+        aiChatInput.focus();
+      });
+
+      aiChatCloseBtn.addEventListener('click', function() {
+        aiChatModal.classList.remove('visible');
+      });
+
+      aiChatModal.addEventListener('click', function(e) {
+        if (e.target === aiChatModal) {
+          aiChatModal.classList.remove('visible');
+        }
+      });
+
+      function addMessage(text, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', `${sender}-message`);
+        if (typeof marked !== 'undefined') {
+          messageElement.innerHTML = marked.parse(text);
+        } else {
+          messageElement.textContent = text;
+        }
+        aiChatMessages.appendChild(messageElement);
+        aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+      }
+
+      function sendMessage() {
+        const userMessage = aiChatInput.value.trim();
+        if (!userMessage) return;
+
+        addMessage(userMessage, 'user');
+        aiChatInput.value = '';
+        
+        // هنا يمكنك إضافة استدعاء API للذكاء الاصطناعي
+        setTimeout(() => {
+          const aiResponse = isArabic 
+            ? "شكراً على سؤالك! هذه ميزة تجريبية."
+            : "Thank you for your question! This is a demo feature.";
+          addMessage(aiResponse, 'ai');
+        }, 1000);
+      }
+
+      aiChatSendBtn.addEventListener('click', sendMessage);
+      aiChatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      // Question Toggle Function
+      window.toggleQuestion = function(element) {
+        const content = element.querySelector('.question-content');
+        element.classList.toggle('open');
+        content.classList.toggle('show');
+        
+        if (content.classList.contains('show')) {
+          setTimeout(() => {
+            content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 300);
+        }
+      };
+
+      // MCQ Selection Function
+      window.selectMCQ = function(element, isCorrect) {
+        const options = element.parentNode.querySelectorAll('.mcq-option');
+        
+        options.forEach(option => {
+          option.style.pointerEvents = 'none';
+          option.classList.remove('selected', 'correct', 'incorrect');
+        });
+        
+        element.classList.add('selected');
+        
+        setTimeout(() => {
+          if (isCorrect) {
+            element.classList.add('correct');
+            element.innerHTML += ' ✓';
+          } else {
+            element.classList.add('incorrect');
+            element.innerHTML += ' ✗';
+            
+            options.forEach(option => {
+              const onclick = option.getAttribute('onclick');
+              if (onclick && onclick.includes('true')) {
+                option.classList.add('correct');
+                option.innerHTML += ' ✓';
+              }
+            });
+          }
+        }, 500);
+      };
+    });
+  </script>
+</body>
+</html>
+
