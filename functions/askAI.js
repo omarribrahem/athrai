@@ -218,7 +218,7 @@ async function queryGoogleAI(systemInstruction, conversationHistory, apiKey) {
   const requestBody = {
     contents: modifiedContents,
     generationConfig: {
-      temperature: 0,6,
+      temperature: 0.6,
       maxOutputTokens: 512,
       topP: 0.92,
       topK: 35
